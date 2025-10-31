@@ -64,4 +64,40 @@ export default async function ViewPurchaseOrdersPage() {
                       <span className="font-semibold">Total Items:</span> {po.items.length}
                     </p>
                     <p className="text-gray-300">
-                      <span clas
+                      <span className="font-semibold">Total Cost:</span> ${po.items.reduce((sum, item) => sum + (item.quantity * item.unitCost), 0).toFixed(2)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-900">
+                    <tr>
+                      <th className="px-4 py-2 text-left text-sm font-medium text-gray-400">Product</th>
+                      <th className="px-4 py-2 text-left text-sm font-medium text-gray-400">SKU</th>
+                      <th className="px-4 py-2 text-right text-sm font-medium text-gray-400">Quantity</th>
+                      <th className="px-4 py-2 text-right text-sm font-medium text-gray-400">Unit Cost</th>
+                      <th className="px-4 py-2 text-right text-sm font-medium text-gray-400">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {po.items.map((item, index) => (
+                      <tr key={item.id} className={index % 2 === 0 ? 'bg-gray-800' : 'bg-gray-750'}>
+                        <td className="px-4 py-3 text-white">{item.product.name}</td>
+                        <td className="px-4 py-3 text-gray-400">{item.product.sku}</td>
+                        <td className="px-4 py-3 text-right text-white">{item.quantity}</td>
+                        <td className="px-4 py-3 text-right text-white">${item.unitCost.toFixed(2)}</td>
+                        <td className="px-4 py-3 text-right text-white font-medium">${(item.quantity * item.unitCost).toFixed(2)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
