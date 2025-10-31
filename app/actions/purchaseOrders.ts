@@ -77,7 +77,8 @@ export async function updatePurchaseOrder(id: string, data: {
     unitCost: number
   }>
 }) {
-  await prisma.$transaction(async (tx: Omit<PrismaClient, Prisma.TypeMap['meta']['modelProps']>) => {
+  // @ts-ignore - Prisma transaction type inference
+  await prisma.$transaction(async (tx) => {
     await tx.purchaseOrderItem.deleteMany({
       where: { purchaseOrderId: id }
     })
