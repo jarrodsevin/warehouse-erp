@@ -1,8 +1,9 @@
 "use server";
-
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 import { revalidatePath } from 'next/cache'
+
 const prisma = new PrismaClient();
+
 export async function createPurchaseOrder(data: {
   poNumber: string
   vendorId: string
@@ -29,6 +30,7 @@ export async function createPurchaseOrder(data: {
       }
     }
   })
+  
   revalidatePath('/purchase-orders')
 }
 
@@ -75,7 +77,7 @@ export async function updatePurchaseOrder(id: string, data: {
     unitCost: number
   }>
 }) {
-  await prisma.$transaction(async (tx) => {
+  await prisma.$transaction(async (tx: Omit<PrismaClient, Prisma.TypeMap['meta']['modelProps']>) => {
     await tx.purchaseOrderItem.deleteMany({
       where: { purchaseOrderId: id }
     })
@@ -103,9 +105,11 @@ export async function updatePurchaseOrder(id: string, data: {
   revalidatePath('/purchase-orders')
   revalidatePath(`/purchase-orders/${id}`)
 }
+
 export async function deletePurchaseOrder(id: string) {
   await prisma.purchaseOrder.delete({
     where: { id }
   })
+  
   revalidatePath('/purchase-orders')
 }
