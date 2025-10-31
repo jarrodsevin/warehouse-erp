@@ -1,5 +1,6 @@
 import { prisma } from '@/prisma/prisma.config'
 import Link from 'next/link'
+import { Brand } from '@prisma/client'
 
 export default async function UpdateBrands() {
   const brands = await prisma.brand.findMany({
@@ -30,7 +31,7 @@ export default async function UpdateBrands() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {brands.map((brand) => (
+            {brands.map((brand: Brand) => (
               <Link
                 key={brand.id}
                 href={`/admin/brands/${brand.id}`}
