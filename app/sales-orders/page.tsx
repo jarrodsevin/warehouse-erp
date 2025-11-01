@@ -56,7 +56,15 @@ export default function SalesOrdersPage() {
   return (
     <div className="p-8">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Sales Orders</h1>
+        <div className="flex items-center gap-4">
+          <Link
+            href="/"
+            className="text-gray-400 hover:text-white"
+          >
+            ← Home
+          </Link>
+          <h1 className="text-3xl font-bold">Sales Orders</h1>
+        </div>
         <Link
           href="/sales-orders/create"
           className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
