@@ -62,6 +62,17 @@ export default function ReportsMenu() {
               </p>
             </div>
           </Link>
+
+          <Link href="/reports/customer-sales" className="group">
+            <div className="bg-gray-800 border border-gray-700 rounded-lg p-10 hover:scale-105 transition-transform cursor-pointer h-full">
+              <h2 className="text-2xl font-semibold mb-4 text-indigo-400 group-hover:text-indigo-300">
+                👥 Customer Sales Performance
+              </h2>
+              <p className="text-gray-400">
+                Analyze customer profitability and sales performance with time-based filtering
+              </p>
+            </div>
+          </Link>
         </div>
       </div>
     </div>
