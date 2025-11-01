@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
@@ -35,7 +33,6 @@ export async function GET() {
         name: 'asc'
       }
     })
-
     return NextResponse.json(products)
   } catch (error) {
     console.error('Error fetching products:', error)

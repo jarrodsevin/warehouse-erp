@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
@@ -18,7 +16,6 @@ export async function GET() {
         name: 'asc'
       }
     });
-
     return NextResponse.json(customers);
   } catch (error) {
     console.error('Error fetching customers:', error);
@@ -32,7 +29,6 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    
     const customer = await prisma.customer.create({
       data: {
         name: body.name,
@@ -48,7 +44,6 @@ export async function POST(request: Request) {
         notes: body.notes
       }
     });
-
     return NextResponse.json(customer);
   } catch (error) {
     console.error('Error creating customer:', error);
