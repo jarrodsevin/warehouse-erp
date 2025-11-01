@@ -3,6 +3,11 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
+type Customer = {
+  id: string
+  name: string
+}
+
 type Product = {
   id: string
   name: string
@@ -23,6 +28,7 @@ type SalesOrder = {
   id: string
   soNumber: string
   orderDate: string
+  customer: Customer
   items: SalesOrderItem[]
 }
 
@@ -36,13 +42,27 @@ type ProductDiscountMetrics = {
   profitLost: number
 }
 
+type CustomerDiscountMetrics = {
+  customer: Customer
+  orderCount: number
+  totalUnits: number
+  avgDiscount: number
+  potentialProfit: number
+  actualProfit: number
+  profitLost: number
+  discountRate: number
+}
+
 type DateFilter = '30' | '60' | '90' | 'ytd' | 'thisYear' | 'lastYear'
+type ViewMode = 'products' | 'customers'
 
 export default function DiscountAnalysisReport() {
   const [salesOrders, setSalesOrders] = useState<SalesOrder[]>([])
   const [loading, setLoading] = useState(true)
   const [dateFilter, setDateFilter] = useState<DateFilter>('30')
-  const [sortBy, setSortBy] = useState<'profitLost' | 'discount' | 'units' | 'potentialProfit'>('profitLost')
+  const [viewMode, setViewMode] = useState<ViewMode>('products')
+  const [productSortBy, setProductSortBy] = useState<'profitLost' | 'discount' | 'units' | 'potentialProfit'>('profitLost')
+  const [customerSortBy, setCustomerSortBy] = useState<'profitLost' | 'discount' | 'orders' | 'discountRate'>('profitLost')
   const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('desc')
 
   useEffect(() => {
@@ -123,25 +143,15 @@ export default function DiscountAnalysisReport() {
       const product = data.product
       
       const unitsSold = items.reduce((sum, item) => sum + item.quantity, 0)
-      
-      // Calculate average selling price
       const totalRevenue = items.reduce((sum, item) => sum + item.lineTotal, 0)
       const avgSellingPrice = totalRevenue / unitsSold
-      
-      // Calculate average discount percentage
       const avgDiscount = product.retailPrice > 0 
         ? ((product.retailPrice - avgSellingPrice) / product.retailPrice) * 100
         : 0
-      
-      // Potential profit at full retail
       const potentialProfit = (product.retailPrice - product.cost) * unitsSold
-      
-      // Actual profit
       const actualProfit = items.reduce((sum, item) => {
         return sum + ((item.unitPrice - product.cost) * item.quantity)
       }, 0)
-      
-      // Profit lost due to discounting
       const profitLost = potentialProfit - actualProfit
 
       return {
@@ -157,7 +167,7 @@ export default function DiscountAnalysisReport() {
     .sort((a, b) => {
       let aValue: number, bValue: number
       
-      switch (sortBy) {
+      switch (productSortBy) {
         case 'profitLost':
           aValue = a.profitLost
           bValue = b.profitLost
@@ -173,6 +183,96 @@ export default function DiscountAnalysisReport() {
         case 'potentialProfit':
           aValue = a.potentialProfit
           bValue = b.potentialProfit
+          break
+        default:
+          aValue = a.profitLost
+          bValue = b.profitLost
+      }
+
+      return sortOrder === 'desc' ? bValue - aValue : aValue - bValue
+    })
+
+  // Calculate customer discount metrics
+  const customerMetrics: CustomerDiscountMetrics[] = Array.from(
+    filteredOrders.reduce((map, order) => {
+      const customerId = order.customer.id
+      if (!map.has(customerId)) {
+        map.set(customerId, {
+          customer: order.customer,
+          orders: [],
+        })
+      }
+      map.get(customerId)!.orders.push(order)
+      return map
+    }, new Map<string, { customer: Customer; orders: SalesOrder[] }>())
+  )
+    .map(([_, data]) => {
+      const orders = data.orders
+      const customer = data.customer
+      
+      let totalUnits = 0
+      let totalPotentialProfit = 0
+      let totalActualProfit = 0
+      let totalRetailValue = 0
+      let totalActualValue = 0
+      
+      orders.forEach(order => {
+        order.items.forEach(item => {
+          const units = item.quantity
+          const retailPrice = item.product.retailPrice
+          const cost = item.product.cost
+          const actualPrice = item.unitPrice
+          
+          totalUnits += units
+          totalPotentialProfit += (retailPrice - cost) * units
+          totalActualProfit += (actualPrice - cost) * units
+          totalRetailValue += retailPrice * units
+          totalActualValue += actualPrice * units
+        })
+      })
+      
+      const profitLost = totalPotentialProfit - totalActualProfit
+      const avgDiscount = totalRetailValue > 0 
+        ? ((totalRetailValue - totalActualValue) / totalRetailValue) * 100
+        : 0
+      
+      // Discount rate: percentage of items purchased at a discount
+      const discountedItems = orders.reduce((sum, order) => {
+        return sum + order.items.filter(item => item.unitPrice < item.product.retailPrice).length
+      }, 0)
+      const totalItems = orders.reduce((sum, order) => sum + order.items.length, 0)
+      const discountRate = totalItems > 0 ? (discountedItems / totalItems) * 100 : 0
+
+      return {
+        customer,
+        orderCount: orders.length,
+        totalUnits,
+        avgDiscount,
+        potentialProfit: totalPotentialProfit,
+        actualProfit: totalActualProfit,
+        profitLost,
+        discountRate,
+      }
+    })
+    .sort((a, b) => {
+      let aValue: number, bValue: number
+      
+      switch (customerSortBy) {
+        case 'profitLost':
+          aValue = a.profitLost
+          bValue = b.profitLost
+          break
+        case 'discount':
+          aValue = a.avgDiscount
+          bValue = b.avgDiscount
+          break
+        case 'orders':
+          aValue = a.orderCount
+          bValue = b.orderCount
+          break
+        case 'discountRate':
+          aValue = a.discountRate
+          bValue = b.discountRate
           break
         default:
           aValue = a.profitLost
@@ -202,7 +302,7 @@ export default function DiscountAnalysisReport() {
     })
     
     doc.setFontSize(18)
-    doc.text('Discount & Pricing Analysis Report', 14, 20)
+    doc.text(`Discount Analysis - ${viewMode === 'products' ? 'Products' : 'Customers'}`, 14, 20)
     
     doc.setFontSize(10)
     doc.text(`Generated: ${new Date().toLocaleDateString()}`, 14, 28)
@@ -211,50 +311,53 @@ export default function DiscountAnalysisReport() {
     doc.text(`Actual Profit: $${totalActualProfit.toFixed(2)}`, 14, 43)
     doc.text(`Profit Lost: $${totalProfitLost.toFixed(2)}`, 14, 48)
     
-    const tableData = productMetrics.map((product, index) => [
-      `#${index + 1}`,
-      product.product.sku,
-      product.product.name,
-      product.unitsSold.toString(),
-      `$${product.product.retailPrice.toFixed(2)}`,
-      `$${product.avgSellingPrice.toFixed(2)}`,
-      `${product.avgDiscount.toFixed(1)}%`,
-      `$${product.potentialProfit.toFixed(2)}`,
-      `$${product.actualProfit.toFixed(2)}`,
-      `$${product.profitLost.toFixed(2)}`,
-    ])
+    if (viewMode === 'products') {
+      const tableData = productMetrics.map((product, index) => [
+        `#${index + 1}`,
+        product.product.sku,
+        product.product.name,
+        product.unitsSold.toString(),
+        `$${product.product.retailPrice.toFixed(2)}`,
+        `$${product.avgSellingPrice.toFixed(2)}`,
+        `${product.avgDiscount.toFixed(1)}%`,
+        `$${product.potentialProfit.toFixed(2)}`,
+        `$${product.actualProfit.toFixed(2)}`,
+        `$${product.profitLost.toFixed(2)}`,
+      ])
 
-    autoTable(doc, {
-      startY: 55,
-      head: [[
-        'Rank',
-        'SKU',
-        'Product',
-        'Units',
-        'Retail',
-        'Avg Price',
-        'Discount %',
-        'Potential',
-        'Actual',
-        'Lost',
-      ]],
-      body: tableData,
-      theme: 'grid',
-      styles: {
-        fontSize: 8,
-        cellPadding: 2,
-      },
-      headStyles: {
-        fillColor: [239, 68, 68],
-        textColor: [255, 255, 255],
-        fontStyle: 'bold',
-      },
-      columnStyles: {
-        2: { cellWidth: 40 },
-      },
-    })
+      autoTable(doc, {
+        startY: 55,
+        head: [['Rank', 'SKU', 'Product', 'Units', 'Retail', 'Avg Price', 'Discount %', 'Potential', 'Actual', 'Lost']],
+        body: tableData,
+        theme: 'grid',
+        styles: { fontSize: 8, cellPadding: 2 },
+        headStyles: { fillColor: [239, 68, 68], textColor: [255, 255, 255], fontStyle: 'bold' },
+        columnStyles: { 2: { cellWidth: 40 } },
+      })
+    } else {
+      const tableData = customerMetrics.map((customer, index) => [
+        `#${index + 1}`,
+        customer.customer.name,
+        customer.orderCount.toString(),
+        customer.totalUnits.toString(),
+        `${customer.avgDiscount.toFixed(1)}%`,
+        `${customer.discountRate.toFixed(1)}%`,
+        `$${customer.potentialProfit.toFixed(2)}`,
+        `$${customer.actualProfit.toFixed(2)}`,
+        `$${customer.profitLost.toFixed(2)}`,
+      ])
 
-    doc.save(`discount-analysis-${dateFilter}-${new Date().toISOString().split('T')[0]}.pdf`)
+      autoTable(doc, {
+        startY: 55,
+        head: [['Rank', 'Customer', 'Orders', 'Units', 'Avg Discount', 'Discount Rate', 'Potential', 'Actual', 'Lost']],
+        body: tableData,
+        theme: 'grid',
+        styles: { fontSize: 9, cellPadding: 2 },
+        headStyles: { fillColor: [239, 68, 68], textColor: [255, 255, 255], fontStyle: 'bold' },
+      })
+    }
+
+    doc.save(`discount-analysis-${viewMode}-${dateFilter}-${new Date().toISOString().split('T')[0]}.pdf`)
   }
 
   const getFilterLabel = () => {
@@ -329,6 +432,35 @@ export default function DiscountAnalysisReport() {
           </div>
         </div>
 
+        {/* View Mode Toggle */}
+        <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 mb-6">
+          <div className="flex gap-4 items-center">
+            <label className="text-sm font-medium text-gray-300">View:</label>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setViewMode('products')}
+                className={`px-6 py-2 rounded-lg transition-colors font-medium ${
+                  viewMode === 'products'
+                    ? 'bg-red-500 text-white'
+                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                }`}
+              >
+                📦 Products
+              </button>
+              <button
+                onClick={() => setViewMode('customers')}
+                className={`px-6 py-2 rounded-lg transition-colors font-medium ${
+                  viewMode === 'customers'
+                    ? 'bg-red-500 text-white'
+                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                }`}
+              >
+                👥 Customers
+              </button>
+            </div>
+          </div>
+        </div>
+
         {/* Filters */}
         <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 mb-8">
           <div className="flex gap-6 items-center flex-wrap">
@@ -362,16 +494,29 @@ export default function DiscountAnalysisReport() {
             {/* Sort Options */}
             <div className="flex gap-4 items-center ml-auto">
               <label className="text-sm font-medium text-gray-300">Sort by:</label>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as 'profitLost' | 'discount' | 'units' | 'potentialProfit')}
-                className="px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-gray-100"
-              >
-                <option value="profitLost">Profit Lost</option>
-                <option value="discount">Discount %</option>
-                <option value="units">Units Sold</option>
-                <option value="potentialProfit">Potential Profit</option>
-              </select>
+              {viewMode === 'products' ? (
+                <select
+                  value={productSortBy}
+                  onChange={(e) => setProductSortBy(e.target.value as 'profitLost' | 'discount' | 'units' | 'potentialProfit')}
+                  className="px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-gray-100"
+                >
+                  <option value="profitLost">Profit Lost</option>
+                  <option value="discount">Discount %</option>
+                  <option value="units">Units Sold</option>
+                  <option value="potentialProfit">Potential Profit</option>
+                </select>
+              ) : (
+                <select
+                  value={customerSortBy}
+                  onChange={(e) => setCustomerSortBy(e.target.value as 'profitLost' | 'discount' | 'orders' | 'discountRate')}
+                  className="px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-gray-100"
+                >
+                  <option value="profitLost">Profit Lost</option>
+                  <option value="discount">Avg Discount %</option>
+                  <option value="orders">Order Count</option>
+                  <option value="discountRate">Discount Rate %</option>
+                </select>
+              )}
               <button
                 onClick={() => setSortOrder(prev => prev === 'desc' ? 'asc' : 'desc')}
                 className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
@@ -382,63 +527,136 @@ export default function DiscountAnalysisReport() {
           </div>
         </div>
 
-        {/* Results Table */}
-        {productMetrics.length === 0 ? (
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-8 text-center">
-            <p className="text-gray-400">No sales data for the selected period.</p>
-          </div>
-        ) : (
-          <div className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-900 border-b border-gray-700">
-                  <tr>
-                    <th className="text-left p-4 text-gray-400 font-medium">Rank</th>
-                    <th className="text-left p-4 text-gray-400 font-medium">SKU</th>
-                    <th className="text-left p-4 text-gray-400 font-medium">Product</th>
-                    <th className="text-center p-4 text-gray-400 font-medium">Units Sold</th>
-                    <th className="text-right p-4 text-gray-400 font-medium">Retail Price</th>
-                    <th className="text-right p-4 text-gray-400 font-medium">Avg Selling Price</th>
-                    <th className="text-right p-4 text-gray-400 font-medium">Avg Discount %</th>
-                    <th className="text-right p-4 text-gray-400 font-medium">Potential Profit</th>
-                    <th className="text-right p-4 text-gray-400 font-medium">Actual Profit</th>
-                    <th className="text-right p-4 text-gray-400 font-medium">Profit Lost</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {productMetrics.map((product, index) => (
-                    <tr 
-                      key={product.product.id} 
-                      className="border-b border-gray-800 hover:bg-gray-900/50 transition-colors"
-                    >
-                      <td className="p-4 text-gray-300">#{index + 1}</td>
-                      <td className="p-4 text-gray-300 font-mono text-sm">{product.product.sku}</td>
-                      <td className="p-4 text-gray-100 font-medium">{product.product.name}</td>
-                      <td className="p-4 text-center text-cyan-400">{product.unitsSold}</td>
-                      <td className="p-4 text-right text-gray-400">${product.product.retailPrice.toFixed(2)}</td>
-                      <td className="p-4 text-right text-blue-400">${product.avgSellingPrice.toFixed(2)}</td>
-                      <td className="p-4 text-right">
-                        <span className={`font-semibold ${
-                          product.avgDiscount > 10 ? 'text-red-400' : 
-                          product.avgDiscount > 5 ? 'text-orange-400' : 
-                          'text-yellow-400'
-                        }`}>
-                          {product.avgDiscount.toFixed(1)}%
-                        </span>
-                      </td>
-                      <td className="p-4 text-right text-blue-400">${product.potentialProfit.toFixed(2)}</td>
-                      <td className="p-4 text-right text-green-400">${product.actualProfit.toFixed(2)}</td>
-                      <td className="p-4 text-right">
-                        <span className="font-semibold text-red-400">
-                          ${product.profitLost.toFixed(2)}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+        {/* Results Table - Products View */}
+        {viewMode === 'products' && (
+          <>
+            {productMetrics.length === 0 ? (
+              <div className="bg-gray-800 border border-gray-700 rounded-lg p-8 text-center">
+                <p className="text-gray-400">No sales data for the selected period.</p>
+              </div>
+            ) : (
+              <div className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-gray-900 border-b border-gray-700">
+                      <tr>
+                        <th className="text-left p-4 text-gray-400 font-medium">Rank</th>
+                        <th className="text-left p-4 text-gray-400 font-medium">SKU</th>
+                        <th className="text-left p-4 text-gray-400 font-medium">Product</th>
+                        <th className="text-center p-4 text-gray-400 font-medium">Units Sold</th>
+                        <th className="text-right p-4 text-gray-400 font-medium">Retail Price</th>
+                        <th className="text-right p-4 text-gray-400 font-medium">Avg Selling Price</th>
+                        <th className="text-right p-4 text-gray-400 font-medium">Avg Discount %</th>
+                        <th className="text-right p-4 text-gray-400 font-medium">Potential Profit</th>
+                        <th className="text-right p-4 text-gray-400 font-medium">Actual Profit</th>
+                        <th className="text-right p-4 text-gray-400 font-medium">Profit Lost</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {productMetrics.map((product, index) => (
+                        <tr 
+                          key={product.product.id} 
+                          className="border-b border-gray-800 hover:bg-gray-900/50 transition-colors"
+                        >
+                          <td className="p-4 text-gray-300">#{index + 1}</td>
+                          <td className="p-4 text-gray-300 font-mono text-sm">{product.product.sku}</td>
+                          <td className="p-4 text-gray-100 font-medium">{product.product.name}</td>
+                          <td className="p-4 text-center text-cyan-400">{product.unitsSold}</td>
+                          <td className="p-4 text-right text-gray-400">${product.product.retailPrice.toFixed(2)}</td>
+                          <td className="p-4 text-right text-blue-400">${product.avgSellingPrice.toFixed(2)}</td>
+                          <td className="p-4 text-right">
+                            <span className={`font-semibold ${
+                              product.avgDiscount > 10 ? 'text-red-400' : 
+                              product.avgDiscount > 5 ? 'text-orange-400' : 
+                              'text-yellow-400'
+                            }`}>
+                              {product.avgDiscount.toFixed(1)}%
+                            </span>
+                          </td>
+                          <td className="p-4 text-right text-blue-400">${product.potentialProfit.toFixed(2)}</td>
+                          <td className="p-4 text-right text-green-400">${product.actualProfit.toFixed(2)}</td>
+                          <td className="p-4 text-right">
+                            <span className="font-semibold text-red-400">
+                              ${product.profitLost.toFixed(2)}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* Results Table - Customers View */}
+        {viewMode === 'customers' && (
+          <>
+            {customerMetrics.length === 0 ? (
+              <div className="bg-gray-800 border border-gray-700 rounded-lg p-8 text-center">
+                <p className="text-gray-400">No sales data for the selected period.</p>
+              </div>
+            ) : (
+              <div className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-gray-900 border-b border-gray-700">
+                      <tr>
+                        <th className="text-left p-4 text-gray-400 font-medium">Rank</th>
+                        <th className="text-left p-4 text-gray-400 font-medium">Customer</th>
+                        <th className="text-center p-4 text-gray-400 font-medium">Orders</th>
+                        <th className="text-center p-4 text-gray-400 font-medium">Total Units</th>
+                        <th className="text-right p-4 text-gray-400 font-medium">Avg Discount %</th>
+                        <th className="text-right p-4 text-gray-400 font-medium">Discount Rate %</th>
+                        <th className="text-right p-4 text-gray-400 font-medium">Potential Profit</th>
+                        <th className="text-right p-4 text-gray-400 font-medium">Actual Profit</th>
+                        <th className="text-right p-4 text-gray-400 font-medium">Profit Lost</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {customerMetrics.map((customer, index) => (
+                        <tr 
+                          key={customer.customer.id} 
+                          className="border-b border-gray-800 hover:bg-gray-900/50 transition-colors"
+                        >
+                          <td className="p-4 text-gray-300">#{index + 1}</td>
+                          <td className="p-4 text-gray-100 font-medium">{customer.customer.name}</td>
+                          <td className="p-4 text-center text-cyan-400">{customer.orderCount}</td>
+                          <td className="p-4 text-center text-purple-400">{customer.totalUnits}</td>
+                          <td className="p-4 text-right">
+                            <span className={`font-semibold ${
+                              customer.avgDiscount > 10 ? 'text-red-400' : 
+                              customer.avgDiscount > 5 ? 'text-orange-400' : 
+                              'text-yellow-400'
+                            }`}>
+                              {customer.avgDiscount.toFixed(1)}%
+                            </span>
+                          </td>
+                          <td className="p-4 text-right">
+                            <span className={`font-semibold ${
+                              customer.discountRate > 75 ? 'text-red-400' : 
+                              customer.discountRate > 50 ? 'text-orange-400' : 
+                              'text-yellow-400'
+                            }`}>
+                              {customer.discountRate.toFixed(1)}%
+                            </span>
+                          </td>
+                          <td className="p-4 text-right text-blue-400">${customer.potentialProfit.toFixed(2)}</td>
+                          <td className="p-4 text-right text-green-400">${customer.actualProfit.toFixed(2)}</td>
+                          <td className="p-4 text-right">
+                            <span className="font-semibold text-red-400">
+                              ${customer.profitLost.toFixed(2)}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
