@@ -17,7 +17,7 @@ interface Product {
   name: string;
   cost: number;
   retailPrice: number;
-  floorPrice: number;
+  floorPrice: number | null;
   inventory: {
     quantityOnHand: number;
   } | null;
@@ -38,7 +38,7 @@ export default function CreateSalesOrderPage() {
   const router = useRouter();
   const signatureCanvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
-  
+
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedCustomerId, setSelectedCustomerId] = useState('');
@@ -126,6 +126,9 @@ export default function CreateSalesOrderPage() {
       return;
     }
 
+    // Use floorPrice if available, otherwise calculate as cost * 1.15
+    const floorPrice = product.floorPrice ?? (product.cost * 1.15);
+
     const newItem: OrderItem = {
       productId: product.id,
       productName: product.name,
@@ -134,7 +137,7 @@ export default function CreateSalesOrderPage() {
       unitPrice: product.retailPrice,
       lineTotal: product.retailPrice,
       availableQty: product.inventory?.quantityOnHand || 0,
-      floorPrice: product.floorPrice
+      floorPrice: floorPrice
     };
 
     setOrderItems([...orderItems, newItem]);
@@ -445,41 +448,44 @@ export default function CreateSalesOrderPage() {
 
             {searchTerm && filteredProducts.length > 0 && (
               <div className="mt-2 bg-gray-900 border border-gray-700 rounded max-h-64 overflow-y-auto">
-                {filteredProducts.map(product => (
-                  <button
-                    key={product.id}
-                    type="button"
-                    onClick={() => addProductToOrder(product)}
-                    className="w-full px-4 py-3 hover:bg-gray-800 text-left border-b border-gray-700 last:border-b-0"
-                  >
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <div className="font-medium text-white">{product.name}</div>
-                        <div className="text-sm text-gray-400">SKU: {product.sku}</div>
-                        <div className="text-xs text-gray-500 mt-1">
-                          Floor: ${product.floorPrice.toFixed(2)}
+                {filteredProducts.map(product => {
+                  const displayFloorPrice = product.floorPrice ?? (product.cost * 1.15);
+                  return (
+                    <button
+                      key={product.id}
+                      type="button"
+                      onClick={() => addProductToOrder(product)}
+                      className="w-full px-4 py-3 hover:bg-gray-800 text-left border-b border-gray-700 last:border-b-0"
+                    >
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <div className="font-medium text-white">{product.name}</div>
+                          <div className="text-sm text-gray-400">SKU: {product.sku}</div>
+                          <div className="text-xs text-gray-500 mt-1">
+                            Floor: ${displayFloorPrice.toFixed(2)}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className={`font-medium ${
+                            (product.inventory?.quantityOnHand || 0) === 0
+                              ? 'text-red-400'
+                              : 'text-white'
+                          }`}>
+                            ${product.retailPrice.toFixed(2)}
+                          </div>
+                          <div className={`text-sm ${
+                            (product.inventory?.quantityOnHand || 0) === 0
+                              ? 'text-red-400 font-bold'
+                              : 'text-gray-400'
+                          }`}>
+                            Stock: {product.inventory?.quantityOnHand || 0}
+                            {(product.inventory?.quantityOnHand || 0) === 0 && ' ⚠️'}
+                          </div>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <div className={`font-medium ${
-                          (product.inventory?.quantityOnHand || 0) === 0
-                            ? 'text-red-400'
-                            : 'text-white'
-                        }`}>
-                          ${product.retailPrice.toFixed(2)}
-                        </div>
-                        <div className={`text-sm ${
-                          (product.inventory?.quantityOnHand || 0) === 0
-                            ? 'text-red-400 font-bold'
-                            : 'text-gray-400'
-                        }`}>
-                          Stock: {product.inventory?.quantityOnHand || 0}
-                          {(product.inventory?.quantityOnHand || 0) === 0 && ' ⚠️'}
-                        </div>
-                      </div>
-                    </div>
-                  </button>
-                ))}
+                    </button>
+                  );
+                })}
               </div>
             )}
           </div>
@@ -520,8 +526,8 @@ export default function CreateSalesOrderPage() {
                               }}
                               onFocus={(e) => e.target.select()}
                               className={`w-24 py-1 px-3 bg-gray-900 border rounded text-white text-right ${
-                                priceErrors[item.productId] 
-                                  ? 'border-red-500' 
+                                priceErrors[item.productId]
+                                  ? 'border-red-500'
                                   : 'border-gray-700'
                               }`}
                             />
@@ -609,8 +615,8 @@ export default function CreateSalesOrderPage() {
                 <div className="flex-1">
                   <span className="text-white font-medium">I accept this order</span>
                   <p className="text-sm text-gray-400 mt-1">
-                    By checking this box, I acknowledge that I have reviewed the order details above, 
-                    including quantities, prices, and the total amount. I agree to accept delivery of 
+                    By checking this box, I acknowledge that I have reviewed the order details above,
+                    including quantities, prices, and the total amount. I agree to accept delivery of
                     these products and authorize payment according to the agreed terms.
                   </p>
                 </div>
