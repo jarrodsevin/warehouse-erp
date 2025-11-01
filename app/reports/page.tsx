@@ -73,6 +73,17 @@ export default function ReportsMenu() {
               </p>
             </div>
           </Link>
+
+          <Link href="/reports/discount-analysis" className="group">
+            <div className="bg-gray-800 border border-gray-700 rounded-lg p-10 hover:scale-105 transition-transform cursor-pointer h-full">
+              <h2 className="text-2xl font-semibold mb-4 text-red-400 group-hover:text-red-300">
+                💰 Discount & Pricing Analysis
+              </h2>
+              <p className="text-gray-400">
+                Compare potential profit at retail vs actual profit with discounts applied
+              </p>
+            </div>
+          </Link>
         </div>
       </div>
     </div>
