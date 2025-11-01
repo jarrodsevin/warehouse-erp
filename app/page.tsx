@@ -5,7 +5,7 @@ export default function Dashboard() {
     <div className="min-h-screen flex flex-col items-center justify-center p-8">
       <div className="text-center mb-16">
         <h1 className="text-6xl font-bold mb-4 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-600 bg-clip-text text-transparent">
-          Warehouse ERP
+          ApexFlow
         </h1>
         <p className="text-xl text-gray-400">Select a module to get started</p>
       </div>
