@@ -56,16 +56,19 @@ export default function ProfitabilityReport() {
       try {
         const response = await fetch('/api/products')
         const data = await response.json()
-        setProducts(data.products)
+        
+        // Handle the API response - it returns an array directly
+        const productsData = Array.isArray(data) ? data : []
+        setProducts(productsData)
         
         // Extract unique categories, subcategories, and brands
         const uniqueCategories = Array.from(
-          new Map(data.products.map((p: Product) => [p.category.id, p.category])).values()
+          new Map(productsData.map((p: Product) => [p.category.id, p.category])).values()
         ) as Category[]
         
         const uniqueSubcategories = Array.from(
           new Map(
-            data.products
+            productsData
               .filter((p: Product) => p.subcategory)
               .map((p: Product) => [p.subcategory!.id, p.subcategory])
           ).values()
@@ -73,7 +76,7 @@ export default function ProfitabilityReport() {
         
         const uniqueBrands = Array.from(
           new Map(
-            data.products
+            productsData
               .filter((p: Product) => p.brand)
               .map((p: Product) => [p.brand!.id, p.brand])
           ).values()
