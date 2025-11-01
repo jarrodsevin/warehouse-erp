@@ -13,15 +13,11 @@ export default function CategoryForm({ category }: CategoryFormProps) {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
-    
-    const data = {
-      name: formData.get('name') as string,
-    }
 
     if (category) {
-      await updateCategory(category.id, data)
+      await updateCategory(category.id, formData)
     } else {
-      await createCategory(data)
+      await createCategory(formData)
     }
     
     router.push('/admin/categories')
