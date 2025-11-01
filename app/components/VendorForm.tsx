@@ -14,22 +14,13 @@ export default function VendorForm({ vendor }: VendorFormProps) {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
-    
-    const data = {
-      name: formData.get('name') as string,
-      contactName: formData.get('contactName') as string || undefined,
-      email: formData.get('email') as string || undefined,
-      phone: formData.get('phone') as string || undefined,
-      terms: formData.get('terms') as string || undefined,
-      notes: formData.get('notes') as string || undefined,
-    }
 
     if (vendor) {
-      await updateVendor(vendor.id, data)
+      await updateVendor(vendor.id, formData)
     } else {
-      await createVendor(data)
+      await createVendor(formData)
     }
-    
+
     router.push('/vendors')
     router.refresh()
   }
