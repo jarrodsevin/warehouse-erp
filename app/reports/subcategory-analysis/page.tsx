@@ -66,7 +66,8 @@ export default function SubcategoryAnalysis() {
       try {
         const response = await fetch('/api/products')
         const data = await response.json()
-        setProducts(data.products.filter((p: Product) => p.subcategory !== null))
+        const productsData = Array.isArray(data) ? data : []
+        setProducts(productsData.filter((p: Product) => p.subcategory !== null))
       } catch (error) {
         console.error('Error fetching data:', error)
       } finally {
