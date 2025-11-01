@@ -31,6 +31,7 @@ export default async function ViewBrands() {
         ) : (
           <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
             <div className="space-y-3">
+              {/* @ts-ignore */}
               {brands.map((brand) => (
                 <div
                   key={brand.id}

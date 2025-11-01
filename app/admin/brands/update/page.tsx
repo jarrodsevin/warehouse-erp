@@ -1,7 +1,7 @@
 import { prisma } from '@/prisma/prisma.config'
 import Link from 'next/link'
 
-export default async function UpdateBrands() {
+export default async function ViewBrands() {
   const brands = await prisma.brand.findMany({
     orderBy: {
       name: 'asc',
@@ -19,9 +19,9 @@ export default async function UpdateBrands() {
 
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-cyan-500 bg-clip-text text-transparent">
-            Update Brands
+            View Brands
           </h1>
-          <p className="text-gray-400">Click on a brand to edit it</p>
+          <p className="text-gray-400">All brands in the system</p>
         </div>
 
         {brands.length === 0 ? (
@@ -29,18 +29,24 @@ export default async function UpdateBrands() {
             <p className="text-gray-400">No brands found. Create one to get started!</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* @ts-ignore */}
-            {brands.map((brand) => (
-              <Link
-                key={brand.id}
-                href={`/admin/brands/${brand.id}`}
-                className="bg-gray-800 border border-gray-700 rounded-lg p-6 hover:scale-105 hover:shadow-lg transition-all cursor-pointer"
-              >
-                <h3 className="text-xl font-semibold text-blue-400">{brand.name}</h3>
-                <p className="text-sm text-gray-400 mt-2">Click to edit</p>
-              </Link>
-            ))}
+          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
+            <div className="space-y-3">
+              {/* @ts-ignore */}
+              {brands.map((brand) => (
+                <div
+                  key={brand.id}
+                  className="bg-gray-900 rounded-lg p-4 flex justify-between items-center"
+                >
+                  <div>
+                    <h3 className="text-lg font-semibold text-blue-400">{brand.name}</h3>
+                    <p className="text-sm text-gray-400">ID: {brand.id}</p>
+                  </div>
+                  <div className="text-sm text-gray-400">
+                    Created: {new Date(brand.createdAt).toLocaleDateString()}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>
