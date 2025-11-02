@@ -3,14 +3,32 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-// GET - Fetch sales visit data for a customer
+// GET - Fetch sales visit data
+// If customerId is provided: return customer history
+// If no customerId: return all sales visits
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const customerId = searchParams.get('customerId');
 
+    // If no customerId, return all sales visits
     if (!customerId) {
-      return NextResponse.json({ error: 'Customer ID is required' }, { status: 400 });
+      const allVisits = await prisma.salesVisit.findMany({
+        include: {
+          customer: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              phone: true
+            }
+          }
+        },
+        orderBy: {
+          visitDate: 'desc'
+        }
+      });
+      return NextResponse.json(allVisits);
     }
 
     // Get all sales visits for this customer

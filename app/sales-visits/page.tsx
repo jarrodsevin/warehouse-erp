@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 interface Customer {
   id: string;
@@ -128,6 +130,81 @@ export default function SalesVisitPage() {
   
   const removeImage = (index: number) => {
     setImages(prev => prev.filter((_, i) => i !== index));
+  };
+const generatePDF = () => {
+    if (!selectedCustomer) return;
+    
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    
+    // Title
+    doc.setFontSize(20);
+    doc.text('Sales Visit Report', pageWidth / 2, 20, { align: 'center' });
+    
+    // Customer Info
+    doc.setFontSize(14);
+    doc.text('Customer Information', 14, 35);
+    doc.setFontSize(11);
+    doc.text(`Name: ${selectedCustomer.name}`, 14, 45);
+    doc.text(`Email: ${selectedCustomer.email || 'N/A'}`, 14, 52);
+    doc.text(`Phone: ${selectedCustomer.phone || 'N/A'}`, 14, 59);
+    
+    // Visit Details
+    doc.setFontSize(14);
+    doc.text('Visit Details', 14, 72);
+    doc.setFontSize(11);
+    doc.text(`Date & Time: ${new Date(visitDate).toLocaleString()}`, 14, 82);
+    
+    // Visit Notes
+    doc.setFontSize(14);
+    doc.text('Visit Notes', 14, 95);
+    doc.setFontSize(10);
+    
+    if (notes && notes.trim()) {
+      const splitNotes = doc.splitTextToSize(notes, pageWidth - 28);
+      doc.text(splitNotes, 14, 105);
+    } else {
+      doc.text('No notes recorded', 14, 105);
+    }
+    
+    // Photos section
+    const notesHeight = notes ? doc.splitTextToSize(notes, pageWidth - 28).length * 5 : 5;
+    const photosY = 105 + notesHeight + 10;
+    
+    doc.setFontSize(14);
+    doc.text('Photos', 14, photosY);
+    doc.setFontSize(10);
+    
+    if (images.length > 0) {
+      doc.text(`${images.length} photo(s) attached to this visit`, 14, photosY + 10);
+      
+      // Add images to PDF
+      let currentY = photosY + 20;
+      images.forEach((image, index) => {
+        // Check if we need a new page
+        if (currentY > 250) {
+          doc.addPage();
+          currentY = 20;
+        }
+        
+        try {
+          const imgWidth = 80;
+          const imgHeight = 60;
+          doc.addImage(image, 'JPEG', 14, currentY, imgWidth, imgHeight);
+          doc.setFontSize(9);
+          doc.text(`Photo ${index + 1}`, 14, currentY + imgHeight + 5);
+          currentY += imgHeight + 15;
+        } catch (error) {
+          console.error('Error adding image to PDF:', error);
+        }
+      });
+    } else {
+      doc.text('No photos attached', 14, photosY + 10);
+    }
+    
+    // Save the PDF
+    const dateStr = new Date(visitDate).toISOString().split('T')[0];
+    doc.save(`Sales_Visit_${selectedCustomer.name.replace(/\s+/g, '_')}_${dateStr}.pdf`);
   };
   
   const handleSubmit = async (e: React.FormEvent) => {
@@ -275,12 +352,20 @@ export default function SalesVisitPage() {
     <div className="p-8 max-w-6xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Sales Visit</h1>
-        <Link
-          href="/"
-          className="text-gray-400 hover:text-white"
-        >
-          ← Back to Dashboard
-        </Link>
+        <div className="flex gap-4">
+          <Link
+            href="/sales-visits/view"
+            className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded"
+          >
+            📋 View All Visits
+          </Link>
+          <Link
+            href="/"
+            className="text-gray-400 hover:text-white"
+          >
+            ← Back to Dashboard
+          </Link>
+        </div>
       </div>
       
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -395,7 +480,7 @@ export default function SalesVisitPage() {
           )}
         </div>
         
-        {/* Submit Button */}
+     {/* Submit Button */}
         <div className="flex justify-end gap-4">
           <Link
             href="/"
@@ -403,6 +488,15 @@ export default function SalesVisitPage() {
           >
             Cancel
           </Link>
+          {selectedCustomerId && (
+            <button
+              type="button"
+              onClick={generatePDF}
+              className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded"
+            >
+              📄 Generate PDF
+            </button>
+          )}
           <button
             type="submit"
             disabled={loading || !selectedCustomerId || !visitDate}
