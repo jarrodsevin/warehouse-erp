@@ -75,16 +75,6 @@ export default function Dashboard() {
             </p>
           </div>
         </Link>
-        <Link href="/sales-visits" className="group">
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-12 hover:scale-105 transition-transform cursor-pointer shadow-lg hover:shadow-teal-500/50">
-            <h2 className="text-3xl font-semibold mb-4 bg-gradient-to-r from-teal-400 to-teal-600 bg-clip-text text-transparent group-hover:from-teal-300 group-hover:to-teal-500">
-              Sales Visits
-            </h2>
-            <p className="text-gray-400">
-              Record customer visits and view history
-            </p>
-          </div>
-        </Link>
 
         <Link href="/reports" className="group">
           <div className="bg-gray-800 border border-gray-700 rounded-lg p-12 hover:scale-105 transition-transform cursor-pointer shadow-lg hover:shadow-cyan-500/50">
