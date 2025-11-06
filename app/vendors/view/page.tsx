@@ -49,11 +49,11 @@ export default async function ViewVendorsPage() {
                   <span className="font-medium text-gray-900">Phone:</span> {vendor.phone}
                 </p>
               )}
-              {vendor.paymentTerms && (
-                <p className="text-gray-600">
-                  <span className="font-medium text-gray-900">Terms:</span> {vendor.paymentTerms}
-                </p>
-              )}
+              {vendor.terms && (
+  <p className="text-gray-600">
+    <span className="font-medium text-gray-900">Terms:</span> {vendor.terms}
+  </p>
+)}
             </div>
           </Link>
         ))}
