@@ -27,25 +27,25 @@ export default function CategoryForm({ category }: CategoryFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-white font-medium mb-1.5">Category Name</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">Category Name</label>
         <input
           type="text"
           name="name"
           defaultValue={category?.name}
           required
-          className="w-full bg-gray-900 border border-gray-600 text-white rounded-lg px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+          className="w-full bg-white border border-gray-300 text-gray-900 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
           placeholder="Enter category name"
         />
       </div>
 
       <div className="flex gap-4 pt-2">
-        <button type="submit" className="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors">
+        <button type="submit" className="px-6 py-2.5 bg-blue-600 text-sm font-medium text-gray-700 rounded-lg hover:bg-blue-700 transition-colors">
           {category ? 'Update' : 'Create'} Category
         </button>
         <button
           type="button"
           onClick={() => router.push('/admin/categories')}
-          className="px-6 py-2.5 bg-gray-700 text-white font-medium rounded-lg hover:bg-gray-600 transition-colors"
+          className="px-6 py-2.5 bg-gray-700 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
         >
           Cancel
         </button>

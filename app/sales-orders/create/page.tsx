@@ -371,7 +371,7 @@ export default function CreateSalesOrderPage() {
         <h1 className="text-3xl font-bold">Create Sales Order</h1>
         <Link
           href="/sales-orders"
-          className="text-gray-400 hover:text-white"
+          className="text-gray-600 hover:text-gray-900"
         >
           ← Back to Sales Orders
         </Link>
@@ -379,7 +379,7 @@ export default function CreateSalesOrderPage() {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Customer Selection */}
-        <div className="bg-gray-800 rounded-lg p-6">
+        <div className="bg-white rounded-lg p-6">
           <h2 className="text-xl font-semibold mb-4">Customer</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="md:col-span-2">
@@ -390,7 +390,7 @@ export default function CreateSalesOrderPage() {
                 value={selectedCustomerId}
                 onChange={(e) => handleCustomerChange(e.target.value)}
                 required
-                className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded text-white"
+                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded text-gray-900"
               >
                 <option value="">-- Select Customer --</option>
                 {customers.map(customer => (
@@ -403,25 +403,25 @@ export default function CreateSalesOrderPage() {
             {selectedCustomer && (
               <>
                 <div>
-                  <label className="block text-sm text-gray-400">Credit Limit</label>
-                  <p className="text-lg text-white">${selectedCustomer.creditLimit.toLocaleString()}</p>
+                  <label className="block text-sm text-gray-600">Credit Limit</label>
+                  <p className="text-lg text-gray-900">${selectedCustomer.creditLimit.toLocaleString()}</p>
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-400">Current Balance</label>
-                  <p className="text-lg text-yellow-400">${selectedCustomer.currentBalance.toLocaleString()}</p>
+                  <label className="block text-sm text-gray-600">Current Balance</label>
+                  <p className="text-lg text-warning-dark">${selectedCustomer.currentBalance.toLocaleString()}</p>
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-400">Available Credit</label>
-                  <p className="text-lg text-green-400">
+                  <label className="block text-sm text-gray-600">Available Credit</label>
+                  <p className="text-lg text-gray-900">
                     ${(selectedCustomer.creditLimit - selectedCustomer.currentBalance).toLocaleString()}
                   </p>
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-400">Balance After This Sale</label>
+                  <label className="block text-sm text-gray-600">Balance After This Sale</label>
                   <p className={`text-lg ${
                     selectedCustomer.currentBalance + total > selectedCustomer.creditLimit
                       ? 'text-red-400'
-                      : 'text-white'
+                      : 'text-gray-900'
                   }`}>
                     ${(selectedCustomer.currentBalance + total).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                   </p>
@@ -432,7 +432,7 @@ export default function CreateSalesOrderPage() {
         </div>
 
         {/* Products */}
-        <div className="bg-gray-800 rounded-lg p-6">
+        <div className="bg-white rounded-lg p-6">
           <h2 className="text-xl font-semibold mb-4">Products</h2>
 
           {/* Product Search */}
@@ -443,11 +443,11 @@ export default function CreateSalesOrderPage() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search by product name or SKU..."
-              className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded text-white"
+              className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded text-gray-900"
             />
 
             {searchTerm && filteredProducts.length > 0 && (
-              <div className="mt-2 bg-gray-900 border border-gray-700 rounded max-h-64 overflow-y-auto">
+              <div className="mt-2 bg-gray-50 border border-gray-200 rounded max-h-64 overflow-y-auto">
                 {filteredProducts.map(product => {
                   const displayFloorPrice = product.floorPrice ?? (product.cost * 1.15);
                   return (
@@ -455,12 +455,12 @@ export default function CreateSalesOrderPage() {
                       key={product.id}
                       type="button"
                       onClick={() => addProductToOrder(product)}
-                      className="w-full px-4 py-3 hover:bg-gray-800 text-left border-b border-gray-700 last:border-b-0"
+                      className="w-full px-4 py-3 hover:bg-white text-left border-b border-gray-200 last:border-b-0"
                     >
                       <div className="flex justify-between items-center">
                         <div>
-                          <div className="font-medium text-white">{product.name}</div>
-                          <div className="text-sm text-gray-400">SKU: {product.sku}</div>
+                          <div className="font-medium text-gray-900">{product.name}</div>
+                          <div className="text-sm text-gray-600">SKU: {product.sku}</div>
                           <div className="text-xs text-gray-500 mt-1">
                             Floor: ${displayFloorPrice.toFixed(2)}
                           </div>
@@ -469,14 +469,14 @@ export default function CreateSalesOrderPage() {
                           <div className={`font-medium ${
                             (product.inventory?.quantityOnHand || 0) === 0
                               ? 'text-red-400'
-                              : 'text-white'
+                              : 'text-gray-900'
                           }`}>
                             ${product.retailPrice.toFixed(2)}
                           </div>
                           <div className={`text-sm ${
                             (product.inventory?.quantityOnHand || 0) === 0
                               ? 'text-red-400 font-bold'
-                              : 'text-gray-400'
+                              : 'text-gray-600'
                           }`}>
                             Stock: {product.inventory?.quantityOnHand || 0}
                             {(product.inventory?.quantityOnHand || 0) === 0 && ' ⚠️'}
@@ -494,25 +494,25 @@ export default function CreateSalesOrderPage() {
           {orderItems.length > 0 && (
             <div className="mt-6 overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-900">
+                <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-400">Product</th>
-                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-400">SKU</th>
-                    <th className="px-4 py-2 text-right text-sm font-medium text-gray-400">Price</th>
-                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-400">Quantity</th>
-                    <th className="px-4 py-2 text-right text-sm font-medium text-gray-400">Total</th>
-                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-400">Action</th>
+                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">Product</th>
+                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">SKU</th>
+                    <th className="px-4 py-2 text-right text-sm font-medium text-gray-600">Price</th>
+                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-600">Quantity</th>
+                    <th className="px-4 py-2 text-right text-sm font-medium text-gray-600">Total</th>
+                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-600">Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   {orderItems.map((item, index) => (
-                    <tr key={item.productId} className={index % 2 === 0 ? 'bg-gray-800' : 'bg-gray-750'}>
-                      <td className="px-4 py-3 text-white">{item.productName}</td>
-                      <td className="px-4 py-3 text-gray-400 text-sm">{item.sku}</td>
+                    <tr key={item.productId} className={index % 2 === 0 ? 'bg-white' : 'bg-white'}>
+                      <td className="px-4 py-3 text-gray-900">{item.productName}</td>
+                      <td className="px-4 py-3 text-gray-600 text-sm">{item.sku}</td>
                       <td className="px-4 py-3">
                         <div className="flex flex-col items-end">
                           <div className="flex items-center gap-1">
-                            <span className="text-gray-400 text-sm">$</span>
+                            <span className="text-gray-600 text-sm">$</span>
                             <input
                               type="text"
                               inputMode="decimal"
@@ -525,10 +525,10 @@ export default function CreateSalesOrderPage() {
                                 updateItemPrice(item.productId, finalPrice);
                               }}
                               onFocus={(e) => e.target.select()}
-                              className={`w-24 py-1 px-3 bg-gray-900 border rounded text-white text-right ${
+                              className={`w-24 py-1 px-3 bg-gray-50 border rounded text-gray-900 text-right ${
                                 priceErrors[item.productId]
                                   ? 'border-red-500'
-                                  : 'border-gray-700'
+                                  : 'border-gray-200'
                               }`}
                             />
                           </div>
@@ -549,13 +549,13 @@ export default function CreateSalesOrderPage() {
                           onChange={(e) => updateItemQuantity(item.productId, parseInt(e.target.value) || 1)}
                           min="1"
                           max={item.availableQty}
-                          className="w-20 px-2 py-1 bg-gray-900 border border-gray-700 rounded text-white text-center"
+                          className="w-20 px-2 py-1 bg-gray-50 border border-gray-200 rounded text-gray-900 text-center"
                         />
-                        <div className="text-xs text-gray-400 text-center mt-1">
+                        <div className="text-xs text-gray-600 text-center mt-1">
                           Max: {item.availableQty}
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-right font-medium text-white">
+                      <td className="px-4 py-3 text-right font-medium text-gray-900">
                         ${item.lineTotal.toFixed(2)}
                       </td>
                       <td className="px-4 py-3 text-center">
@@ -575,7 +575,7 @@ export default function CreateSalesOrderPage() {
           )}
 
           {orderItems.length === 0 && (
-            <div className="text-center py-8 text-gray-400">
+            <div className="text-center py-8 text-gray-600">
               No products added yet. Search and select products above.
             </div>
           )}
@@ -583,16 +583,16 @@ export default function CreateSalesOrderPage() {
 
         {/* Order Summary */}
         {orderItems.length > 0 && (
-          <div className="bg-gray-800 rounded-lg p-6">
+          <div className="bg-white rounded-lg p-6">
             <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
             <div className="space-y-2">
               <div className="flex justify-between text-lg">
-                <span className="text-gray-400">Subtotal:</span>
-                <span className="text-white font-medium">${subtotal.toFixed(2)}</span>
+                <span className="text-gray-600">Subtotal:</span>
+                <span className="text-gray-900 font-medium">${subtotal.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between text-2xl font-bold border-t border-gray-700 pt-2">
-                <span className="text-white">Total:</span>
-                <span className="text-white">${total.toFixed(2)}</span>
+              <div className="flex justify-between text-2xl font-bold border-t border-gray-200 pt-2">
+                <span className="text-gray-900">Total:</span>
+                <span className="text-gray-900">${total.toFixed(2)}</span>
               </div>
             </div>
           </div>
@@ -600,7 +600,7 @@ export default function CreateSalesOrderPage() {
 
         {/* NEW: Order Acceptance Section */}
         {orderItems.length > 0 && (
-          <div className="bg-gray-800 rounded-lg p-6">
+          <div className="bg-white rounded-lg p-6">
             <h2 className="text-xl font-semibold mb-6">Order Acceptance</h2>
 
             {/* Terms Acceptance Checkbox */}
@@ -610,11 +610,11 @@ export default function CreateSalesOrderPage() {
                   type="checkbox"
                   checked={orderAccepted}
                   onChange={(e) => setOrderAccepted(e.target.checked)}
-                  className="mt-1 w-5 h-5 bg-gray-900 border-gray-700 rounded focus:ring-2 focus:ring-blue-500"
+                  className="mt-1 w-5 h-5 bg-white border-gray-300 rounded focus:ring-2 focus:ring-primary-500"
                 />
                 <div className="flex-1">
-                  <span className="text-white font-medium">I accept this order</span>
-                  <p className="text-sm text-gray-400 mt-1">
+                  <span className="text-gray-900 font-medium">I accept this order</span>
+                  <p className="text-sm text-gray-600 mt-1">
                     By checking this box, I acknowledge that I have reviewed the order details above,
                     including quantities, prices, and the total amount. I agree to accept delivery of
                     these products and authorize payment according to the agreed terms.
@@ -633,9 +633,9 @@ export default function CreateSalesOrderPage() {
                 value={printedName}
                 onChange={(e) => setPrintedName(e.target.value)}
                 placeholder="Enter your full name"
-                className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded text-white"
+                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded text-gray-900"
               />
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-xs text-gray-600 mt-1">
                 Please enter your name as it appears on official documents
               </p>
             </div>
@@ -645,7 +645,7 @@ export default function CreateSalesOrderPage() {
               <label className="block text-sm font-medium mb-2">
                 Signature <span className="text-red-500">*</span>
               </label>
-              <div className="border-2 border-gray-700 rounded bg-gray-900 p-2">
+              <div className="border-2 border-gray-200 rounded bg-gray-50 p-2">
                 <canvas
                   ref={signatureCanvasRef}
                   onMouseDown={startDrawing}
@@ -655,18 +655,18 @@ export default function CreateSalesOrderPage() {
                   onTouchStart={startDrawing}
                   onTouchMove={draw}
                   onTouchEnd={stopDrawing}
-                  className="w-full h-40 bg-gray-900 rounded cursor-crosshair touch-none"
+                  className="w-full h-40 bg-gray-50 rounded cursor-crosshair touch-none"
                   style={{ touchAction: 'none' }}
                 />
               </div>
               <div className="flex justify-between items-center mt-2">
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-gray-600">
                   Sign above using your mouse or touch screen
                 </p>
                 <button
                   type="button"
                   onClick={clearSignature}
-                  className="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm"
+                  className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-300 rounded text-sm"
                 >
                   Clear Signature
                 </button>
@@ -688,13 +688,13 @@ export default function CreateSalesOrderPage() {
         )}
 
         {/* Notes */}
-        <div className="bg-gray-800 rounded-lg p-6">
+        <div className="bg-white rounded-lg p-6">
           <label className="block text-sm font-medium mb-2">Notes</label>
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             rows={3}
-            className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded text-white"
+            className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded text-gray-900"
             placeholder="Add any notes about this order..."
           />
         </div>
@@ -703,14 +703,14 @@ export default function CreateSalesOrderPage() {
         <div className="flex justify-end gap-4">
           <Link
             href="/sales-orders"
-            className="px-6 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded"
+            className="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-300 text-gray-900 rounded"
           >
             Cancel
           </Link>
           <button
             type="submit"
             disabled={loading || !selectedCustomerId || orderItems.length === 0 || Object.keys(priceErrors).length > 0}
-            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded disabled:bg-gray-600 disabled:cursor-not-allowed"
+            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-gray-900 rounded disabled:bg-gray-600 disabled:cursor-not-allowed"
           >
             {loading ? 'Creating...' : 'Create Sales Order'}
           </button>

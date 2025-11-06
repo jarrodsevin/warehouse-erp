@@ -58,24 +58,24 @@ export default function PurchaseOrderForm({ purchaseOrder, vendors, products }: 
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-white font-medium mb-1.5">PO Number</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">PO Number</label>
           <input
             type="text"
             name="poNumber"
             defaultValue={purchaseOrder?.poNumber}
             required
-            className="w-full bg-gray-900 border border-gray-600 text-white rounded-lg px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            className="w-full bg-white border border-gray-300 text-gray-900 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
             placeholder="Enter PO number"
           />
         </div>
 
         <div>
-          <label className="block text-white font-medium mb-1.5">Vendor</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">Vendor</label>
           <select
             name="vendorId"
             defaultValue={purchaseOrder?.vendorId}
             required
-            className="w-full bg-gray-900 border border-gray-600 text-white rounded-lg px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            className="w-full bg-white border border-gray-300 text-gray-900 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
           >
             <option value="">Select Vendor</option>
             {vendors.map((vendor) => (
@@ -89,34 +89,34 @@ export default function PurchaseOrderForm({ purchaseOrder, vendors, products }: 
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-white font-medium mb-1.5">Order Date</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">Order Date</label>
           <input
             type="date"
             name="orderDate"
             defaultValue={purchaseOrder?.orderDate ? purchaseOrder.orderDate.toString().split('T')[0] : new Date().toISOString().split('T')[0]}
             required
-            className="w-full bg-gray-900 border border-gray-600 text-white rounded-lg px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            className="w-full bg-white border border-gray-300 text-gray-900 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
           />
         </div>
 
         <div>
-          <label className="block text-white font-medium mb-1.5">Expected Date</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">Expected Date</label>
           <input
             type="date"
             name="expectedDate"
             defaultValue={purchaseOrder?.expectedDate ? purchaseOrder.expectedDate.toString().split('T')[0] : ''}
-            className="w-full bg-gray-900 border border-gray-600 text-white rounded-lg px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            className="w-full bg-white border border-gray-300 text-gray-900 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-white font-medium mb-1.5">Status</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">Status</label>
         <select
           name="status"
           defaultValue={purchaseOrder?.status || 'pending'}
           required
-          className="w-full bg-gray-900 border border-gray-600 text-white rounded-lg px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+          className="w-full bg-white border border-gray-300 text-gray-900 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
         >
           <option value="pending">Pending</option>
           <option value="received">Received</option>
@@ -125,18 +125,18 @@ export default function PurchaseOrderForm({ purchaseOrder, vendors, products }: 
       </div>
 
       <div>
-        <label className="block text-white font-medium mb-1.5">Notes</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">Notes</label>
         <textarea
           name="notes"
           defaultValue={purchaseOrder?.notes}
-          className="w-full bg-gray-900 border border-gray-600 text-white rounded-lg px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+          className="w-full bg-white border border-gray-300 text-gray-900 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
           rows={3}
           placeholder="Additional notes (optional)"
         />
       </div>
 
       <div>
-        <label className="block text-white font-medium mb-2">Line Items</label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Line Items</label>
         <div className="space-y-2">
           {items.map((item: any, index: number) => (
             <div key={index} className="flex gap-2 bg-gray-900/50 p-3 rounded-lg">
@@ -144,7 +144,7 @@ export default function PurchaseOrderForm({ purchaseOrder, vendors, products }: 
                 value={item.productId}
                 onChange={(e) => updateItem(index, 'productId', e.target.value)}
                 required
-                className="flex-1 bg-gray-900 border border-gray-600 text-white rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                className="flex-1 bg-white border border-gray-300 text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               >
                 <option value="">Select Product</option>
                 {products.map((product) => (
@@ -160,7 +160,7 @@ export default function PurchaseOrderForm({ purchaseOrder, vendors, products }: 
                 min="1"
                 placeholder="Qty"
                 required
-                className="w-20 bg-gray-900 border border-gray-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                className="w-20 bg-white border border-gray-300 text-gray-900 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               />
               <input
                 type="number"
@@ -170,7 +170,7 @@ export default function PurchaseOrderForm({ purchaseOrder, vendors, products }: 
                 min="0"
                 placeholder="Cost"
                 required
-                className="w-28 bg-gray-900 border border-gray-600 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                className="w-28 bg-white border border-gray-300 text-gray-900 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               />
               {items.length > 1 && (
                 <button
@@ -194,13 +194,13 @@ export default function PurchaseOrderForm({ purchaseOrder, vendors, products }: 
       </div>
 
       <div className="flex gap-4 pt-2">
-        <button type="submit" className="px-6 py-2.5 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors">
+        <button type="submit" className="px-6 py-2.5 bg-purple-600 text-sm font-medium text-gray-700 rounded-lg hover:bg-purple-700 transition-colors">
           {purchaseOrder ? 'Update' : 'Create'} Purchase Order
         </button>
         <button
           type="button"
           onClick={() => router.push('/purchase-orders')}
-          className="px-6 py-2.5 bg-gray-700 text-white font-medium rounded-lg hover:bg-gray-600 transition-colors"
+          className="px-6 py-2.5 bg-gray-700 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
         >
           Cancel
         </button>

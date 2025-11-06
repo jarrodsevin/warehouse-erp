@@ -12,19 +12,19 @@ export default async function CreatePurchaseOrderPage() {
   })
 
   return (
-    <div className="min-h-screen py-16 px-8">
+    <div className="min-h-screen p-8">
       <div className="max-w-5xl mx-auto">
         <div className="mb-8">
-          <Link href="/purchase-orders" className="text-blue-400 hover:text-blue-300">
+          <Link href="/purchase-orders" className="text-primary-600 hover:text-primary-700">
             ← Back to Purchase Orders Menu
           </Link>
         </div>
         
-        <h1 className="text-4xl font-bold mb-12 text-center bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
+        <h1 className="text-4xl font-bold mb-12 text-center text-gray-900">
           Create New Purchase Order
         </h1>
 
-        <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 shadow-[0_0_15px_rgba(168,85,247,0.3)]">
+        <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
           <PurchaseOrderForm vendors={vendors} products={products} />
         </div>
       </div>

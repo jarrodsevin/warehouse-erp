@@ -329,7 +329,7 @@ export default function InventoryValueReport() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-8">
         <div className="max-w-7xl mx-auto">
-          <div className="text-white text-center">Loading inventory data...</div>
+          <div className="text-gray-900 text-center">Loading inventory data...</div>
         </div>
       </div>
     );
@@ -341,19 +341,19 @@ export default function InventoryValueReport() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-4xl font-bold text-white mb-2">Inventory Value Report</h1>
-            <p className="text-gray-400">View inventory value by cost and retail price</p>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">Inventory Value Report</h1>
+            <p className="text-gray-600">View inventory value by cost and retail price</p>
           </div>
           <div className="flex gap-3">
             <button
               onClick={generatePDF}
-              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+              className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors"
             >
               📄 Export PDF
             </button>
             <Link
               href="/reports"
-              className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
+              className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-300 text-gray-900 rounded-lg transition-colors"
             >
               ← Back to Reports
             </Link>
@@ -363,36 +363,36 @@ export default function InventoryValueReport() {
         {/* Grand Totals */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-gradient-to-br from-green-500/20 to-green-600/20 border border-green-500/30 rounded-xl p-6">
-            <h3 className="text-sm text-green-300 mb-2">Total Cost Value</h3>
-            <p className="text-3xl font-bold text-green-400">
+            <h3 className="text-sm text-success mb-2">Total Cost Value</h3>
+            <p className="text-3xl font-bold text-gray-900">
               ${grandTotals.costValue.toFixed(2)}
             </p>
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-xs text-gray-600 mt-1">
               {inventory.reduce((sum, item) => sum + item.quantityOnHand, 0)} units
             </p>
           </div>
 
           <div className="bg-gradient-to-br from-blue-500/20 to-blue-600/20 border border-blue-500/30 rounded-xl p-6">
-            <h3 className="text-sm text-blue-300 mb-2">Total Retail Value</h3>
-            <p className="text-3xl font-bold text-blue-400">
+            <h3 className="text-sm text-primary-600 mb-2">Total Retail Value</h3>
+            <p className="text-3xl font-bold text-primary-600">
               ${grandTotals.retailValue.toFixed(2)}
             </p>
           </div>
 
           <div className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 border border-purple-500/30 rounded-xl p-6">
-            <h3 className="text-sm text-purple-300 mb-2">Potential Profit</h3>
-            <p className="text-3xl font-bold text-purple-400">
+            <h3 className="text-sm text-primary-600 mb-2">Potential Profit</h3>
+            <p className="text-3xl font-bold text-gray-900">
               ${grandTotals.profit.toFixed(2)}
             </p>
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-xs text-gray-600 mt-1">
               {((grandTotals.profit / grandTotals.retailValue) * 100).toFixed(1)}% margin
             </p>
           </div>
         </div>
 
         {/* Group By Selection */}
-        <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6 mb-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Group By</h3>
+        <div className="bg-white/50 backdrop-blur-sm border border-gray-200 rounded-xl p-6 mb-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Group By</h3>
           <div className="flex flex-wrap gap-2">
             {(['category', 'subcategory', 'brand', 'vendor'] as GroupByType[]).map((type) => (
               <button
@@ -400,8 +400,8 @@ export default function InventoryValueReport() {
                 onClick={() => setGroupBy(type)}
                 className={`px-4 py-2 rounded-lg border transition-all ${
                   groupBy === type
-                    ? 'bg-blue-600 text-white border-blue-500'
-                    : 'bg-gray-800/50 text-gray-400 border-gray-700 hover:border-gray-600'
+                    ? 'bg-blue-600 text-gray-900 border-blue-500'
+                    : 'bg-white/50 text-gray-600 border-gray-200 hover:border-gray-300'
                 }`}
               >
                 {type.charAt(0).toUpperCase() + type.slice(1)}
@@ -411,12 +411,12 @@ export default function InventoryValueReport() {
         </div>
 
         {/* Filters */}
-        <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6 mb-6">
-          <h2 className="text-xl font-semibold text-white mb-6">Filters</h2>
+        <div className="bg-white/50 backdrop-blur-sm border border-gray-200 rounded-xl p-6 mb-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">Filters</h2>
 
           {/* Search */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-600 mb-2">
               Search Products
             </label>
             <input
@@ -424,18 +424,18 @@ export default function InventoryValueReport() {
               placeholder="Search by product name, SKU, category, brand, or vendor..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
           </div>
 
           {/* Category Filter */}
           <div className="mb-6">
             <div className="flex items-center justify-between mb-3">
-              <label className="text-sm font-medium text-gray-300">Filter by Category</label>
+              <label className="text-sm font-medium text-gray-600">Filter by Category</label>
               {selectedCategories.length > 0 && (
                 <button
                   onClick={clearCategoryFilters}
-                  className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                  className="text-sm text-primary-600 hover:text-primary-700 transition-colors"
                 >
                   Clear ({selectedCategories.length})
                 </button>
@@ -448,8 +448,8 @@ export default function InventoryValueReport() {
                   onClick={() => toggleCategory(category.id)}
                   className={`px-4 py-2 rounded-lg border transition-all ${
                     selectedCategories.includes(category.id)
-                      ? 'bg-blue-600 text-white border-blue-500'
-                      : 'bg-gray-800/50 text-gray-400 border-gray-700 hover:border-gray-600'
+                      ? 'bg-blue-600 text-gray-900 border-blue-500'
+                      : 'bg-white/50 text-gray-600 border-gray-200 hover:border-gray-300'
                   }`}
                 >
                   {category.name}
@@ -461,11 +461,11 @@ export default function InventoryValueReport() {
           {/* Subcategory Filter */}
           <div className="mb-6">
             <div className="flex items-center justify-between mb-3">
-              <label className="text-sm font-medium text-gray-300">Filter by Subcategory</label>
+              <label className="text-sm font-medium text-gray-600">Filter by Subcategory</label>
               {selectedSubcategories.length > 0 && (
                 <button
                   onClick={clearSubcategoryFilters}
-                  className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                  className="text-sm text-primary-600 hover:text-primary-700 transition-colors"
                 >
                   Clear ({selectedSubcategories.length})
                 </button>
@@ -478,8 +478,8 @@ export default function InventoryValueReport() {
                   onClick={() => toggleSubcategory(subcategory.id)}
                   className={`px-4 py-2 rounded-lg border transition-all ${
                     selectedSubcategories.includes(subcategory.id)
-                      ? 'bg-orange-600 text-white border-orange-500'
-                      : 'bg-gray-800/50 text-gray-400 border-gray-700 hover:border-gray-600'
+                      ? 'bg-orange-600 text-gray-900 border-orange-500'
+                      : 'bg-white/50 text-gray-600 border-gray-200 hover:border-gray-300'
                   }`}
                 >
                   {subcategory.name}
@@ -491,11 +491,11 @@ export default function InventoryValueReport() {
           {/* Brand Filter */}
           <div className="mb-6">
             <div className="flex items-center justify-between mb-3">
-              <label className="text-sm font-medium text-gray-300">Filter by Brand</label>
+              <label className="text-sm font-medium text-gray-600">Filter by Brand</label>
               {selectedBrands.length > 0 && (
                 <button
                   onClick={clearBrandFilters}
-                  className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                  className="text-sm text-primary-600 hover:text-primary-700 transition-colors"
                 >
                   Clear ({selectedBrands.length})
                 </button>
@@ -508,8 +508,8 @@ export default function InventoryValueReport() {
                   onClick={() => toggleBrand(brand.id)}
                   className={`px-4 py-2 rounded-lg border transition-all ${
                     selectedBrands.includes(brand.id)
-                      ? 'bg-purple-600 text-white border-purple-500'
-                      : 'bg-gray-800/50 text-gray-400 border-gray-700 hover:border-gray-600'
+                      ? 'bg-purple-600 text-gray-900 border-purple-500'
+                      : 'bg-white/50 text-gray-600 border-gray-200 hover:border-gray-300'
                   }`}
                 >
                   {brand.name}
@@ -521,11 +521,11 @@ export default function InventoryValueReport() {
           {/* Vendor Filter */}
           <div className="mb-6">
             <div className="flex items-center justify-between mb-3">
-              <label className="text-sm font-medium text-gray-300">Filter by Vendor</label>
+              <label className="text-sm font-medium text-gray-600">Filter by Vendor</label>
               {selectedVendors.length > 0 && (
                 <button
                   onClick={clearVendorFilters}
-                  className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                  className="text-sm text-primary-600 hover:text-primary-700 transition-colors"
                 >
                   Clear ({selectedVendors.length})
                 </button>
@@ -538,8 +538,8 @@ export default function InventoryValueReport() {
                   onClick={() => toggleVendor(vendor.id)}
                   className={`px-4 py-2 rounded-lg border transition-all ${
                     selectedVendors.includes(vendor.id)
-                      ? 'bg-cyan-600 text-white border-cyan-500'
-                      : 'bg-gray-800/50 text-gray-400 border-gray-700 hover:border-gray-600'
+                      ? 'bg-cyan-600 text-gray-900 border-cyan-500'
+                      : 'bg-white/50 text-gray-600 border-gray-200 hover:border-gray-300'
                   }`}
                 >
                   {vendor.name}
@@ -555,35 +555,35 @@ export default function InventoryValueReport() {
           selectedBrands.length > 0 ||
           selectedVendors.length > 0 ||
           searchTerm) && (
-          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6 mb-6">
-            <h3 className="text-lg font-semibold text-white mb-4">Filtered Results</h3>
+          <div className="bg-white/50 backdrop-blur-sm border border-gray-200 rounded-xl p-6 mb-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Filtered Results</h3>
             <div className="grid grid-cols-3 gap-4">
               <div>
-                <p className="text-sm text-gray-400">Cost Value</p>
-                <p className="text-xl font-bold text-green-400">${totals.costValue.toFixed(2)}</p>
+                <p className="text-sm text-gray-600">Cost Value</p>
+                <p className="text-xl font-bold text-gray-900">${totals.costValue.toFixed(2)}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-400">Retail Value</p>
-                <p className="text-xl font-bold text-blue-400">${totals.retailValue.toFixed(2)}</p>
+                <p className="text-sm text-gray-600">Retail Value</p>
+                <p className="text-xl font-bold text-primary-600">${totals.retailValue.toFixed(2)}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-400">Profit</p>
-                <p className="text-xl font-bold text-purple-400">${totals.profit.toFixed(2)}</p>
+                <p className="text-sm text-gray-600">Profit</p>
+                <p className="text-xl font-bold text-gray-900">${totals.profit.toFixed(2)}</p>
               </div>
             </div>
           </div>
         )}
 
         {/* Results Count */}
-        <div className="mb-4 text-gray-400">
+        <div className="mb-4 text-gray-600">
           Showing {filteredInventory.length} of {inventory.length} items
         </div>
 
         {/* Grouped Inventory Display */}
         <div className="space-y-6">
           {Object.entries(groupedInventory).length === 0 ? (
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-8 text-center">
-              <p className="text-gray-400">No inventory items found</p>
+            <div className="bg-white/50 backdrop-blur-sm border border-gray-200 rounded-xl p-8 text-center">
+              <p className="text-gray-600">No inventory items found</p>
             </div>
           ) : (
             Object.entries(groupedInventory).map(([groupName, items]) => {
@@ -591,28 +591,28 @@ export default function InventoryValueReport() {
               return (
                 <div
                   key={groupName}
-                  className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl overflow-hidden"
+                  className="bg-white/50 backdrop-blur-sm border border-gray-200 rounded-xl overflow-hidden"
                 >
                   {/* Group Header */}
                   <div className="bg-blue-600/20 border-b border-blue-500/30 p-4">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-xl font-bold text-blue-400">{groupName}</h3>
+                      <h3 className="text-xl font-bold text-primary-600">{groupName}</h3>
                       <div className="flex gap-6 text-sm">
                         <div>
-                          <span className="text-gray-400">Cost: </span>
-                          <span className="text-green-400 font-semibold">
+                          <span className="text-gray-600">Cost: </span>
+                          <span className="text-gray-900 font-semibold">
                             ${groupTotals.costValue.toFixed(2)}
                           </span>
                         </div>
                         <div>
-                          <span className="text-gray-400">Retail: </span>
-                          <span className="text-blue-400 font-semibold">
+                          <span className="text-gray-600">Retail: </span>
+                          <span className="text-primary-600 font-semibold">
                             ${groupTotals.retailValue.toFixed(2)}
                           </span>
                         </div>
                         <div>
-                          <span className="text-gray-400">Profit: </span>
-                          <span className="text-purple-400 font-semibold">
+                          <span className="text-gray-600">Profit: </span>
+                          <span className="text-gray-900 font-semibold">
                             ${groupTotals.profit.toFixed(2)}
                           </span>
                         </div>
@@ -624,24 +624,24 @@ export default function InventoryValueReport() {
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead>
-                        <tr className="border-b border-gray-700 bg-gray-900/50">
-                          <th className="text-left py-3 px-4 text-gray-400 font-medium">SKU</th>
-                          <th className="text-left py-3 px-4 text-gray-400 font-medium">
+                        <tr className="border-b border-gray-200 bg-gray-50/50">
+                          <th className="text-left py-3 px-4 text-gray-600 font-medium">SKU</th>
+                          <th className="text-left py-3 px-4 text-gray-600 font-medium">
                             Product
                           </th>
-                          <th className="text-right py-3 px-4 text-gray-400 font-medium">
+                          <th className="text-right py-3 px-4 text-gray-600 font-medium">
                             Qty on Hand
                           </th>
-                          <th className="text-right py-3 px-4 text-gray-400 font-medium">
+                          <th className="text-right py-3 px-4 text-gray-600 font-medium">
                             Unit Cost
                           </th>
-                          <th className="text-right py-3 px-4 text-gray-400 font-medium">
+                          <th className="text-right py-3 px-4 text-gray-600 font-medium">
                             Cost Value
                           </th>
-                          <th className="text-right py-3 px-4 text-gray-400 font-medium">
+                          <th className="text-right py-3 px-4 text-gray-600 font-medium">
                             Retail Value
                           </th>
-                          <th className="text-right py-3 px-4 text-gray-400 font-medium">
+                          <th className="text-right py-3 px-4 text-gray-600 font-medium">
                             Profit
                           </th>
                         </tr>
@@ -655,23 +655,23 @@ export default function InventoryValueReport() {
                           return (
                             <tr
                               key={item.id}
-                              className={index % 2 === 0 ? 'bg-gray-800/30' : 'bg-gray-800/10'}
+                              className={index % 2 === 0 ? 'bg-white/30' : 'bg-white/10'}
                             >
-                              <td className="py-3 px-4 text-gray-300">{item.product.sku}</td>
-                              <td className="py-3 px-4 text-white">{item.product.name}</td>
-                              <td className="py-3 px-4 text-right text-gray-300">
+                              <td className="py-3 px-4 text-gray-600">{item.product.sku}</td>
+                              <td className="py-3 px-4 text-gray-900">{item.product.name}</td>
+                              <td className="py-3 px-4 text-right text-gray-600">
                                 {item.quantityOnHand}
                               </td>
-                              <td className="py-3 px-4 text-right text-gray-300">
+                              <td className="py-3 px-4 text-right text-gray-600">
                                 ${item.product.cost.toFixed(2)}
                               </td>
-                              <td className="py-3 px-4 text-right text-green-400 font-medium">
+                              <td className="py-3 px-4 text-right text-gray-900 font-medium">
                                 ${costValue.toFixed(2)}
                               </td>
-                              <td className="py-3 px-4 text-right text-blue-400 font-medium">
+                              <td className="py-3 px-4 text-right text-primary-600 font-medium">
                                 ${retailValue.toFixed(2)}
                               </td>
-                              <td className="py-3 px-4 text-right text-purple-400 font-medium">
+                              <td className="py-3 px-4 text-right text-gray-900 font-medium">
                                 ${profit.toFixed(2)}
                               </td>
                             </tr>

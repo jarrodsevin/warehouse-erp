@@ -3,10 +3,10 @@ import Link from 'next/link'
 
 export default function CreateCategoryPage() {
   return (
-    <div className="min-h-screen py-16 px-8">
+    <div className="min-h-screen p-8">
       <div className="max-w-3xl mx-auto">
         <div className="mb-8">
-          <Link href="/admin/categories" className="text-blue-400 hover:text-blue-300">
+          <Link href="/admin/categories" className="text-primary-600 hover:text-primary-700">
             ← Back to Categories Menu
           </Link>
         </div>
@@ -15,7 +15,7 @@ export default function CreateCategoryPage() {
           Create New Category
         </h1>
 
-        <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 shadow-[0_0_15px_rgba(234,179,8,0.3)]">
+        <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
           <CategoryForm />
         </div>
       </div>

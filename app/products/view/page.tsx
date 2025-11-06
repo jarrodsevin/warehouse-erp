@@ -279,7 +279,7 @@ const generatePDF = async () => {
   if (loading) {
     return (
       <div className="min-h-screen p-8 flex items-center justify-center">
-        <div className="text-xl text-gray-400">Loading products...</div>
+        <div className="text-xl text-gray-600">Loading products...</div>
       </div>
     )
   }
@@ -288,45 +288,45 @@ const generatePDF = async () => {
     <div className="min-h-screen p-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold text-gray-900">
             View All Products
           </h1>
           <div className="flex gap-3">
             <button
               onClick={generatePDF}
-              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center gap-2"
+              className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors flex items-center gap-2"
             >
               📄 Export PDF
             </button>
             <Link
               href="/products"
-              className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
+              className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-300 rounded-lg transition-colors"
             >
               ← Back to Products
             </Link>
           </div>
         </div>
 
-        <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 mb-8">
+        <div className="bg-white border border-gray-200 rounded-lg p-6 mb-8">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-4">
-              <h2 className="text-lg font-semibold text-gray-300">Filters & Search</h2>
+              <h2 className="text-lg font-semibold text-gray-600">Filters & Search</h2>
               {(selectedCategories.length > 0 || selectedSubcategories.length > 0 || selectedBrands.length > 0) && (
-                <span className="text-sm text-gray-400">
+                <span className="text-sm text-gray-600">
                   ({selectedCategories.length + selectedSubcategories.length + selectedBrands.length} active)
                 </span>
               )}
             </div>
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors text-sm"
+              className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-300 rounded-lg transition-colors text-sm"
             >
               {showFilters ? '▼ Hide Filters' : '▶ Show Filters'}
             </button>
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-600 mb-2">
               Search Products
             </label>
             <input
@@ -334,7 +334,7 @@ const generatePDF = async () => {
               placeholder="Search by name, SKU, brand, subcategory, or description..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
           </div>
 
@@ -342,9 +342,9 @@ const generatePDF = async () => {
             <div>
               {/* Category Filter */}
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-600 mb-2">
                   Categories {selectedCategories.length > 0 && (
-                    <span className="text-blue-400">({selectedCategories.length} selected)</span>
+                    <span className="text-primary-600">({selectedCategories.length} selected)</span>
                   )}
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -354,8 +354,8 @@ const generatePDF = async () => {
                       onClick={() => toggleCategory(category.id)}
                       className={`px-4 py-2 rounded-lg transition-colors ${
                         selectedCategories.includes(category.id)
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                          ? 'bg-blue-500 text-gray-900'
+                          : 'bg-gray-700 text-gray-600 hover:bg-gray-600'
                       }`}
                     >
                       {category.name}
@@ -364,7 +364,7 @@ const generatePDF = async () => {
                   {selectedCategories.length > 0 && (
                     <button
                       onClick={() => setSelectedCategories([])}
-                      className="px-4 py-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30"
+                      className="px-4 py-2 rounded-lg bg-error-light text-error-dark hover:bg-red-500/30"
                     >
                       Clear
                     </button>
@@ -374,7 +374,7 @@ const generatePDF = async () => {
 
               {/* Subcategory Filter */}
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-600 mb-2">
                   Subcategories {selectedSubcategories.length > 0 && (
                     <span className="text-orange-400">({selectedSubcategories.length} selected)</span>
                   )}
@@ -386,8 +386,8 @@ const generatePDF = async () => {
                       onClick={() => toggleSubcategory(subcategory.id)}
                       className={`px-4 py-2 rounded-lg transition-colors ${
                         selectedSubcategories.includes(subcategory.id)
-                          ? 'bg-orange-500 text-white'
-                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                          ? 'bg-orange-500 text-gray-900'
+                          : 'bg-gray-700 text-gray-600 hover:bg-gray-600'
                       }`}
                     >
                       {subcategory.name}
@@ -396,7 +396,7 @@ const generatePDF = async () => {
                   {selectedSubcategories.length > 0 && (
                     <button
                       onClick={() => setSelectedSubcategories([])}
-                      className="px-4 py-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30"
+                      className="px-4 py-2 rounded-lg bg-error-light text-error-dark hover:bg-red-500/30"
                     >
                       Clear
                     </button>
@@ -406,9 +406,9 @@ const generatePDF = async () => {
 
               {/* Brand Filter */}
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-600 mb-2">
                   Brands {selectedBrands.length > 0 && (
-                    <span className="text-purple-400">({selectedBrands.length} selected)</span>
+                    <span className="text-gray-900">({selectedBrands.length} selected)</span>
                   )}
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -418,8 +418,8 @@ const generatePDF = async () => {
                       onClick={() => toggleBrand(brand.id)}
                       className={`px-4 py-2 rounded-lg transition-colors ${
                         selectedBrands.includes(brand.id)
-                          ? 'bg-purple-500 text-white'
-                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                          ? 'bg-purple-500 text-gray-900'
+                          : 'bg-gray-700 text-gray-600 hover:bg-gray-600'
                       }`}
                     >
                       {brand.name}
@@ -428,7 +428,7 @@ const generatePDF = async () => {
                   {selectedBrands.length > 0 && (
                     <button
                       onClick={() => setSelectedBrands([])}
-                      className="px-4 py-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30"
+                      className="px-4 py-2 rounded-lg bg-error-light text-error-dark hover:bg-red-500/30"
                     >
                       Clear
                     </button>
@@ -438,14 +438,14 @@ const generatePDF = async () => {
             </div>
           )}
 
-          <div className="mt-4 text-sm text-gray-400">
+          <div className="mt-4 text-sm text-gray-600">
             Showing {filteredProducts.length} of {products.length} products
           </div>
         </div>
 
         {filteredProducts.length === 0 ? (
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-8 text-center">
-            <p className="text-gray-400">
+          <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
+            <p className="text-gray-600">
               {products.length === 0 
                 ? 'No products found. Create one to get started!' 
                 : 'No products match your search criteria.'}
@@ -456,19 +456,19 @@ const generatePDF = async () => {
             {filteredProducts.map((product) => (
               <div
                 key={product.id}
-                className="bg-gray-800 border border-gray-700 rounded-lg p-6 hover:shadow-lg transition-shadow"
+                className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow"
               >
-                <div className="mb-6 pb-4 border-b border-gray-700">
+                <div className="mb-6 pb-4 border-b border-gray-200">
                   <div className="flex justify-between items-start mb-2">
                     <div>
-                      <h2 className="text-2xl font-bold text-blue-400">{product.name}</h2>
-                      <p className="text-sm text-gray-400 mt-1">SKU: {product.sku}</p>
+                      <h2 className="text-2xl font-bold text-primary-600">{product.name}</h2>
+                      <p className="text-sm text-gray-600 mt-1">SKU: {product.sku}</p>
                       {product.brand && (
-                        <p className="text-sm text-gray-400 mt-1">Brand: {product.brand.name}</p>
+                        <p className="text-sm text-gray-600 mt-1">Brand: {product.brand.name}</p>
                       )}
                     </div>
                     <div className="flex flex-col gap-2 items-end">
-                      <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-sm">
+                      <span className="px-3 py-1 bg-info-light text-info-dark rounded-full text-sm">
                         {product.category.name}
                       </span>
                       {product.subcategory && (
@@ -476,29 +476,29 @@ const generatePDF = async () => {
                           {product.subcategory.name}
                         </span>
                       )}
-                      <span className="px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded-full text-sm">
+                      <span className="px-3 py-1 bg-info-light text-info-dark rounded-full text-sm">
                         On-Hand: {product.inventory?.quantityOnHand ?? 0}
                       </span>
                     </div>
                   </div>
                   
                   {product.description && (
-                    <p className="text-gray-300 mt-3">{product.description}</p>
+                    <p className="text-gray-600 mt-3">{product.description}</p>
                   )}
 
                   <div className="mt-4 flex flex-wrap gap-4 text-sm">
                     {product.packageSize && product.unitOfMeasurement && (
-                      <div className="text-gray-400">
+                      <div className="text-gray-600">
                         <span className="text-gray-500">Size:</span> {product.packageSize} {product.unitOfMeasurement}
                       </div>
                     )}
                     {product.casePackCount && (
-                      <div className="text-gray-400">
+                      <div className="text-gray-600">
                         <span className="text-gray-500">Case Pack:</span> {product.casePackCount} units
                       </div>
                     )}
                     {product.storageType && (
-                      <div className="text-gray-400">
+                      <div className="text-gray-600">
                         <span className="text-gray-500">Storage:</span> {product.storageType}
                       </div>
                     )}
@@ -506,27 +506,27 @@ const generatePDF = async () => {
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                  <div className="bg-gray-900 rounded-lg p-3">
-                    <p className="text-xs text-gray-400 mb-1">Cost</p>
-                    <p className="text-lg font-semibold text-green-400">
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <p className="text-xs text-gray-600 mb-1">Cost</p>
+                    <p className="text-lg font-semibold text-gray-900">
                       ${product.cost.toFixed(2)}
                     </p>
                   </div>
-                  <div className="bg-gray-900 rounded-lg p-3">
-                    <p className="text-xs text-gray-400 mb-1">Retail Price</p>
-                    <p className="text-lg font-semibold text-blue-400">
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <p className="text-xs text-gray-600 mb-1">Retail Price</p>
+                    <p className="text-lg font-semibold text-primary-600">
                       ${product.retailPrice.toFixed(2)}
                     </p>
                   </div>
-                  <div className="bg-gray-900 rounded-lg p-3">
-                    <p className="text-xs text-gray-400 mb-1">Markup</p>
-                    <p className="text-lg font-semibold text-purple-400">
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <p className="text-xs text-gray-600 mb-1">Markup</p>
+                    <p className="text-lg font-semibold text-gray-900">
                       {calculateMarkup(product.cost, product.retailPrice)}%
                     </p>
                   </div>
-                  <div className="bg-gray-900 rounded-lg p-3">
-                    <p className="text-xs text-gray-400 mb-1">Margin</p>
-                    <p className="text-lg font-semibold text-yellow-400">
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <p className="text-xs text-gray-600 mb-1">Margin</p>
+                    <p className="text-lg font-semibold text-warning-dark">
                       {calculateMargin(product.cost, product.retailPrice)}%
                     </p>
                   </div>
@@ -535,39 +535,39 @@ const generatePDF = async () => {
                 {product.purchaseOrderItems.length > 0 && (
                   <div className="mb-6">
                     <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-lg font-semibold text-gray-300">Purchase History</h3>
+                      <h3 className="text-lg font-semibold text-gray-600">Purchase History</h3>
                       <button
                         onClick={() => togglePurchaseHistory(product.id)}
-                        className="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors text-sm"
+                        className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-300 rounded-lg transition-colors text-sm"
                       >
                         {expandedPurchaseHistory === product.id ? '▼ Hide' : '▶ Show'} ({product.purchaseOrderItems.length})
                       </button>
                     </div>
 
                     {expandedPurchaseHistory === product.id && (
-                      <div className="bg-gray-900 rounded-lg overflow-hidden">
+                      <div className="bg-gray-50 rounded-lg overflow-hidden">
                         <div className="overflow-x-auto">
                           <table className="w-full text-sm">
                             <thead>
-                              <tr className="bg-gray-800 border-b border-gray-700">
-                                <th className="text-left p-3 text-gray-400 font-medium">PO Number</th>
-                                <th className="text-left p-3 text-gray-400 font-medium">Vendor</th>
-                                <th className="text-left p-3 text-gray-400 font-medium">Quantity</th>
-                                <th className="text-left p-3 text-gray-400 font-medium">Unit Cost</th>
-                                <th className="text-left p-3 text-gray-400 font-medium">Total Cost</th>
+                              <tr className="bg-white border-b border-gray-200">
+                                <th className="text-left p-3 text-gray-600 font-medium">PO Number</th>
+                                <th className="text-left p-3 text-gray-600 font-medium">Vendor</th>
+                                <th className="text-left p-3 text-gray-600 font-medium">Quantity</th>
+                                <th className="text-left p-3 text-gray-600 font-medium">Unit Cost</th>
+                                <th className="text-left p-3 text-gray-600 font-medium">Total Cost</th>
                               </tr>
                             </thead>
                             <tbody>
                               {product.purchaseOrderItems.map((item: any, index: number) => (
                                 <tr 
                                   key={item.id} 
-                                  className={`border-b border-gray-800 ${index % 2 === 0 ? 'bg-gray-900' : 'bg-gray-900/50'}`}
+                                  className={`border-b border-gray-800 ${index % 2 === 0 ? 'bg-gray-50' : 'bg-gray-50/50'}`}
                                 >
-                                  <td className="p-3 text-gray-300">{item.purchaseOrder.poNumber}</td>
-                                  <td className="p-3 text-gray-300">{item.purchaseOrder.vendor.name}</td>
-                                  <td className="p-3 text-gray-300">{item.quantity} units</td>
-                                  <td className="p-3 text-green-400 font-medium">${item.unitCost.toFixed(2)}</td>
-                                  <td className="p-3 text-blue-400 font-medium">${(item.quantity * item.unitCost).toFixed(2)}</td>
+                                  <td className="p-3 text-gray-600">{item.purchaseOrder.poNumber}</td>
+                                  <td className="p-3 text-gray-600">{item.purchaseOrder.vendor.name}</td>
+                                  <td className="p-3 text-gray-600">{item.quantity} units</td>
+                                  <td className="p-3 text-gray-900 font-medium">${item.unitCost.toFixed(2)}</td>
+                                  <td className="p-3 text-primary-600 font-medium">${(item.quantity * item.unitCost).toFixed(2)}</td>
                                 </tr>
                               ))}
                             </tbody>

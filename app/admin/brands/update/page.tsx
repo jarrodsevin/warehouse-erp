@@ -9,39 +9,39 @@ export default async function ViewBrands() {
   })
 
   return (
-    <div className="min-h-screen py-16 px-8">
+    <div className="min-h-screen p-8">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
-          <Link href="/admin/brands" className="text-blue-400 hover:text-blue-300">
+          <Link href="/admin/brands" className="text-primary-600 hover:text-primary-700">
             ← Back to Brands
           </Link>
         </div>
 
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-cyan-500 bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold mb-4 text-gray-900">
             View Brands
           </h1>
-          <p className="text-gray-400">All brands in the system</p>
+          <p className="text-gray-600">All brands in the system</p>
         </div>
 
         {brands.length === 0 ? (
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-8 text-center">
-            <p className="text-gray-400">No brands found. Create one to get started!</p>
+          <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
+            <p className="text-gray-600">No brands found. Create one to get started!</p>
           </div>
         ) : (
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
+          <div className="bg-white border border-gray-200 rounded-lg p-6">
             <div className="space-y-3">
               {/* @ts-ignore */}
               {brands.map((brand) => (
                 <div
                   key={brand.id}
-                  className="bg-gray-900 rounded-lg p-4 flex justify-between items-center"
+                  className="bg-gray-50 rounded-lg p-4 flex justify-between items-center"
                 >
                   <div>
-                    <h3 className="text-lg font-semibold text-blue-400">{brand.name}</h3>
-                    <p className="text-sm text-gray-400">ID: {brand.id}</p>
+                    <h3 className="text-lg font-semibold text-primary-600">{brand.name}</h3>
+                    <p className="text-sm text-gray-600">ID: {brand.id}</p>
                   </div>
-                  <div className="text-sm text-gray-400">
+                  <div className="text-sm text-gray-600">
                     Created: {new Date(brand.createdAt).toLocaleDateString()}
                   </div>
                 </div>

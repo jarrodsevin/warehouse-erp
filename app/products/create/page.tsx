@@ -16,21 +16,21 @@ export default async function CreateProduct() {
   })
 
   return (
-    <div className="min-h-screen py-16 px-8">
+    <div className="min-h-screen p-8">
       <div className="max-w-2xl mx-auto">
         <div className="mb-8">
-          <Link href="/products" className="text-blue-400 hover:text-blue-300">
+          <Link href="/products" className="text-primary-600 hover:text-primary-700">
             ← Back to Products
           </Link>
         </div>
 
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold mb-4 text-gray-900">
             Create New Product
           </h1>
         </div>
 
-        <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 shadow-[0_0_15px_rgba(59,130,246,0.3)]">
+        <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
           <ProductForm categories={categories} subcategories={subcategories} brands={brands} />
         </div>
       </div>

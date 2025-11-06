@@ -375,7 +375,7 @@ export default function DiscountAnalysisReport() {
   if (loading) {
     return (
       <div className="min-h-screen p-8 flex items-center justify-center">
-        <div className="text-xl text-gray-400">Loading report...</div>
+        <div className="text-xl text-gray-600">Loading report...</div>
       </div>
     )
   }
@@ -390,13 +390,13 @@ export default function DiscountAnalysisReport() {
           <div className="flex gap-3">
             <button
               onClick={generatePDF}
-              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+              className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors"
             >
               📄 Export PDF
             </button>
             <Link
               href="/reports"
-              className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
+              className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-300 rounded-lg transition-colors"
             >
               ← Back to Reports
             </Link>
@@ -405,44 +405,44 @@ export default function DiscountAnalysisReport() {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-            <p className="text-sm text-gray-400 mb-2">Potential Profit</p>
-            <p className="text-3xl font-bold text-blue-400">${totalPotentialProfit.toFixed(0)}</p>
+          <div className="bg-white border border-gray-200 rounded-lg p-6">
+            <p className="text-sm text-gray-600 mb-2">Potential Profit</p>
+            <p className="text-3xl font-bold text-primary-600">${totalPotentialProfit.toFixed(0)}</p>
             <p className="text-xs text-gray-500 mt-1">At full retail</p>
           </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-            <p className="text-sm text-gray-400 mb-2">Actual Profit</p>
-            <p className="text-3xl font-bold text-green-400">${totalActualProfit.toFixed(0)}</p>
+          <div className="bg-white border border-gray-200 rounded-lg p-6">
+            <p className="text-sm text-gray-600 mb-2">Actual Profit</p>
+            <p className="text-3xl font-bold text-gray-900">${totalActualProfit.toFixed(0)}</p>
             <p className="text-xs text-gray-500 mt-1">With discounts</p>
           </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-            <p className="text-sm text-gray-400 mb-2">Profit Lost</p>
+          <div className="bg-white border border-gray-200 rounded-lg p-6">
+            <p className="text-sm text-gray-600 mb-2">Profit Lost</p>
             <p className="text-3xl font-bold text-red-400">${totalProfitLost.toFixed(0)}</p>
             <p className="text-xs text-gray-500 mt-1">Due to discounts</p>
           </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-            <p className="text-sm text-gray-400 mb-2">Avg Discount</p>
+          <div className="bg-white border border-gray-200 rounded-lg p-6">
+            <p className="text-sm text-gray-600 mb-2">Avg Discount</p>
             <p className="text-3xl font-bold text-orange-400">{avgDiscount.toFixed(1)}%</p>
             <p className="text-xs text-gray-500 mt-1">Across all products</p>
           </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-            <p className="text-sm text-gray-400 mb-2">Capture Rate</p>
-            <p className="text-3xl font-bold text-purple-400">{captureRate.toFixed(1)}%</p>
+          <div className="bg-white border border-gray-200 rounded-lg p-6">
+            <p className="text-sm text-gray-600 mb-2">Capture Rate</p>
+            <p className="text-3xl font-bold text-gray-900">{captureRate.toFixed(1)}%</p>
             <p className="text-xs text-gray-500 mt-1">Of potential profit</p>
           </div>
         </div>
 
         {/* View Mode Toggle */}
-        <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 mb-6">
+        <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
           <div className="flex gap-4 items-center">
-            <label className="text-sm font-medium text-gray-300">View:</label>
+            <label className="text-sm font-medium text-gray-600">View:</label>
             <div className="flex gap-2">
               <button
                 onClick={() => setViewMode('products')}
                 className={`px-6 py-2 rounded-lg transition-colors font-medium ${
                   viewMode === 'products'
-                    ? 'bg-red-500 text-white'
-                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    ? 'bg-red-500 text-gray-900'
+                    : 'bg-gray-700 text-gray-600 hover:bg-gray-600'
                 }`}
               >
                 📦 Products
@@ -451,8 +451,8 @@ export default function DiscountAnalysisReport() {
                 onClick={() => setViewMode('customers')}
                 className={`px-6 py-2 rounded-lg transition-colors font-medium ${
                   viewMode === 'customers'
-                    ? 'bg-red-500 text-white'
-                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    ? 'bg-red-500 text-gray-900'
+                    : 'bg-gray-700 text-gray-600 hover:bg-gray-600'
                 }`}
               >
                 👥 Customers
@@ -462,11 +462,11 @@ export default function DiscountAnalysisReport() {
         </div>
 
         {/* Filters */}
-        <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 mb-8">
+        <div className="bg-white border border-gray-200 rounded-lg p-6 mb-8">
           <div className="flex gap-6 items-center flex-wrap">
             {/* Date Filter */}
             <div className="flex gap-4 items-center">
-              <label className="text-sm font-medium text-gray-300">Period:</label>
+              <label className="text-sm font-medium text-gray-600">Period:</label>
               <div className="flex gap-2">
                 {[
                   { value: '30', label: 'Last 30 Days' },
@@ -481,8 +481,8 @@ export default function DiscountAnalysisReport() {
                     onClick={() => setDateFilter(filter.value as DateFilter)}
                     className={`px-4 py-2 rounded-lg transition-colors ${
                       dateFilter === filter.value
-                        ? 'bg-red-500 text-white'
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                        ? 'bg-red-500 text-gray-900'
+                        : 'bg-gray-700 text-gray-600 hover:bg-gray-600'
                     }`}
                   >
                     {filter.label}
@@ -493,12 +493,12 @@ export default function DiscountAnalysisReport() {
 
             {/* Sort Options */}
             <div className="flex gap-4 items-center ml-auto">
-              <label className="text-sm font-medium text-gray-300">Sort by:</label>
+              <label className="text-sm font-medium text-gray-600">Sort by:</label>
               {viewMode === 'products' ? (
                 <select
                   value={productSortBy}
                   onChange={(e) => setProductSortBy(e.target.value as 'profitLost' | 'discount' | 'units' | 'potentialProfit')}
-                  className="px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-gray-100"
+                  className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-900"
                 >
                   <option value="profitLost">Profit Lost</option>
                   <option value="discount">Discount %</option>
@@ -509,7 +509,7 @@ export default function DiscountAnalysisReport() {
                 <select
                   value={customerSortBy}
                   onChange={(e) => setCustomerSortBy(e.target.value as 'profitLost' | 'discount' | 'orders' | 'discountRate')}
-                  className="px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-gray-100"
+                  className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-900"
                 >
                   <option value="profitLost">Profit Lost</option>
                   <option value="discount">Avg Discount %</option>
@@ -519,7 +519,7 @@ export default function DiscountAnalysisReport() {
               )}
               <button
                 onClick={() => setSortOrder(prev => prev === 'desc' ? 'asc' : 'desc')}
-                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
+                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-300 rounded-lg transition-colors"
               >
                 {sortOrder === 'desc' ? '↓ Highest First' : '↑ Lowest First'}
               </button>
@@ -531,50 +531,50 @@ export default function DiscountAnalysisReport() {
         {viewMode === 'products' && (
           <>
             {productMetrics.length === 0 ? (
-              <div className="bg-gray-800 border border-gray-700 rounded-lg p-8 text-center">
-                <p className="text-gray-400">No sales data for the selected period.</p>
+              <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
+                <p className="text-gray-600">No sales data for the selected period.</p>
               </div>
             ) : (
-              <div className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden">
+              <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full">
-                    <thead className="bg-gray-900 border-b border-gray-700">
+                    <thead className="bg-gray-50 border-b border-gray-200">
                       <tr>
-                        <th className="text-left p-4 text-gray-400 font-medium">Rank</th>
-                        <th className="text-left p-4 text-gray-400 font-medium">SKU</th>
-                        <th className="text-left p-4 text-gray-400 font-medium">Product</th>
-                        <th className="text-center p-4 text-gray-400 font-medium">Units Sold</th>
-                        <th className="text-right p-4 text-gray-400 font-medium">Retail Price</th>
-                        <th className="text-right p-4 text-gray-400 font-medium">Avg Selling Price</th>
-                        <th className="text-right p-4 text-gray-400 font-medium">Avg Discount %</th>
-                        <th className="text-right p-4 text-gray-400 font-medium">Potential Profit</th>
-                        <th className="text-right p-4 text-gray-400 font-medium">Actual Profit</th>
-                        <th className="text-right p-4 text-gray-400 font-medium">Profit Lost</th>
+                        <th className="text-left p-4 text-gray-600 font-medium">Rank</th>
+                        <th className="text-left p-4 text-gray-600 font-medium">SKU</th>
+                        <th className="text-left p-4 text-gray-600 font-medium">Product</th>
+                        <th className="text-center p-4 text-gray-600 font-medium">Units Sold</th>
+                        <th className="text-right p-4 text-gray-600 font-medium">Retail Price</th>
+                        <th className="text-right p-4 text-gray-600 font-medium">Avg Selling Price</th>
+                        <th className="text-right p-4 text-gray-600 font-medium">Avg Discount %</th>
+                        <th className="text-right p-4 text-gray-600 font-medium">Potential Profit</th>
+                        <th className="text-right p-4 text-gray-600 font-medium">Actual Profit</th>
+                        <th className="text-right p-4 text-gray-600 font-medium">Profit Lost</th>
                       </tr>
                     </thead>
                     <tbody>
                       {productMetrics.map((product, index) => (
                         <tr 
                           key={product.product.id} 
-                          className="border-b border-gray-800 hover:bg-gray-900/50 transition-colors"
+                          className="border-b border-gray-800 hover:bg-gray-50/50 transition-colors"
                         >
-                          <td className="p-4 text-gray-300">#{index + 1}</td>
-                          <td className="p-4 text-gray-300 font-mono text-sm">{product.product.sku}</td>
+                          <td className="p-4 text-gray-600">#{index + 1}</td>
+                          <td className="p-4 text-gray-600 font-mono text-sm">{product.product.sku}</td>
                           <td className="p-4 text-gray-100 font-medium">{product.product.name}</td>
-                          <td className="p-4 text-center text-cyan-400">{product.unitsSold}</td>
-                          <td className="p-4 text-right text-gray-400">${product.product.retailPrice.toFixed(2)}</td>
-                          <td className="p-4 text-right text-blue-400">${product.avgSellingPrice.toFixed(2)}</td>
+                          <td className="p-4 text-center text-gray-900">{product.unitsSold}</td>
+                          <td className="p-4 text-right text-gray-600">${product.product.retailPrice.toFixed(2)}</td>
+                          <td className="p-4 text-right text-primary-600">${product.avgSellingPrice.toFixed(2)}</td>
                           <td className="p-4 text-right">
                             <span className={`font-semibold ${
                               product.avgDiscount > 10 ? 'text-red-400' : 
                               product.avgDiscount > 5 ? 'text-orange-400' : 
-                              'text-yellow-400'
+                              'text-warning-dark'
                             }`}>
                               {product.avgDiscount.toFixed(1)}%
                             </span>
                           </td>
-                          <td className="p-4 text-right text-blue-400">${product.potentialProfit.toFixed(2)}</td>
-                          <td className="p-4 text-right text-green-400">${product.actualProfit.toFixed(2)}</td>
+                          <td className="p-4 text-right text-primary-600">${product.potentialProfit.toFixed(2)}</td>
+                          <td className="p-4 text-right text-gray-900">${product.actualProfit.toFixed(2)}</td>
                           <td className="p-4 text-right">
                             <span className="font-semibold text-red-400">
                               ${product.profitLost.toFixed(2)}
@@ -594,41 +594,41 @@ export default function DiscountAnalysisReport() {
         {viewMode === 'customers' && (
           <>
             {customerMetrics.length === 0 ? (
-              <div className="bg-gray-800 border border-gray-700 rounded-lg p-8 text-center">
-                <p className="text-gray-400">No sales data for the selected period.</p>
+              <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
+                <p className="text-gray-600">No sales data for the selected period.</p>
               </div>
             ) : (
-              <div className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden">
+              <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full">
-                    <thead className="bg-gray-900 border-b border-gray-700">
+                    <thead className="bg-gray-50 border-b border-gray-200">
                       <tr>
-                        <th className="text-left p-4 text-gray-400 font-medium">Rank</th>
-                        <th className="text-left p-4 text-gray-400 font-medium">Customer</th>
-                        <th className="text-center p-4 text-gray-400 font-medium">Orders</th>
-                        <th className="text-center p-4 text-gray-400 font-medium">Total Units</th>
-                        <th className="text-right p-4 text-gray-400 font-medium">Avg Discount %</th>
-                        <th className="text-right p-4 text-gray-400 font-medium">Discount Rate %</th>
-                        <th className="text-right p-4 text-gray-400 font-medium">Potential Profit</th>
-                        <th className="text-right p-4 text-gray-400 font-medium">Actual Profit</th>
-                        <th className="text-right p-4 text-gray-400 font-medium">Profit Lost</th>
+                        <th className="text-left p-4 text-gray-600 font-medium">Rank</th>
+                        <th className="text-left p-4 text-gray-600 font-medium">Customer</th>
+                        <th className="text-center p-4 text-gray-600 font-medium">Orders</th>
+                        <th className="text-center p-4 text-gray-600 font-medium">Total Units</th>
+                        <th className="text-right p-4 text-gray-600 font-medium">Avg Discount %</th>
+                        <th className="text-right p-4 text-gray-600 font-medium">Discount Rate %</th>
+                        <th className="text-right p-4 text-gray-600 font-medium">Potential Profit</th>
+                        <th className="text-right p-4 text-gray-600 font-medium">Actual Profit</th>
+                        <th className="text-right p-4 text-gray-600 font-medium">Profit Lost</th>
                       </tr>
                     </thead>
                     <tbody>
                       {customerMetrics.map((customer, index) => (
                         <tr 
                           key={customer.customer.id} 
-                          className="border-b border-gray-800 hover:bg-gray-900/50 transition-colors"
+                          className="border-b border-gray-800 hover:bg-gray-50/50 transition-colors"
                         >
-                          <td className="p-4 text-gray-300">#{index + 1}</td>
+                          <td className="p-4 text-gray-600">#{index + 1}</td>
                           <td className="p-4 text-gray-100 font-medium">{customer.customer.name}</td>
-                          <td className="p-4 text-center text-cyan-400">{customer.orderCount}</td>
-                          <td className="p-4 text-center text-purple-400">{customer.totalUnits}</td>
+                          <td className="p-4 text-center text-gray-900">{customer.orderCount}</td>
+                          <td className="p-4 text-center text-gray-900">{customer.totalUnits}</td>
                           <td className="p-4 text-right">
                             <span className={`font-semibold ${
                               customer.avgDiscount > 10 ? 'text-red-400' : 
                               customer.avgDiscount > 5 ? 'text-orange-400' : 
-                              'text-yellow-400'
+                              'text-warning-dark'
                             }`}>
                               {customer.avgDiscount.toFixed(1)}%
                             </span>
@@ -637,13 +637,13 @@ export default function DiscountAnalysisReport() {
                             <span className={`font-semibold ${
                               customer.discountRate > 75 ? 'text-red-400' : 
                               customer.discountRate > 50 ? 'text-orange-400' : 
-                              'text-yellow-400'
+                              'text-warning-dark'
                             }`}>
                               {customer.discountRate.toFixed(1)}%
                             </span>
                           </td>
-                          <td className="p-4 text-right text-blue-400">${customer.potentialProfit.toFixed(2)}</td>
-                          <td className="p-4 text-right text-green-400">${customer.actualProfit.toFixed(2)}</td>
+                          <td className="p-4 text-right text-primary-600">${customer.potentialProfit.toFixed(2)}</td>
+                          <td className="p-4 text-right text-gray-900">${customer.actualProfit.toFixed(2)}</td>
                           <td className="p-4 text-right">
                             <span className="font-semibold text-red-400">
                               ${customer.profitLost.toFixed(2)}

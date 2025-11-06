@@ -159,7 +159,7 @@ export default function ViewSalesVisitsPage() {
     return (
       <div className="p-8 max-w-6xl mx-auto">
         <div className="text-center py-12">
-          <p className="text-gray-400">Loading sales visits...</p>
+          <p className="text-gray-600">Loading sales visits...</p>
         </div>
       </div>
     );
@@ -172,13 +172,13 @@ export default function ViewSalesVisitsPage() {
         <div className="flex gap-4">
           <Link
             href="/sales-visits"
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-gray-900 rounded"
           >
             + New Visit
           </Link>
           <Link
             href="/"
-            className="text-gray-400 hover:text-white"
+            className="text-gray-600 hover:text-gray-900"
           >
             ← Back to Dashboard
           </Link>
@@ -186,19 +186,19 @@ export default function ViewSalesVisitsPage() {
       </div>
 
       {/* Sales Visits Table */}
-      <div className="bg-gray-800 rounded-lg p-6">
+      <div className="bg-white rounded-lg p-6">
         <h2 className="text-xl font-semibold mb-4">All Sales Visits ({salesVisits.length})</h2>
 
         {salesVisits.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-900">
+              <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-400">Customer</th>
-                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-400">Visit Date</th>
-                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-400">Notes Preview</th>
-                  <th className="px-4 py-2 text-center text-sm font-medium text-gray-400">Photos</th>
-                  <th className="px-4 py-2 text-center text-sm font-medium text-gray-400">Action</th>
+                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">Customer</th>
+                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">Visit Date</th>
+                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">Notes Preview</th>
+                  <th className="px-4 py-2 text-center text-sm font-medium text-gray-600">Photos</th>
+                  <th className="px-4 py-2 text-center text-sm font-medium text-gray-600">Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -211,29 +211,29 @@ export default function ViewSalesVisitsPage() {
                     : 'No notes';
 
                   return (
-                    <tr key={visit.id} className={index % 2 === 0 ? 'bg-gray-800' : 'bg-gray-750'}>
+                    <tr key={visit.id} className={index % 2 === 0 ? 'bg-white' : 'bg-white'}>
                       <td className="px-4 py-3">
                         <div>
-                          <div className="text-white font-medium">{visit.customer.name}</div>
-                          <div className="text-xs text-gray-400">{visit.customer.email || 'No email'}</div>
+                          <div className="text-gray-900 font-medium">{visit.customer.name}</div>
+                          <div className="text-xs text-gray-600">{visit.customer.email || 'No email'}</div>
                         </div>
                       </td>
                       <td className="px-4 py-3">
                         <div>
-                          <div className="text-white">
+                          <div className="text-gray-900">
                             {new Date(visit.visitDate).toLocaleDateString()}
                           </div>
-                          <div className="text-xs text-gray-400">
+                          <div className="text-xs text-gray-600">
                             {new Date(visit.visitDate).toLocaleTimeString()}
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-gray-400 text-sm max-w-md">
+                      <td className="px-4 py-3 text-gray-600 text-sm max-w-md">
                         {notesPreview}
                       </td>
                       <td className="px-4 py-3 text-center">
                         {imageCount > 0 ? (
-                          <span className="px-2 py-1 bg-blue-500/20 text-blue-400 rounded text-xs">
+                          <span className="px-2 py-1 bg-info-light text-info-dark rounded text-xs">
                             📷 {imageCount}
                           </span>
                         ) : (
@@ -243,7 +243,7 @@ export default function ViewSalesVisitsPage() {
                       <td className="px-4 py-3 text-center">
                         <button
                           onClick={() => viewVisitDetails(visit)}
-                          className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm"
+                          className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-gray-900 rounded text-sm"
                         >
                           View Details
                         </button>
@@ -256,10 +256,10 @@ export default function ViewSalesVisitsPage() {
           </div>
         ) : (
           <div className="text-center py-12">
-            <p className="text-gray-400 mb-4">No sales visits recorded yet.</p>
+            <p className="text-gray-600 mb-4">No sales visits recorded yet.</p>
             <Link
               href="/sales-visits"
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded inline-block"
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-gray-900 rounded inline-block"
             >
               Record Your First Visit
             </Link>
@@ -270,7 +270,7 @@ export default function ViewSalesVisitsPage() {
       {/* Modal for Visit Details */}
       {showModal && selectedVisit && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               {/* Modal Header */}
               <div className="flex justify-between items-center mb-6">
@@ -278,13 +278,13 @@ export default function ViewSalesVisitsPage() {
                 <div className="flex gap-3">
                   <button
                     onClick={() => generateVisitPDF(selectedVisit)}
-                    className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded text-sm"
+                    className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded text-sm"
                   >
                     📄 Export PDF
                   </button>
                   <button
                     onClick={closeModal}
-                    className="text-gray-400 hover:text-white text-2xl"
+                    className="text-gray-600 hover:text-gray-900 text-2xl"
                   >
                     ×
                   </button>
@@ -292,24 +292,24 @@ export default function ViewSalesVisitsPage() {
               </div>
 
               {/* Customer Info */}
-              <div className="bg-gray-900 rounded-lg p-4 mb-6">
+              <div className="bg-gray-50 rounded-lg p-4 mb-6">
                 <h3 className="text-lg font-semibold mb-3">Customer Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm text-gray-400">Name</label>
-                    <p className="text-white">{selectedVisit.customer.name}</p>
+                    <label className="block text-sm text-gray-600">Name</label>
+                    <p className="text-gray-900">{selectedVisit.customer.name}</p>
                   </div>
                   <div>
-                    <label className="block text-sm text-gray-400">Email</label>
-                    <p className="text-white">{selectedVisit.customer.email || 'N/A'}</p>
+                    <label className="block text-sm text-gray-600">Email</label>
+                    <p className="text-gray-900">{selectedVisit.customer.email || 'N/A'}</p>
                   </div>
                   <div>
-                    <label className="block text-sm text-gray-400">Phone</label>
-                    <p className="text-white">{selectedVisit.customer.phone || 'N/A'}</p>
+                    <label className="block text-sm text-gray-600">Phone</label>
+                    <p className="text-gray-900">{selectedVisit.customer.phone || 'N/A'}</p>
                   </div>
                   <div>
-                    <label className="block text-sm text-gray-400">Visit Date & Time</label>
-                    <p className="text-white">
+                    <label className="block text-sm text-gray-600">Visit Date & Time</label>
+                    <p className="text-gray-900">
                       {new Date(selectedVisit.visitDate).toLocaleString()}
                     </p>
                   </div>
@@ -317,16 +317,16 @@ export default function ViewSalesVisitsPage() {
               </div>
 
               {/* Notes */}
-              <div className="bg-gray-900 rounded-lg p-4 mb-6">
+              <div className="bg-gray-50 rounded-lg p-4 mb-6">
                 <h3 className="text-lg font-semibold mb-3">Visit Notes</h3>
-                <p className="text-gray-300 whitespace-pre-wrap">
+                <p className="text-gray-600 whitespace-pre-wrap">
                   {selectedVisit.notes || 'No notes recorded'}
                 </p>
               </div>
 
               {/* Photos */}
               {parseImages(selectedVisit.images).length > 0 && (
-                <div className="bg-gray-900 rounded-lg p-4 mb-6">
+                <div className="bg-gray-50 rounded-lg p-4 mb-6">
                   <h3 className="text-lg font-semibold mb-3">Photos ({parseImages(selectedVisit.images).length})</h3>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     {parseImages(selectedVisit.images).map((image, index) => (
@@ -334,13 +334,13 @@ export default function ViewSalesVisitsPage() {
                         <img
                           src={image}
                           alt={`Visit photo ${index + 1}`}
-                          className="w-full h-48 object-cover rounded border border-gray-700 cursor-pointer hover:opacity-80"
+                          className="w-full h-48 object-cover rounded border border-gray-200 cursor-pointer hover:opacity-80"
                           onClick={() => window.open(image, '_blank')}
                         />
                       </div>
                     ))}
                   </div>
-                  <p className="text-xs text-gray-400 mt-2">Click on any image to view full size</p>
+                  <p className="text-xs text-gray-600 mt-2">Click on any image to view full size</p>
                 </div>
               )}
 
@@ -348,7 +348,7 @@ export default function ViewSalesVisitsPage() {
               <div className="flex justify-end">
                 <button
                   onClick={closeModal}
-                  className="px-6 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded"
+                  className="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-300 text-gray-900 rounded"
                 >
                   Close
                 </button>

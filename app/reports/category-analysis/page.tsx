@@ -252,7 +252,7 @@ export default function CategoryAnalysis() {
   if (loading) {
     return (
       <div className="min-h-screen p-8 flex items-center justify-center">
-        <div className="text-xl text-gray-400">Loading report...</div>
+        <div className="text-xl text-gray-600">Loading report...</div>
       </div>
     )
   }
@@ -267,13 +267,13 @@ export default function CategoryAnalysis() {
           <div className="flex gap-3">
             <button
               onClick={generatePDF}
-              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+              className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors"
             >
               📄 Export PDF
             </button>
             <Link
               href="/reports"
-              className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
+              className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-300 rounded-lg transition-colors"
             >
               ← Back to Reports
             </Link>
@@ -281,13 +281,13 @@ export default function CategoryAnalysis() {
         </div>
 
         {/* Sort Options */}
-        <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 mb-8">
+        <div className="bg-white border border-gray-200 rounded-lg p-6 mb-8">
           <div className="flex gap-4 items-center">
-            <label className="text-sm font-medium text-gray-300">Sort by:</label>
+            <label className="text-sm font-medium text-gray-600">Sort by:</label>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as 'margin' | 'markup' | 'profit')}
-              className="px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-gray-100"
+              className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-900"
             >
               <option value="margin">Average Margin %</option>
               <option value="markup">Average Markup %</option>
@@ -301,11 +301,11 @@ export default function CategoryAnalysis() {
           {categoryMetrics.map((catMetric, index) => (
             <div
               key={catMetric.category.id}
-              className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden"
+              className="bg-white border border-gray-200 rounded-lg overflow-hidden"
             >
               {/* Category Header */}
               <div 
-                className="p-6 cursor-pointer hover:bg-gray-750 transition-colors"
+                className="p-6 cursor-pointer hover:bg-white transition-colors"
                 onClick={() => setExpandedCategory(
                   expandedCategory === catMetric.category.id ? null : catMetric.category.id
                 )}
@@ -314,24 +314,24 @@ export default function CategoryAnalysis() {
                   <div className="flex items-center gap-4">
                     <span className="text-2xl font-bold text-gray-500">#{index + 1}</span>
                     <div>
-                      <h3 className="text-2xl font-bold text-blue-400">{catMetric.category.name}</h3>
-                      <p className="text-sm text-gray-400 mt-1">{catMetric.productCount} products</p>
+                      <h3 className="text-2xl font-bold text-primary-600">{catMetric.category.name}</h3>
+                      <p className="text-sm text-gray-600 mt-1">{catMetric.productCount} products</p>
                     </div>
                   </div>
                   <div className="flex gap-8">
                     <div className="text-right">
-                      <p className="text-sm text-gray-400">Avg Margin</p>
-                      <p className="text-2xl font-bold text-yellow-400">{catMetric.avgMargin.toFixed(2)}%</p>
+                      <p className="text-sm text-gray-600">Avg Margin</p>
+                      <p className="text-2xl font-bold text-warning-dark">{catMetric.avgMargin.toFixed(2)}%</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm text-gray-400">Avg Markup</p>
-                      <p className="text-2xl font-bold text-purple-400">{catMetric.avgMarkup.toFixed(2)}%</p>
+                      <p className="text-sm text-gray-600">Avg Markup</p>
+                      <p className="text-2xl font-bold text-gray-900">{catMetric.avgMarkup.toFixed(2)}%</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm text-gray-400">Avg Profit/Unit</p>
-                      <p className="text-2xl font-bold text-green-400">${catMetric.avgProfitPerUnit.toFixed(2)}</p>
+                      <p className="text-sm text-gray-600">Avg Profit/Unit</p>
+                      <p className="text-2xl font-bold text-gray-900">${catMetric.avgProfitPerUnit.toFixed(2)}</p>
                     </div>
-                    <button className="text-gray-400 hover:text-gray-300">
+                    <button className="text-gray-600 hover:text-gray-600">
                       {expandedCategory === catMetric.category.id ? '▼' : '▶'}
                     </button>
                   </div>
@@ -340,7 +340,7 @@ export default function CategoryAnalysis() {
 
               {/* Expanded Details */}
               {expandedCategory === catMetric.category.id && (
-                <div className="border-t border-gray-700 p-6 bg-gray-900">
+                <div className="border-t border-gray-200 p-6 bg-gray-50">
                   <div className="grid grid-cols-2 gap-8">
                     {/* Subcategory Breakdown */}
                     <div>
@@ -350,16 +350,16 @@ export default function CategoryAnalysis() {
                       {catMetric.subcategoryBreakdown.length > 0 ? (
                         <div className="space-y-3">
                           {catMetric.subcategoryBreakdown.slice(0, 5).map(sub => (
-                            <div key={sub.subcategory.id} className="bg-gray-800 rounded-lg p-3">
+                            <div key={sub.subcategory.id} className="bg-white rounded-lg p-3">
                               <div className="flex justify-between items-center">
                                 <div>
                                   <p className="font-medium text-gray-200">{sub.subcategory.name}</p>
-                                  <p className="text-sm text-gray-400">{sub.productCount} products</p>
+                                  <p className="text-sm text-gray-600">{sub.productCount} products</p>
                                 </div>
                                 <div className="text-right">
-                                  <p className="text-sm text-yellow-400">{sub.avgMargin.toFixed(2)}% margin</p>
-                                  <p className="text-sm text-purple-400">{sub.avgMarkup.toFixed(2)}% markup</p>
-                                  <p className="text-sm font-semibold text-green-400">${sub.avgProfitPerUnit.toFixed(2)}/unit</p>
+                                  <p className="text-sm text-warning-dark">{sub.avgMargin.toFixed(2)}% margin</p>
+                                  <p className="text-sm text-gray-900">{sub.avgMarkup.toFixed(2)}% markup</p>
+                                  <p className="text-sm font-semibold text-gray-900">${sub.avgProfitPerUnit.toFixed(2)}/unit</p>
                                 </div>
                               </div>
                             </div>
@@ -372,22 +372,22 @@ export default function CategoryAnalysis() {
 
                     {/* Brand Breakdown */}
                     <div>
-                      <h4 className="text-lg font-semibold text-purple-400 mb-4">
+                      <h4 className="text-lg font-semibold text-gray-900 mb-4">
                         Top Brands
                       </h4>
                       {catMetric.brandBreakdown.length > 0 ? (
                         <div className="space-y-3">
                           {catMetric.brandBreakdown.slice(0, 5).map(brand => (
-                            <div key={brand.brand.id} className="bg-gray-800 rounded-lg p-3">
+                            <div key={brand.brand.id} className="bg-white rounded-lg p-3">
                               <div className="flex justify-between items-center">
                                 <div>
                                   <p className="font-medium text-gray-200">{brand.brand.name}</p>
-                                  <p className="text-sm text-gray-400">{brand.productCount} products</p>
+                                  <p className="text-sm text-gray-600">{brand.productCount} products</p>
                                 </div>
                                 <div className="text-right">
-                                  <p className="text-sm text-yellow-400">{brand.avgMargin.toFixed(2)}% margin</p>
-                                  <p className="text-sm text-purple-400">{brand.avgMarkup.toFixed(2)}% markup</p>
-                                  <p className="text-sm font-semibold text-green-400">${brand.avgProfitPerUnit.toFixed(2)}/unit</p>
+                                  <p className="text-sm text-warning-dark">{brand.avgMargin.toFixed(2)}% margin</p>
+                                  <p className="text-sm text-gray-900">{brand.avgMarkup.toFixed(2)}% markup</p>
+                                  <p className="text-sm font-semibold text-gray-900">${brand.avgProfitPerUnit.toFixed(2)}/unit</p>
                                 </div>
                               </div>
                             </div>

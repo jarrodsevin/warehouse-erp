@@ -267,7 +267,7 @@ export default function ProfitabilityReport() {
   if (loading) {
     return (
       <div className="min-h-screen p-8 flex items-center justify-center">
-        <div className="text-xl text-gray-400">Loading report...</div>
+        <div className="text-xl text-gray-600">Loading report...</div>
       </div>
     )
   }
@@ -282,13 +282,13 @@ export default function ProfitabilityReport() {
           <div className="flex gap-3">
             <button
               onClick={generatePDF}
-              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center gap-2"
+              className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors flex items-center gap-2"
             >
               📄 Export PDF
             </button>
             <Link
               href="/reports"
-              className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
+              className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-300 rounded-lg transition-colors"
             >
               ← Back to Reports
             </Link>
@@ -297,35 +297,35 @@ export default function ProfitabilityReport() {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-            <p className="text-sm text-gray-400 mb-2">Total Products</p>
-            <p className="text-3xl font-bold text-blue-400">{totalProducts}</p>
+          <div className="bg-white border border-gray-200 rounded-lg p-6">
+            <p className="text-sm text-gray-600 mb-2">Total Products</p>
+            <p className="text-3xl font-bold text-primary-600">{totalProducts}</p>
           </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-            <p className="text-sm text-gray-400 mb-2">Avg Profit/Unit</p>
-            <p className="text-3xl font-bold text-green-400">${avgProfit.toFixed(2)}</p>
+          <div className="bg-white border border-gray-200 rounded-lg p-6">
+            <p className="text-sm text-gray-600 mb-2">Avg Profit/Unit</p>
+            <p className="text-3xl font-bold text-gray-900">${avgProfit.toFixed(2)}</p>
           </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-            <p className="text-sm text-gray-400 mb-2">Avg Margin</p>
-            <p className="text-3xl font-bold text-yellow-400">{avgMargin.toFixed(2)}%</p>
+          <div className="bg-white border border-gray-200 rounded-lg p-6">
+            <p className="text-sm text-gray-600 mb-2">Avg Margin</p>
+            <p className="text-3xl font-bold text-warning-dark">{avgMargin.toFixed(2)}%</p>
           </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-            <p className="text-sm text-gray-400 mb-2">Range</p>
-            <p className="text-lg font-bold text-purple-400">
+          <div className="bg-white border border-gray-200 rounded-lg p-6">
+            <p className="text-sm text-gray-600 mb-2">Range</p>
+            <p className="text-lg font-bold text-gray-900">
               ${leastProfitable?.profit.toFixed(2) || '0'} - ${mostProfitable?.profit.toFixed(2) || '0'}
             </p>
           </div>
         </div>
 
         {/* Filters */}
-        <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 mb-8">
-          <h2 className="text-xl font-semibold text-gray-300 mb-4">Filters</h2>
+        <div className="bg-white border border-gray-200 rounded-lg p-6 mb-8">
+          <h2 className="text-xl font-semibold text-gray-600 mb-4">Filters</h2>
           
           {/* Category Filter */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-600 mb-2">
               Categories {selectedCategories.length > 0 && (
-                <span className="text-blue-400">({selectedCategories.length} selected)</span>
+                <span className="text-primary-600">({selectedCategories.length} selected)</span>
               )}
             </label>
             <div className="flex flex-wrap gap-2">
@@ -335,8 +335,8 @@ export default function ProfitabilityReport() {
                   onClick={() => toggleCategory(category.id)}
                   className={`px-4 py-2 rounded-lg transition-colors ${
                     selectedCategories.includes(category.id)
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                      ? 'bg-blue-500 text-gray-900'
+                      : 'bg-gray-700 text-gray-600 hover:bg-gray-600'
                   }`}
                 >
                   {category.name}
@@ -345,7 +345,7 @@ export default function ProfitabilityReport() {
               {selectedCategories.length > 0 && (
                 <button
                   onClick={() => setSelectedCategories([])}
-                  className="px-4 py-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30"
+                  className="px-4 py-2 rounded-lg bg-error-light text-error-dark hover:bg-red-500/30"
                 >
                   Clear
                 </button>
@@ -355,7 +355,7 @@ export default function ProfitabilityReport() {
 
           {/* Subcategory Filter */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-600 mb-2">
               Subcategories {selectedSubcategories.length > 0 && (
                 <span className="text-orange-400">({selectedSubcategories.length} selected)</span>
               )}
@@ -367,8 +367,8 @@ export default function ProfitabilityReport() {
                   onClick={() => toggleSubcategory(subcategory.id)}
                   className={`px-4 py-2 rounded-lg transition-colors ${
                     selectedSubcategories.includes(subcategory.id)
-                      ? 'bg-orange-500 text-white'
-                      : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                      ? 'bg-orange-500 text-gray-900'
+                      : 'bg-gray-700 text-gray-600 hover:bg-gray-600'
                   }`}
                 >
                   {subcategory.name}
@@ -377,7 +377,7 @@ export default function ProfitabilityReport() {
               {selectedSubcategories.length > 0 && (
                 <button
                   onClick={() => setSelectedSubcategories([])}
-                  className="px-4 py-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30"
+                  className="px-4 py-2 rounded-lg bg-error-light text-error-dark hover:bg-red-500/30"
                 >
                   Clear
                 </button>
@@ -387,9 +387,9 @@ export default function ProfitabilityReport() {
 
           {/* Brand Filter */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-600 mb-2">
               Brands {selectedBrands.length > 0 && (
-                <span className="text-purple-400">({selectedBrands.length} selected)</span>
+                <span className="text-gray-900">({selectedBrands.length} selected)</span>
               )}
             </label>
             <div className="flex flex-wrap gap-2">
@@ -399,8 +399,8 @@ export default function ProfitabilityReport() {
                   onClick={() => toggleBrand(brand.id)}
                   className={`px-4 py-2 rounded-lg transition-colors ${
                     selectedBrands.includes(brand.id)
-                      ? 'bg-purple-500 text-white'
-                      : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                      ? 'bg-purple-500 text-gray-900'
+                      : 'bg-gray-700 text-gray-600 hover:bg-gray-600'
                   }`}
                 >
                   {brand.name}
@@ -409,7 +409,7 @@ export default function ProfitabilityReport() {
               {selectedBrands.length > 0 && (
                 <button
                   onClick={() => setSelectedBrands([])}
-                  className="px-4 py-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30"
+                  className="px-4 py-2 rounded-lg bg-error-light text-error-dark hover:bg-red-500/30"
                 >
                   Clear
                 </button>
@@ -419,11 +419,11 @@ export default function ProfitabilityReport() {
 
           {/* Sort Options */}
           <div className="flex gap-4 items-center">
-            <label className="text-sm font-medium text-gray-300">Sort by:</label>
+            <label className="text-sm font-medium text-gray-600">Sort by:</label>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as 'profit' | 'margin' | 'markup')}
-              className="px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-gray-100"
+              className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-900"
             >
               <option value="profit">Profit per Unit</option>
               <option value="margin">Margin %</option>
@@ -431,7 +431,7 @@ export default function ProfitabilityReport() {
             </select>
             <button
               onClick={() => setSortOrder(prev => prev === 'desc' ? 'asc' : 'desc')}
-              className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
+              className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-300 rounded-lg transition-colors"
             >
               {sortOrder === 'desc' ? '↓ Highest First' : '↑ Lowest First'}
             </button>
@@ -440,51 +440,51 @@ export default function ProfitabilityReport() {
 
         {/* Results Table */}
         {filteredProducts.length === 0 ? (
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-8 text-center">
-            <p className="text-gray-400">No products match your filter criteria.</p>
+          <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
+            <p className="text-gray-600">No products match your filter criteria.</p>
           </div>
         ) : (
-          <div className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden">
+          <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-900 border-b border-gray-700">
+                <thead className="bg-gray-50 border-b border-gray-200">
                   <tr>
-                    <th className="text-left p-4 text-gray-400 font-medium">Rank</th>
-                    <th className="text-left p-4 text-gray-400 font-medium">SKU</th>
-                    <th className="text-left p-4 text-gray-400 font-medium">Product Name</th>
-                    <th className="text-left p-4 text-gray-400 font-medium">Brand</th>
-                    <th className="text-left p-4 text-gray-400 font-medium">Category</th>
-                    <th className="text-left p-4 text-gray-400 font-medium">Subcategory</th>
-                    <th className="text-right p-4 text-gray-400 font-medium">Cost</th>
-                    <th className="text-right p-4 text-gray-400 font-medium">Retail</th>
-                    <th className="text-right p-4 text-gray-400 font-medium">Profit</th>
-                    <th className="text-right p-4 text-gray-400 font-medium">Margin %</th>
-                    <th className="text-right p-4 text-gray-400 font-medium">Markup %</th>
+                    <th className="text-left p-4 text-gray-600 font-medium">Rank</th>
+                    <th className="text-left p-4 text-gray-600 font-medium">SKU</th>
+                    <th className="text-left p-4 text-gray-600 font-medium">Product Name</th>
+                    <th className="text-left p-4 text-gray-600 font-medium">Brand</th>
+                    <th className="text-left p-4 text-gray-600 font-medium">Category</th>
+                    <th className="text-left p-4 text-gray-600 font-medium">Subcategory</th>
+                    <th className="text-right p-4 text-gray-600 font-medium">Cost</th>
+                    <th className="text-right p-4 text-gray-600 font-medium">Retail</th>
+                    <th className="text-right p-4 text-gray-600 font-medium">Profit</th>
+                    <th className="text-right p-4 text-gray-600 font-medium">Margin %</th>
+                    <th className="text-right p-4 text-gray-600 font-medium">Markup %</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredProducts.map((product, index) => (
                     <tr 
                       key={product.id} 
-                      className="border-b border-gray-800 hover:bg-gray-900/50 transition-colors"
+                      className="border-b border-gray-800 hover:bg-gray-50/50 transition-colors"
                     >
-                      <td className="p-4 text-gray-300">#{index + 1}</td>
-                      <td className="p-4 text-gray-300 font-mono text-sm">{product.sku}</td>
+                      <td className="p-4 text-gray-600">#{index + 1}</td>
+                      <td className="p-4 text-gray-600 font-mono text-sm">{product.sku}</td>
                       <td className="p-4 text-gray-100 font-medium">{product.name}</td>
-                      <td className="p-4 text-gray-400">{product.brand?.name || '-'}</td>
-                      <td className="p-4 text-gray-400">{product.category.name}</td>
-                      <td className="p-4 text-gray-400">{product.subcategory?.name || '-'}</td>
-                      <td className="p-4 text-right text-green-400">${product.cost.toFixed(2)}</td>
-                      <td className="p-4 text-right text-blue-400">${product.retailPrice.toFixed(2)}</td>
+                      <td className="p-4 text-gray-600">{product.brand?.name || '-'}</td>
+                      <td className="p-4 text-gray-600">{product.category.name}</td>
+                      <td className="p-4 text-gray-600">{product.subcategory?.name || '-'}</td>
+                      <td className="p-4 text-right text-gray-900">${product.cost.toFixed(2)}</td>
+                      <td className="p-4 text-right text-primary-600">${product.retailPrice.toFixed(2)}</td>
                       <td className="p-4 text-right">
                         <span className={`font-semibold ${
-                          product.profit > avgProfit ? 'text-green-400' : 'text-yellow-400'
+                          product.profit > avgProfit ? 'text-gray-900' : 'text-warning-dark'
                         }`}>
                           ${product.profit.toFixed(2)}
                         </span>
                       </td>
-                      <td className="p-4 text-right text-yellow-400">{product.margin.toFixed(2)}%</td>
-                      <td className="p-4 text-right text-purple-400">{product.markup.toFixed(2)}%</td>
+                      <td className="p-4 text-right text-warning-dark">{product.margin.toFixed(2)}%</td>
+                      <td className="p-4 text-right text-gray-900">{product.markup.toFixed(2)}%</td>
                     </tr>
                   ))}
                 </tbody>

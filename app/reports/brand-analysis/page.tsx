@@ -250,7 +250,7 @@ export default function BrandAnalysis() {
   if (loading) {
     return (
       <div className="min-h-screen p-8 flex items-center justify-center">
-        <div className="text-xl text-gray-400">Loading report...</div>
+        <div className="text-xl text-gray-600">Loading report...</div>
       </div>
     )
   }
@@ -259,19 +259,19 @@ export default function BrandAnalysis() {
     <div className="min-h-screen p-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold text-gray-900">
             Brand Profitability Analysis
           </h1>
           <div className="flex gap-3">
             <button
               onClick={generatePDF}
-              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+              className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors"
             >
               📄 Export PDF
             </button>
             <Link
               href="/reports"
-              className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
+              className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-300 rounded-lg transition-colors"
             >
               ← Back to Reports
             </Link>
@@ -279,13 +279,13 @@ export default function BrandAnalysis() {
         </div>
 
         {/* Sort Options */}
-        <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 mb-8">
+        <div className="bg-white border border-gray-200 rounded-lg p-6 mb-8">
           <div className="flex gap-4 items-center">
-            <label className="text-sm font-medium text-gray-300">Sort by:</label>
+            <label className="text-sm font-medium text-gray-600">Sort by:</label>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as 'margin' | 'markup' | 'profit')}
-              className="px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-gray-100"
+              className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-900"
             >
               <option value="margin">Average Margin %</option>
               <option value="markup">Average Markup %</option>
@@ -299,11 +299,11 @@ export default function BrandAnalysis() {
           {brandMetrics.map((brandMetric, index) => (
             <div
               key={brandMetric.brand.id}
-              className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden"
+              className="bg-white border border-gray-200 rounded-lg overflow-hidden"
             >
               {/* Brand Header */}
               <div 
-                className="p-6 cursor-pointer hover:bg-gray-750 transition-colors"
+                className="p-6 cursor-pointer hover:bg-white transition-colors"
                 onClick={() => setExpandedBrand(
                   expandedBrand === brandMetric.brand.id ? null : brandMetric.brand.id
                 )}
@@ -312,24 +312,24 @@ export default function BrandAnalysis() {
                   <div className="flex items-center gap-4">
                     <span className="text-2xl font-bold text-gray-500">#{index + 1}</span>
                     <div>
-                      <h3 className="text-2xl font-bold text-purple-400">{brandMetric.brand.name}</h3>
-                      <p className="text-sm text-gray-400 mt-1">{brandMetric.productCount} products</p>
+                      <h3 className="text-2xl font-bold text-gray-900">{brandMetric.brand.name}</h3>
+                      <p className="text-sm text-gray-600 mt-1">{brandMetric.productCount} products</p>
                     </div>
                   </div>
                   <div className="flex gap-8">
                     <div className="text-right">
-                      <p className="text-sm text-gray-400">Avg Margin</p>
-                      <p className="text-2xl font-bold text-yellow-400">{brandMetric.avgMargin.toFixed(2)}%</p>
+                      <p className="text-sm text-gray-600">Avg Margin</p>
+                      <p className="text-2xl font-bold text-warning-dark">{brandMetric.avgMargin.toFixed(2)}%</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm text-gray-400">Avg Markup</p>
-                      <p className="text-2xl font-bold text-purple-400">{brandMetric.avgMarkup.toFixed(2)}%</p>
+                      <p className="text-sm text-gray-600">Avg Markup</p>
+                      <p className="text-2xl font-bold text-gray-900">{brandMetric.avgMarkup.toFixed(2)}%</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm text-gray-400">Avg Profit/Unit</p>
-                      <p className="text-2xl font-bold text-green-400">${brandMetric.avgProfitPerUnit.toFixed(2)}</p>
+                      <p className="text-sm text-gray-600">Avg Profit/Unit</p>
+                      <p className="text-2xl font-bold text-gray-900">${brandMetric.avgProfitPerUnit.toFixed(2)}</p>
                     </div>
-                    <button className="text-gray-400 hover:text-gray-300">
+                    <button className="text-gray-600 hover:text-gray-600">
                       {expandedBrand === brandMetric.brand.id ? '▼' : '▶'}
                     </button>
                   </div>
@@ -338,26 +338,26 @@ export default function BrandAnalysis() {
 
               {/* Expanded Details */}
               {expandedBrand === brandMetric.brand.id && (
-                <div className="border-t border-gray-700 p-6 bg-gray-900">
+                <div className="border-t border-gray-200 p-6 bg-gray-50">
                   <div className="grid grid-cols-2 gap-8 mb-8">
                     {/* Category Breakdown */}
                     <div>
-                      <h4 className="text-lg font-semibold text-blue-400 mb-4">
+                      <h4 className="text-lg font-semibold text-primary-600 mb-4">
                         Top Categories
                       </h4>
                       {brandMetric.categoryBreakdown.length > 0 ? (
                         <div className="space-y-3">
                           {brandMetric.categoryBreakdown.slice(0, 5).map(cat => (
-                            <div key={cat.category.id} className="bg-gray-800 rounded-lg p-3">
+                            <div key={cat.category.id} className="bg-white rounded-lg p-3">
                               <div className="flex justify-between items-center">
                                 <div>
                                   <p className="font-medium text-gray-200">{cat.category.name}</p>
-                                  <p className="text-sm text-gray-400">{cat.productCount} products</p>
+                                  <p className="text-sm text-gray-600">{cat.productCount} products</p>
                                 </div>
                                 <div className="text-right">
-                                  <p className="text-sm text-yellow-400">{cat.avgMargin.toFixed(2)}% margin</p>
-                                  <p className="text-sm text-purple-400">{cat.avgMarkup.toFixed(2)}% markup</p>
-                                  <p className="text-sm font-semibold text-green-400">${cat.avgProfitPerUnit.toFixed(2)}/unit</p>
+                                  <p className="text-sm text-warning-dark">{cat.avgMargin.toFixed(2)}% margin</p>
+                                  <p className="text-sm text-gray-900">{cat.avgMarkup.toFixed(2)}% markup</p>
+                                  <p className="text-sm font-semibold text-gray-900">${cat.avgProfitPerUnit.toFixed(2)}/unit</p>
                                 </div>
                               </div>
                             </div>
@@ -376,16 +376,16 @@ export default function BrandAnalysis() {
                       {brandMetric.subcategoryBreakdown.length > 0 ? (
                         <div className="space-y-3">
                           {brandMetric.subcategoryBreakdown.slice(0, 5).map(sub => (
-                            <div key={sub.subcategory.id} className="bg-gray-800 rounded-lg p-3">
+                            <div key={sub.subcategory.id} className="bg-white rounded-lg p-3">
                               <div className="flex justify-between items-center">
                                 <div>
                                   <p className="font-medium text-gray-200">{sub.subcategory.name}</p>
-                                  <p className="text-sm text-gray-400">{sub.productCount} products</p>
+                                  <p className="text-sm text-gray-600">{sub.productCount} products</p>
                                 </div>
                                 <div className="text-right">
-                                  <p className="text-sm text-yellow-400">{sub.avgMargin.toFixed(2)}% margin</p>
-                                  <p className="text-sm text-purple-400">{sub.avgMarkup.toFixed(2)}% markup</p>
-                                  <p className="text-sm font-semibold text-green-400">${sub.avgProfitPerUnit.toFixed(2)}/unit</p>
+                                  <p className="text-sm text-warning-dark">{sub.avgMargin.toFixed(2)}% margin</p>
+                                  <p className="text-sm text-gray-900">{sub.avgMarkup.toFixed(2)}% markup</p>
+                                  <p className="text-sm font-semibold text-gray-900">${sub.avgProfitPerUnit.toFixed(2)}/unit</p>
                                 </div>
                               </div>
                             </div>
@@ -399,7 +399,7 @@ export default function BrandAnalysis() {
 
                   {/* Products List */}
                   <div>
-                    <h4 className="text-lg font-semibold text-green-400 mb-4">
+                    <h4 className="text-lg font-semibold text-gray-900 mb-4">
                       Products
                     </h4>
                     <div className="space-y-3">
@@ -415,16 +415,16 @@ export default function BrandAnalysis() {
                           const profitPerUnit = product.retailPrice - product.cost
 
                           return (
-                            <div key={product.id} className="bg-gray-800 rounded-lg p-3">
+                            <div key={product.id} className="bg-white rounded-lg p-3">
                               <div className="flex justify-between items-center">
                                 <div>
                                   <p className="font-medium text-gray-200">{product.name}</p>
-                                  <p className="text-sm text-gray-400">{product.sku}</p>
+                                  <p className="text-sm text-gray-600">{product.sku}</p>
                                 </div>
                                 <div className="text-right">
-                                  <p className="text-sm text-yellow-400">{margin.toFixed(2)}% margin</p>
-                                  <p className="text-sm text-purple-400">{markup.toFixed(2)}% markup</p>
-                                  <p className="text-sm font-semibold text-green-400">${profitPerUnit.toFixed(2)}/unit</p>
+                                  <p className="text-sm text-warning-dark">{margin.toFixed(2)}% margin</p>
+                                  <p className="text-sm text-gray-900">{markup.toFixed(2)}% markup</p>
+                                  <p className="text-sm font-semibold text-gray-900">${profitPerUnit.toFixed(2)}/unit</p>
                                 </div>
                               </div>
                             </div>

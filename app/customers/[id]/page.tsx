@@ -62,13 +62,13 @@ export default function CustomerDetailsPage() {
         <div className="flex gap-4">
           <Link
             href={`/customers/edit/${customer.id}`}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+            className="bg-blue-600 hover:bg-blue-700 text-gray-900 px-4 py-2 rounded"
           >
             Edit Customer
           </Link>
           <Link
             href="/customers"
-            className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded"
+            className="bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-300 text-gray-900 px-4 py-2 rounded"
           >
             Back to List
           </Link>
@@ -78,9 +78,9 @@ export default function CustomerDetailsPage() {
       {/* Status Badge */}
       <div className="mb-6">
         <span className={`px-3 py-1 text-sm rounded capitalize ${
-          customer.status === 'active' ? 'bg-green-500/20 text-green-400 border border-green-500' :
-          customer.status === 'inactive' ? 'bg-gray-500/20 text-gray-400 border border-gray-500' :
-          'bg-red-500/20 text-red-400 border border-red-500'
+          customer.status === 'active' ? 'bg-success-light text-success-dark border border-green-500' :
+          customer.status === 'inactive' ? 'bg-gray-500/20 text-gray-600 border border-gray-500' :
+          'bg-error-light text-error-dark border border-red-500'
         }`}>
           {customer.status}
         </span>
@@ -90,59 +90,59 @@ export default function CustomerDetailsPage() {
         {/* Main Information Card */}
         <div className="lg:col-span-2 space-y-6">
           {/* Contact Information */}
-          <div className="bg-gray-800 rounded-lg p-6">
+          <div className="bg-white rounded-lg p-6">
             <h2 className="text-xl font-semibold mb-4">Contact Information</h2>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm text-gray-400">Email</label>
-                <p className="text-white">{customer.email || 'N/A'}</p>
+                <label className="text-sm text-gray-600">Email</label>
+                <p className="text-gray-900">{customer.email || 'N/A'}</p>
               </div>
               <div>
-                <label className="text-sm text-gray-400">Phone</label>
-                <p className="text-white">{customer.phone || 'N/A'}</p>
+                <label className="text-sm text-gray-600">Phone</label>
+                <p className="text-gray-900">{customer.phone || 'N/A'}</p>
               </div>
               <div className="col-span-2">
-                <label className="text-sm text-gray-400">Address</label>
-                <p className="text-white">{customer.address || 'N/A'}</p>
+                <label className="text-sm text-gray-600">Address</label>
+                <p className="text-gray-900">{customer.address || 'N/A'}</p>
               </div>
             </div>
           </div>
 
           {/* Categorization */}
-          <div className="bg-gray-800 rounded-lg p-6">
+          <div className="bg-white rounded-lg p-6">
             <h2 className="text-xl font-semibold mb-4">Categorization</h2>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm text-gray-400">Customer Group</label>
-                <p className="text-white font-medium">{customer.customerGroup}</p>
+                <label className="text-sm text-gray-600">Customer Group</label>
+                <p className="text-gray-900 font-medium">{customer.customerGroup}</p>
               </div>
               <div>
-                <label className="text-sm text-gray-400">Customer Category</label>
-                <p className="text-white font-medium">{customer.customerCategory}</p>
+                <label className="text-sm text-gray-600">Customer Category</label>
+                <p className="text-gray-900 font-medium">{customer.customerCategory}</p>
               </div>
             </div>
           </div>
 
           {/* Financial Information */}
-          <div className="bg-gray-800 rounded-lg p-6">
+          <div className="bg-white rounded-lg p-6">
             <h2 className="text-xl font-semibold mb-4">Financial Information</h2>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm text-gray-400">Credit Limit</label>
-                <p className="text-2xl font-bold text-white">
+                <label className="text-sm text-gray-600">Credit Limit</label>
+                <p className="text-2xl font-bold text-gray-900">
                   ${customer.creditLimit.toLocaleString()}
                 </p>
               </div>
               <div>
-                <label className="text-sm text-gray-400">Current Balance</label>
+                <label className="text-sm text-gray-600">Current Balance</label>
                 <p className={`text-2xl font-bold ${
-                  customer.currentBalance > 0 ? 'text-yellow-400' : 'text-green-400'
+                  customer.currentBalance > 0 ? 'text-warning-dark' : 'text-gray-900'
                 }`}>
                   ${customer.currentBalance.toLocaleString()}
                 </p>
               </div>
               <div className="col-span-2">
-                <label className="text-sm text-gray-400 mb-2 block">Credit Usage</label>
+                <label className="text-sm text-gray-600 mb-2 block">Credit Usage</label>
                 <div className="w-full bg-gray-700 rounded-full h-4">
                   <div
                     className={`h-4 rounded-full ${
@@ -153,22 +153,22 @@ export default function CustomerDetailsPage() {
                     style={{ width: `${Math.min(creditUsagePercent, 100)}%` }}
                   ></div>
                 </div>
-                <p className="text-sm text-gray-400 mt-1">
+                <p className="text-sm text-gray-600 mt-1">
                   {creditUsagePercent.toFixed(1)}% of credit limit used
                 </p>
               </div>
               <div>
-                <label className="text-sm text-gray-400">Payment Terms</label>
-                <p className="text-white">{customer.paymentTerms || 'N/A'}</p>
+                <label className="text-sm text-gray-600">Payment Terms</label>
+                <p className="text-gray-900">{customer.paymentTerms || 'N/A'}</p>
               </div>
             </div>
           </div>
 
           {/* Notes */}
           {customer.notes && (
-            <div className="bg-gray-800 rounded-lg p-6">
+            <div className="bg-white rounded-lg p-6">
               <h2 className="text-xl font-semibold mb-4">Notes</h2>
-              <p className="text-gray-300 whitespace-pre-wrap">{customer.notes}</p>
+              <p className="text-gray-600 whitespace-pre-wrap">{customer.notes}</p>
             </div>
           )}
         </div>
@@ -176,43 +176,43 @@ export default function CustomerDetailsPage() {
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Activity Summary */}
-          <div className="bg-gray-800 rounded-lg p-6">
+          <div className="bg-white rounded-lg p-6">
             <h2 className="text-xl font-semibold mb-4">Activity Summary</h2>
             <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <span className="text-gray-400">Total Sales Orders</span>
-                <span className="text-2xl font-bold text-white">{customer._count.salesOrders}</span>
+                <span className="text-gray-600">Total Sales Orders</span>
+                <span className="text-2xl font-bold text-gray-900">{customer._count.salesOrders}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-400">Total Payments</span>
-                <span className="text-2xl font-bold text-white">{customer._count.payments}</span>
+                <span className="text-gray-600">Total Payments</span>
+                <span className="text-2xl font-bold text-gray-900">{customer._count.payments}</span>
               </div>
             </div>
           </div>
 
           {/* Quick Actions */}
-          <div className="bg-gray-800 rounded-lg p-6">
+          <div className="bg-white rounded-lg p-6">
             <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
             <div className="space-y-2">
               <Link
                 href={`/sales-orders/create?customerId=${customer.id}`}
-                className="block w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-left"
+                className="block w-full bg-blue-600 hover:bg-blue-700 text-gray-900 px-4 py-2 rounded text-left"
               >
                 Create Sales Order
               </Link>
-              <button className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-left">
+              <button className="w-full bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded text-left">
                 Record Payment
               </button>
             </div>
           </div>
 
           {/* Account Info */}
-          <div className="bg-gray-800 rounded-lg p-6">
+          <div className="bg-white rounded-lg p-6">
             <h2 className="text-xl font-semibold mb-4">Account Info</h2>
             <div className="space-y-2 text-sm">
               <div>
-                <span className="text-gray-400">Customer Since</span>
-                <p className="text-white">
+                <span className="text-gray-600">Customer Since</span>
+                <p className="text-gray-900">
                   {new Date(customer.createdAt).toLocaleDateString()}
                 </p>
               </div>

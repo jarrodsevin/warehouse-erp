@@ -15,10 +15,10 @@ export default async function EditBrand({ params }: { params: Promise<{ id: stri
   }
 
   return (
-    <div className="min-h-screen py-16 px-8">
+    <div className="min-h-screen p-8">
       <div className="max-w-2xl mx-auto">
         <div className="mb-8">
-          <Link href="/admin/brands/update" className="text-blue-400 hover:text-blue-300">
+          <Link href="/admin/brands/update" className="text-primary-600 hover:text-primary-700">
             ← Back to Brands List
           </Link>
         </div>
@@ -29,7 +29,7 @@ export default async function EditBrand({ params }: { params: Promise<{ id: stri
           </h1>
         </div>
 
-        <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 shadow-[0_0_15px_rgba(59,130,246,0.3)]">
+        <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-[0_0_15px_rgba(59,130,246,0.3)]">
           <BrandForm brand={brand} />
         </div>
       </div>

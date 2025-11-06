@@ -112,13 +112,13 @@ export default function EditCustomerPage() {
         <h1 className="text-3xl font-bold">Edit Customer</h1>
         <Link
           href="/customers"
-          className="text-gray-400 hover:text-white"
+          className="text-gray-600 hover:text-gray-900"
         >
           ← Back to Customers
         </Link>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-gray-800 rounded-lg p-6 space-y-6">
+      <form onSubmit={handleSubmit} className="bg-white rounded-lg p-6 space-y-6">
         {/* Basic Information */}
         <div>
           <h2 className="text-xl font-semibold mb-4">Basic Information</h2>
@@ -133,7 +133,7 @@ export default function EditCustomerPage() {
                 value={formData.name}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded text-white"
+                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded text-gray-900"
               />
             </div>
 
@@ -144,7 +144,7 @@ export default function EditCustomerPage() {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded text-white"
+                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded text-gray-900"
               />
             </div>
 
@@ -155,7 +155,7 @@ export default function EditCustomerPage() {
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded text-white"
+                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded text-gray-900"
               />
             </div>
 
@@ -165,7 +165,7 @@ export default function EditCustomerPage() {
                 name="status"
                 value={formData.status}
                 onChange={handleChange}
-                className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded text-white"
+                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded text-gray-900"
               >
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
@@ -180,7 +180,7 @@ export default function EditCustomerPage() {
                 name="address"
                 value={formData.address}
                 onChange={handleChange}
-                className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded text-white"
+                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded text-gray-900"
               />
             </div>
           </div>
@@ -199,7 +199,7 @@ export default function EditCustomerPage() {
                 value={formData.customerGroup}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded text-white"
+                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded text-gray-900"
               >
                 {customerGroups.map(group => (
                   <option key={group} value={group}>{group}</option>
@@ -216,7 +216,7 @@ export default function EditCustomerPage() {
                 value={formData.customerCategory}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded text-white"
+                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded text-gray-900"
               >
                 {customerCategories.map(category => (
                   <option key={category} value={category}>{category}</option>
@@ -242,7 +242,7 @@ export default function EditCustomerPage() {
                 required
                 min="0"
                 step="0.01"
-                className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded text-white"
+                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded text-gray-900"
               />
             </div>
 
@@ -254,7 +254,7 @@ export default function EditCustomerPage() {
                 value={formData.paymentTerms}
                 onChange={handleChange}
                 placeholder="e.g., Net 30, Net 60"
-                className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded text-white"
+                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded text-gray-900"
               />
             </div>
           </div>
@@ -268,7 +268,7 @@ export default function EditCustomerPage() {
             value={formData.notes}
             onChange={handleChange}
             rows={4}
-            className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded text-white"
+            className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded text-gray-900"
           />
         </div>
 
@@ -276,14 +276,14 @@ export default function EditCustomerPage() {
         <div className="flex justify-end gap-4">
           <Link
             href="/customers"
-            className="px-6 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded"
+            className="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-300 text-gray-900 rounded"
           >
             Cancel
           </Link>
           <button
             type="submit"
             disabled={saving}
-            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded disabled:bg-gray-600"
+            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-gray-900 rounded disabled:bg-gray-600"
           >
             {saving ? 'Saving...' : 'Save Changes'}
           </button>
