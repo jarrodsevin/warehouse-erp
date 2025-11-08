@@ -18,8 +18,8 @@ export const prisma =
   (() => {
     const connectionString = { connectionString: databaseUrl };
     const pool = new Pool(connectionString);
-    const adapter = new PrismaNeon(pool);
-    return new PrismaClient({ adapter: adapter as any });
+    const adapter = new PrismaNeon(pool as any);
+    return new PrismaClient({ adapter });
   })();
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
