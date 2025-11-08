@@ -1,6 +1,8 @@
 import PageLayout from '@/app/components/PageLayout'
 import { prisma } from '@/prisma/prisma.config'
 
+export const dynamic = 'force-dynamic';
+
 export default async function ViewPurchaseOrdersPage() {
   const purchaseOrders = await prisma.purchaseOrder.findMany({
     include: {

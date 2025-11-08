@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import PageLayout from '@/app/components/PageLayout'
 
+export const dynamic = 'force-dynamic';
+
 export default function ViewSalesOrdersPage() {
   const [salesOrders, setSalesOrders] = useState([])
   const [loading, setLoading] = useState(true)

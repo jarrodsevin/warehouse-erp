@@ -2,6 +2,8 @@ import { prisma } from '@/lib/prisma'
 import PageLayout from '@/app/components/PageLayout'
 import Link from 'next/link'
 
+export const dynamic = 'force-dynamic';
+
 export default async function ViewVendorsPage() {
   const vendors = await prisma.vendor.findMany({
     orderBy: { name: 'asc' }

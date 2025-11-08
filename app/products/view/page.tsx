@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import ChangeLogTable from '@/app/components/ChangeLogTable'
 
+export const dynamic = 'force-dynamic';
+
 type Category = {
   id: string
   name: string
