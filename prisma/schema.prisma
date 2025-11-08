@@ -1,15 +1,12 @@
 generator client {
   provider = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
-
-// ... rest of your models stay the same
-
 
 model Category {
   id        String    @id @default(cuid())
@@ -54,21 +51,16 @@ model Customer {
   email             String?
   phone             String?
   address           String?
-
   customerGroup     String
   customerCategory  String
-
   creditLimit       Float         @default(0)
   currentBalance    Float         @default(0)
   paymentTerms      String?
-
   status            String        @default("active")
   notes             String?
-
   salesOrders       SalesOrder[]
   payments          Payment[]
-  salesVisits   SalesVisit[]
-
+  salesVisits       SalesVisit[]
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
 }
@@ -80,7 +72,7 @@ model Product {
   description       String?
   cost              Float
   retailPrice       Float
-  floorPrice        Float?        // Minimum selling price (cost * 1.15)
+  floorPrice        Float?
   categoryId        String
   category          Category      @relation(fields: [categoryId], references: [id])
   subcategoryId     String?
@@ -164,70 +156,54 @@ model PurchaseOrderItem {
 model SalesOrder {
   id                String            @id @default(cuid())
   soNumber          String            @unique
-
   customerId        String
   customer          Customer          @relation(fields: [customerId], references: [id])
-
   orderDate         DateTime          @default(now())
-
   status            String            @default("fulfilled")
-
   subtotal          Float
   total             Float
-
   notes             String?
-
-  // NEW: Order Acceptance Fields
   orderAccepted     Boolean           @default(false)
   printedName       String?
   signature         String?           @db.Text
   acceptedAt        DateTime?
-
   items             SalesOrderItem[]
-
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
 }
 
 model SalesOrderItem {
   id                String        @id @default(cuid())
-
   salesOrderId      String
   salesOrder        SalesOrder    @relation(fields: [salesOrderId], references: [id], onDelete: Cascade)
-
   productId         String
   product           Product       @relation(fields: [productId], references: [id])
-
   quantity          Int
   unitPrice         Float
   lineTotal         Float
-
   createdAt         DateTime      @default(now())
 }
 
 model Payment {
   id                String        @id @default(cuid())
-
   customerId        String
   customer          Customer      @relation(fields: [customerId], references: [id])
-
   amount            Float
   paymentDate       DateTime      @default(now())
   paymentMethod     String?
   referenceNumber   String?
-
   notes             String?
-
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
 }
+
 model SalesVisit {
   id          String   @id @default(cuid())
   customerId  String
   customer    Customer @relation(fields: [customerId], references: [id])
   visitDate   DateTime @default(now())
   notes       String?  @db.Text
-  images      String?  @db.Text  // Stores JSON array of base64 images
+  images      String?  @db.Text
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
