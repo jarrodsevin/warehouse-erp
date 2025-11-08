@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
-import { PrismaNeon } from '@prisma/adapter-neon';
 import { Pool } from '@neondatabase/serverless';
+import { PrismaNeon } from '@prisma/adapter-neon';
 
 const databaseUrl = process.env.DATABASE_URL;
 
@@ -13,10 +13,13 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
-const pool = new Pool({ connectionString: databaseUrl });
-const adapter = new PrismaNeon(pool);
-
 export const prisma =
-  globalForPrisma.prisma ?? new PrismaClient({ adapter });
+  globalForPrisma.prisma ??
+  (() => {
+    const connectionString = { connectionString: databaseUrl };
+    const pool = new Pool(connectionString);
+    const adapter = new PrismaNeon(pool);
+    return new PrismaClient({ adapter: adapter as any });
+  })();
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
