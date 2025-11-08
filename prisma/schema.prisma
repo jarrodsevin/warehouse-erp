@@ -7,11 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
 model Category {
   id        String    @id @default(cuid())
   name      String    @unique
@@ -62,11 +57,11 @@ model Customer {
   paymentTerms     String?
   status           String       @default("active")
   notes            String?
+  salesOrders      SalesOrder[]
+  payments         Payment[]
+  salesVisits      SalesVisit[]
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
-  payments         Payment[]
-  salesOrders      SalesOrder[]
-  salesVisits      SalesVisit[]
 }
 
 model Product {
@@ -78,26 +73,27 @@ model Product {
   retailPrice        Float
   floorPrice         Float?
   categoryId         String
+  category           Category            @relation(fields: [categoryId], references: [id])
   subcategoryId      String?
+  subcategory        Subcategory?        @relation(fields: [subcategoryId], references: [id])
   brandId            String?
+  brand              Brand?              @relation(fields: [brandId], references: [id])
   unitOfMeasurement  String?
   packageSize        Float?
   casePackCount      Int?
   storageType        String?
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
-  inventory          Inventory?
-  brand              Brand?              @relation(fields: [brandId], references: [id])
-  category           Category            @relation(fields: [categoryId], references: [id])
-  subcategory        Subcategory?        @relation(fields: [subcategoryId], references: [id])
-  changeLogs         ProductChangeLog[]
   purchaseOrderItems PurchaseOrderItem[]
   salesOrderItems    SalesOrderItem[]
+  changeLogs         ProductChangeLog[]
+  inventory          Inventory?
 }
 
 model ProductChangeLog {
   id             String   @id @default(cuid())
   productId      String
+  product        Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   changeType     String
   oldCost        Float?
   newCost        Float?
@@ -108,7 +104,6 @@ model ProductChangeLog {
   oldDescription String?
   newDescription String?
   changedAt      DateTime @default(now())
-  product        Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@index([productId])
   @@index([changedAt])
@@ -117,6 +112,7 @@ model ProductChangeLog {
 model Inventory {
   id              String    @id @default(cuid())
   productId       String    @unique
+  product         Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
   quantityOnHand  Int       @default(0)
   reorderLevel    Int       @default(0)
   reorderQuantity Int       @default(0)
@@ -125,7 +121,6 @@ model Inventory {
   lastRestocked   DateTime?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
-  product         Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@index([productId])
 }
@@ -134,63 +129,64 @@ model PurchaseOrder {
   id           String              @id @default(cuid())
   poNumber     String              @unique
   vendorId     String
+  vendor       Vendor              @relation(fields: [vendorId], references: [id])
   orderDate    DateTime            @default(now())
   expectedDate DateTime?
   receivedDate DateTime?
   status       String              @default("pending")
   notes        String?
+  items        PurchaseOrderItem[]
   createdAt    DateTime            @default(now())
   updatedAt    DateTime            @updatedAt
-  vendor       Vendor              @relation(fields: [vendorId], references: [id])
-  items        PurchaseOrderItem[]
 }
 
 model PurchaseOrderItem {
   id              String        @id @default(cuid())
   purchaseOrderId String
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
   productId       String
+  product         Product       @relation(fields: [productId], references: [id])
   quantity        Int
   unitCost        Float
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
-  product         Product       @relation(fields: [productId], references: [id])
-  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
 }
 
 model SalesOrder {
   id            String           @id @default(cuid())
   soNumber      String           @unique
   customerId    String
+  customer      Customer         @relation(fields: [customerId], references: [id])
   orderDate     DateTime         @default(now())
   status        String           @default("fulfilled")
   subtotal      Float
   total         Float
   notes         String?
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
-  acceptedAt    DateTime?
   orderAccepted Boolean          @default(false)
   printedName   String?
-  signature     String?
-  customer      Customer         @relation(fields: [customerId], references: [id])
+  signature     String?          @db.Text
+  acceptedAt    DateTime?
   items         SalesOrderItem[]
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
 }
 
 model SalesOrderItem {
   id           String     @id @default(cuid())
   salesOrderId String
+  salesOrder   SalesOrder @relation(fields: [salesOrderId], references: [id], onDelete: Cascade)
   productId    String
+  product      Product    @relation(fields: [productId], references: [id])
   quantity     Int
   unitPrice    Float
   lineTotal    Float
   createdAt    DateTime   @default(now())
-  product      Product    @relation(fields: [productId], references: [id])
-  salesOrder   SalesOrder @relation(fields: [salesOrderId], references: [id], onDelete: Cascade)
 }
 
 model Payment {
   id              String   @id @default(cuid())
   customerId      String
+  customer        Customer @relation(fields: [customerId], references: [id])
   amount          Float
   paymentDate     DateTime @default(now())
   paymentMethod   String?
@@ -198,18 +194,17 @@ model Payment {
   notes           String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
-  customer        Customer @relation(fields: [customerId], references: [id])
 }
 
 model SalesVisit {
   id         String   @id @default(cuid())
   customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
   visitDate  DateTime @default(now())
-  notes      String?
-  images     String?
+  notes      String?  @db.Text
+  images     String?  @db.Text
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  customer   Customer @relation(fields: [customerId], references: [id])
 
   @@index([customerId])
   @@index([visitDate])
