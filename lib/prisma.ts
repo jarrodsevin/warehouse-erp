@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
-import { Pool } from 'pg';
+import { PrismaNeon } from '@prisma/adapter-neon';
+import { Pool } from '@neondatabase/serverless';
 
 declare global {
   var prisma: PrismaClient | undefined;
@@ -13,9 +13,11 @@ if (!connectionString) {
 }
 
 const pool = new Pool({ connectionString });
-const adapter = new PrismaPg(pool);
+const adapter = new PrismaNeon(pool);
 
-export const prisma = global.prisma || new PrismaClient({ adapter });
+export const prisma = global.prisma || new PrismaClient({ 
+  adapter: adapter as any
+});
 
 if (process.env.NODE_ENV !== 'production') {
   global.prisma = prisma;
