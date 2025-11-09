@@ -1,0 +1,33 @@
+import PurchaseOrderForm from '@/app/components/PurchaseOrderForm'
+import Link from 'next/link'
+import { prisma } from '@/prisma/prisma.config'
+
+export default async function CreatePurchaseOrderPage() {
+  const vendors = await prisma.vendor.findMany({
+    orderBy: { name: 'asc' }
+  })
+
+  const products = await prisma.product.findMany({
+    orderBy: { name: 'asc' }
+  })
+
+  return (
+    <div className="min-h-screen p-8">
+      <div className="max-w-5xl mx-auto">
+        <div className="mb-8">
+          <Link href="/purchase-orders" className="text-primary-600 hover:text-primary-700">
+            ← Back to Purchase Orders Menu
+          </Link>
+        </div>
+        
+        <h1 className="text-4xl font-bold mb-12 text-center text-gray-900">
+          Create New Purchase Order
+        </h1>
+
+        <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+          <PurchaseOrderForm vendors={vendors} products={products} />
+        </div>
+      </div>
+    </div>
+  )
+}

@@ -1,40 +1,28 @@
-import { PrismaClient } from '@prisma/client'
+﻿import { PrismaClient } from "@prisma/client";
 
-// Use Neon adapter in production (Vercel), standard client in development
-const isVercel = process.env.VERCEL === '1'
+// DEBUG: Log environment variable status
+console.log('DATABASE_URL exists:', !!process.env.DATABASE_URL);
+console.log('DATABASE_URL length:', process.env.DATABASE_URL?.length);
 
-let prisma: PrismaClient
+if (!process.env.DATABASE_URL) {
+  throw new Error('DATABASE_URL environment variable is not set');
+}
 
-if (isVercel) {
-  // Vercel production: Use Neon adapter (no binary engine)
-  const { PrismaNeon } = require('@prisma/adapter-neon')
-  const { Pool } = require('@neondatabase/serverless')
-  
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL })
-  const adapter = new PrismaNeon(pool)
-  
-  prisma = new PrismaClient({ adapter })
-} else {
-  // Local development: Standard Prisma
-  const databaseUrl = process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_hLy07adclIGB@ep-quiet-dust-ah0i6oxm-pooler.c-3.us-east-1.aws.neon.tech/neondb?sslmode=require'
-  
-  prisma = new PrismaClient({
+const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
+
+export const prisma =
+  globalForPrisma.prisma ??
+  new PrismaClient({
     datasources: {
       db: {
-        url: databaseUrl,
-      },
+        url: process.env.DATABASE_URL
+      }
     },
-  })
+    log: ['query', 'error', 'warn']
+  });
+
+if (process.env.NODE_ENV !== "production") {
+  globalForPrisma.prisma = prisma;
 }
 
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined
-}
-
-export const prismaClient = globalForPrisma.prisma ?? prisma
-
-if (process.env.NODE_ENV !== 'production') {
-  globalForPrisma.prisma = prismaClient
-}
-
-export { prismaClient as prisma }
+export default prisma;

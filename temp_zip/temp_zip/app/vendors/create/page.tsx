@@ -1,0 +1,24 @@
+import VendorForm from '@/app/components/VendorForm'
+import Link from 'next/link'
+
+export default function CreateVendorPage() {
+  return (
+    <div className="min-h-screen p-8">
+      <div className="max-w-3xl mx-auto">
+        <div className="mb-8">
+          <Link href="/vendors" className="text-primary-600 hover:text-primary-700">
+            ← Back to Vendors Menu
+          </Link>
+        </div>
+        
+        <h1 className="text-4xl font-bold mb-12 text-center text-gray-900">
+          Create New Vendor
+        </h1>
+
+        <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+          <VendorForm />
+        </div>
+      </div>
+    </div>
+  )
+}
