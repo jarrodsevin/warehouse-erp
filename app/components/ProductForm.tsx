@@ -82,7 +82,7 @@ export default function ProductForm({
   return (
     <form action={handleSubmit} className="space-y-4">
       <div>
-        <label htmlFor="sku" className="block text-sm font-medium text-gray-300 mb-1.5">
+        <label htmlFor="sku" className="block text-sm font-medium text-gray-700 mb-1.5">
           SKU
         </label>
         <input
@@ -91,12 +91,12 @@ export default function ProductForm({
           name="sku"
           defaultValue={product?.sku || ''}
           required
-          className="w-full px-3 py-2.5 bg-gray-900 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1.5">
+        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1.5">
           Product Name
         </label>
         <input
@@ -105,12 +105,12 @@ export default function ProductForm({
           name="name"
           defaultValue={product?.name || ''}
           required
-          className="w-full px-3 py-2.5 bg-gray-900 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
       <div>
-        <label htmlFor="description" className="block text-sm font-medium text-gray-300 mb-1.5">
+        <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1.5">
           Description
         </label>
         <textarea
@@ -118,13 +118,13 @@ export default function ProductForm({
           name="description"
           defaultValue={product?.description || ''}
           rows={3}
-          className="w-full px-3 py-2.5 bg-gray-900 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label htmlFor="categoryId" className="block text-sm font-medium text-gray-300 mb-1.5">
+          <label htmlFor="categoryId" className="block text-sm font-medium text-gray-700 mb-1.5">
             Category
           </label>
           <select
@@ -132,7 +132,7 @@ export default function ProductForm({
             name="categoryId"
             defaultValue={product?.categoryId || ''}
             required
-            className="w-full px-3 py-2.5 bg-gray-900 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Select Category</option>
             {categories.map((category) => (
@@ -144,14 +144,14 @@ export default function ProductForm({
         </div>
 
         <div>
-          <label htmlFor="subcategoryId" className="block text-sm font-medium text-gray-300 mb-1.5">
+          <label htmlFor="subcategoryId" className="block text-sm font-medium text-gray-700 mb-1.5">
             Subcategory (Optional)
           </label>
           <select
             id="subcategoryId"
             name="subcategoryId"
             defaultValue={product?.subcategoryId || ''}
-            className="w-full px-3 py-2.5 bg-gray-900 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Select Subcategory</option>
             {subcategories.map((subcategory) => (
@@ -164,14 +164,14 @@ export default function ProductForm({
       </div>
 
       <div>
-        <label htmlFor="brandId" className="block text-sm font-medium text-gray-300 mb-1.5">
+        <label htmlFor="brandId" className="block text-sm font-medium text-gray-700 mb-1.5">
           Brand (Optional)
         </label>
         <select
           id="brandId"
           name="brandId"
           defaultValue={product?.brandId || ''}
-          className="w-full px-3 py-2.5 bg-gray-900 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="">Select Brand</option>
           {brands.map((brand) => (
@@ -184,7 +184,7 @@ export default function ProductForm({
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
-          <label htmlFor="packageSize" className="block text-sm font-medium text-gray-300 mb-1.5">
+          <label htmlFor="packageSize" className="block text-sm font-medium text-gray-700 mb-1.5">
             Package Size (Optional)
           </label>
           <input
@@ -193,19 +193,19 @@ export default function ProductForm({
             id="packageSize"
             name="packageSize"
             defaultValue={product?.packageSize || ''}
-            className="w-full px-3 py-2.5 bg-gray-900 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
         <div>
-          <label htmlFor="unitOfMeasurement" className="block text-sm font-medium text-gray-300 mb-1.5">
+          <label htmlFor="unitOfMeasurement" className="block text-sm font-medium text-gray-700 mb-1.5">
             Unit (Optional)
           </label>
           <select
             id="unitOfMeasurement"
             name="unitOfMeasurement"
             defaultValue={product?.unitOfMeasurement || ''}
-            className="w-full px-3 py-2.5 bg-gray-900 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Select Unit</option>
             {UNITS_OF_MEASUREMENT.map((unit) => (
@@ -217,7 +217,7 @@ export default function ProductForm({
         </div>
 
         <div>
-          <label htmlFor="casePackCount" className="block text-sm font-medium text-gray-300 mb-1.5">
+          <label htmlFor="casePackCount" className="block text-sm font-medium text-gray-700 mb-1.5">
             Case Pack Count (Optional)
           </label>
           <input
@@ -225,20 +225,20 @@ export default function ProductForm({
             id="casePackCount"
             name="casePackCount"
             defaultValue={product?.casePackCount || ''}
-            className="w-full px-3 py-2.5 bg-gray-900 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
       </div>
 
       <div>
-        <label htmlFor="storageType" className="block text-sm font-medium text-gray-300 mb-1.5">
+        <label htmlFor="storageType" className="block text-sm font-medium text-gray-700 mb-1.5">
           Storage Type (Optional)
         </label>
         <select
           id="storageType"
           name="storageType"
           defaultValue={product?.storageType || ''}
-          className="w-full px-3 py-2.5 bg-gray-900 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="">Select Storage Type</option>
           {STORAGE_TYPES.map((type) => (
@@ -251,7 +251,7 @@ export default function ProductForm({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label htmlFor="cost" className="block text-sm font-medium text-gray-300 mb-1.5">
+          <label htmlFor="cost" className="block text-sm font-medium text-gray-700 mb-1.5">
             Cost
           </label>
           <input
@@ -261,12 +261,12 @@ export default function ProductForm({
             name="cost"
             defaultValue={product?.cost || ''}
             required
-            className="w-full px-3 py-2.5 bg-gray-900 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
         <div>
-          <label htmlFor="retailPrice" className="block text-sm font-medium text-gray-300 mb-1.5">
+          <label htmlFor="retailPrice" className="block text-sm font-medium text-gray-700 mb-1.5">
             Retail Price
           </label>
           <input
@@ -276,7 +276,7 @@ export default function ProductForm({
             name="retailPrice"
             defaultValue={product?.retailPrice || ''}
             required
-            className="w-full px-3 py-2.5 bg-gray-900 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
       </div>
