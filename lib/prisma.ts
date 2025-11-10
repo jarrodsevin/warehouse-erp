@@ -6,24 +6,25 @@ if (!process.env.DATABASE_URL) {
 
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
-// Vercel uses serverless, local uses Node.js
-const isVercel = process.env.VERCEL === '1';
-
 let prismaClient: PrismaClient;
 
-if (isVercel) {
-  // For Vercel: Use Neon serverless adapter
+// Check if running on Vercel
+if (process.env.VERCEL) {
+  // Import adapter modules only on Vercel
   const { PrismaNeon } = require("@prisma/adapter-neon");
   const { Pool, neonConfig } = require("@neondatabase/serverless");
-  const ws = require("ws");
   
-  neonConfig.webSocketConstructor = ws;
+  // Set WebSocket for serverless environment
+  if (typeof WebSocket === 'undefined') {
+    neonConfig.webSocketConstructor = require('ws');
+  }
+  
   const pool = new Pool({ connectionString: process.env.DATABASE_URL });
   const adapter = new PrismaNeon(pool);
   
   prismaClient = new PrismaClient({ adapter });
 } else {
-  // For local: Use direct connection
+  // Local development - direct connection
   prismaClient = new PrismaClient({
     datasources: {
       db: {
