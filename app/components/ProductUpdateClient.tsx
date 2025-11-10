@@ -70,6 +70,18 @@ function ProductCard({ product }: { product: Product }) {
 }
 
 export default function ProductUpdateClient({ products }: { products: Product[] }) {
+  const [searchQuery, setSearchQuery] = useState('')
+
+  const filteredProducts = products.filter((product) => {
+    const query = searchQuery.toLowerCase()
+    return (
+      product.name.toLowerCase().includes(query) ||
+      product.sku.toLowerCase().includes(query) ||
+      product.cost.toString().includes(query) ||
+      product.retailPrice.toString().includes(query)
+    )
+  })
+
   return (
     <div className="min-h-screen bg-gray-50 py-16 px-8">
       <div className="max-w-6xl mx-auto">
@@ -83,13 +95,45 @@ export default function ProductUpdateClient({ products }: { products: Product[] 
           Update Products
         </h1>
 
-        <p className="text-center text-gray-600 mb-12">Select a product to edit</p>
+        <p className="text-center text-gray-600 mb-8">Select a product to edit</p>
+
+        <div className="max-w-2xl mx-auto mb-8">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search by name, SKU, cost, or price..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full px-4 py-3 pl-10 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <svg
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </div>
+          <p className="text-sm text-gray-500 mt-2 text-center">
+            Showing {filteredProducts.length} of {products.length} products
+          </p>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {products.map((product) => (
+          {filteredProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
+
+        {filteredProducts.length === 0 && searchQuery && (
+          <p className="text-center text-gray-500 mt-8">No products match your search.</p>
+        )}
 
         {products.length === 0 && (
           <p className="text-center text-gray-500 mt-8">No products found. Create one first!</p>

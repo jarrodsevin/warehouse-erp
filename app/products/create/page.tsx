@@ -1,39 +1,33 @@
+import VendorForm from '@/app/components/VendorForm'
+import PageLayout from '@/app/components/PageLayout'
 import Link from 'next/link'
-import ProductForm from '@/app/components/ProductForm'
-import { prisma } from '@/prisma/prisma.config'
 
-export default async function CreateProduct() {
-  const categories = await prisma.category.findMany({
-    orderBy: { name: 'asc' }
-  })
-
-  const subcategories = await prisma.subcategory.findMany({
-    orderBy: { name: 'asc' }
-  })
-
-  const brands = await prisma.brand.findMany({
-    orderBy: { name: 'asc' }
-  })
-
+export default function CreateVendorPage() {
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-2xl mx-auto">
-        <div className="mb-6">
-          <Link href="/products" className="text-gray-900 hover:text-gray-700 font-medium">
-            ← Back to Products
-          </Link>
-        </div>
-
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
-            Create New Product
+    <PageLayout>
+      {/* Blue Header Section */}
+      <div className="bg-blue-600 text-white py-12 px-8 -m-8 mb-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-4">
+            <Link href="/vendors" className="text-blue-100 hover:text-white font-medium">
+              ← Back to Vendors Menu
+            </Link>
+          </div>
+          <h1 className="text-4xl font-bold mb-2">
+            Create New Vendor
           </h1>
-        </div>
-
-        <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-          <ProductForm categories={categories} subcategories={subcategories} brands={brands} />
+          <p className="text-blue-100">
+            Add a new supplier to your vendor database
+          </p>
         </div>
       </div>
-    </div>
+
+      {/* Content Section */}
+      <div className="max-w-3xl mx-auto">
+        <div className="bg-white border border-gray-200 rounded-lg p-8 shadow-sm">
+          <VendorForm />
+        </div>
+      </div>
+    </PageLayout>
   )
 }

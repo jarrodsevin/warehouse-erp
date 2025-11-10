@@ -1,52 +1,68 @@
+import PageLayout from '@/app/components/PageLayout'
 import Link from 'next/link'
 
-export default function Home() {
+export default function VendorsPage() {
   return (
-    <div className="min-h-screen py-16 px-8">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-20">
-          <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-            Warehouse ERP System
+    <PageLayout>
+      {/* Blue Header Section */}
+      <div className="bg-blue-600 text-white py-12 px-8 -m-8 mb-8">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-4xl font-bold mb-2">
+            Vendors
           </h1>
-          
-          <p className="text-xl text-gray-400">Manage your warehouse operations efficiently</p>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <Link href="/products" className="group">
-            <div className="bg-gray-800 border border-gray-700 rounded-lg p-10 hover:scale-105 transition-transform cursor-pointer h-full">
-              <h2 className="text-2xl font-semibold mb-4 text-blue-400 group-hover:text-blue-300">
-                Products
-              </h2>
-              <p className="text-gray-400">
-                Manage your product catalog, pricing, and inventory items
-              </p>
-            </div>
-          </Link>
-
-          <Link href="/vendors" className="group">
-            <div className="bg-gray-800 border border-gray-700 rounded-lg p-10 hover:scale-105 transition-transform cursor-pointer h-full">
-              <h2 className="text-2xl font-semibold mb-4 text-green-400 group-hover:text-green-300">
-                Vendors
-              </h2>
-              <p className="text-gray-400">
-                Manage supplier information and vendor relationships
-              </p>
-            </div>
-          </Link>
-
-          <Link href="/purchase-orders" className="group">
-            <div className="bg-gray-800 border border-gray-700 rounded-lg p-10 hover:scale-105 transition-transform cursor-pointer h-full">
-              <h2 className="text-2xl font-semibold mb-4 text-purple-400 group-hover:text-purple-300">
-                Purchase Orders
-              </h2>
-              <p className="text-gray-400">
-                Create and track purchase orders from vendors
-              </p>
-            </div>
-          </Link>
+          <h2 className="text-xl mb-2">
+            Vendor Management
+          </h2>
+          <p className="text-blue-100">
+            Choose an action to manage your suppliers
+          </p>
         </div>
       </div>
-    </div>
+
+      {/* Content Section */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Link href="/vendors/create" className="group">
+          <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow cursor-pointer h-full">
+            <div className="h-2 bg-green-500"></div>
+            <div className="p-8">
+              <h3 className="text-xl font-semibold mb-3 text-gray-900">
+                Create New Vendor
+              </h3>
+              <p className="text-gray-600">
+                Add a new supplier to your vendor database with contact information and details
+              </p>
+            </div>
+          </div>
+        </Link>
+
+        <Link href="/vendors/update" className="group">
+          <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow cursor-pointer h-full">
+            <div className="h-2 bg-blue-500"></div>
+            <div className="p-8">
+              <h3 className="text-xl font-semibold mb-3 text-gray-900">
+                Update Vendor
+              </h3>
+              <p className="text-gray-600">
+                Edit existing vendor information and details
+              </p>
+            </div>
+          </div>
+        </Link>
+
+        <Link href="/vendors/view" className="group">
+          <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow cursor-pointer h-full">
+            <div className="h-2 bg-purple-500"></div>
+            <div className="p-8">
+              <h3 className="text-xl font-semibold mb-3 text-gray-900">
+                View Vendors
+              </h3>
+              <p className="text-gray-600">
+                Browse and search all vendors in your system
+              </p>
+            </div>
+          </div>
+        </Link>
+      </div>
+    </PageLayout>
   )
 }
