@@ -1,102 +1,221 @@
+'use client'
+
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
+type DashboardStats = {
+  inventoryValue: number
+  ytdRevenue: number
+  recentOrdersCount: number
+  salesToBudget: number
+  bestSeller: string
+  topBrand: string
+}
+
 export default function Dashboard() {
+  const [stats, setStats] = useState<DashboardStats | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const response = await fetch('/api/dashboard')
+        const data = await response.json()
+        setStats(data)
+      } catch (error) {
+        console.error('Error fetching dashboard stats:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchStats()
+  }, [])
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-8">
-      <div className="text-center mb-16">
-        <h1 className="text-6xl font-bold mb-4 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-600 bg-clip-text text-transparent">
-          ApexFlow
-        </h1>
-        <p className="text-xl text-gray-400">Select a module to get started</p>
+    <div className="min-h-screen bg-gray-50">
+      {/* Enhanced Header with Gradient */}
+      <div className="bg-gradient-to-r from-blue-900 via-blue-800 to-blue-900 border-b border-blue-700">
+        <div className="max-w-7xl mx-auto px-8 py-8">
+          <div className="flex items-center justify-between">
+            {/* Left: Branding */}
+            <div>
+              <h1 className="text-4xl font-bold text-white mb-1 tracking-tight">ApexFlow</h1>
+              <p className="text-blue-200 text-lg">Enterprise Resource Planning System</p>
+              <p className="text-blue-300 text-sm mt-1">Warehouse & Inventory Management</p>
+            </div>
+
+            {/* Right: Top Performers */}
+            <div className="flex gap-4">
+              {loading ? (
+                <div className="text-blue-200 text-sm">Loading...</div>
+              ) : (
+                <>
+                  <div className="bg-white/10 backdrop-blur-sm rounded-lg px-5 py-3 border border-white/20 min-w-[200px]">
+                    <div className="text-blue-200 text-xs mb-1">🏆 Best Seller This Month</div>
+                    <div className="text-white text-base font-semibold">
+                      {stats?.bestSeller}
+                    </div>
+                  </div>
+
+                  <div className="bg-white/10 backdrop-blur-sm rounded-lg px-5 py-3 border border-white/20 min-w-[200px]">
+                    <div className="text-blue-200 text-xs mb-1">⭐ Top Brand This Month</div>
+                    <div className="text-white text-base font-semibold">
+                      {stats?.topBrand}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl">
-        <Link href="/products" className="group">
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-12 hover:scale-105 transition-transform cursor-pointer shadow-lg hover:shadow-blue-500/50">
-            <h2 className="text-3xl font-semibold mb-4 bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent group-hover:from-blue-300 group-hover:to-blue-500">
-              Products
-            </h2>
-            <p className="text-gray-400">
-              Manage your product inventory and pricing
-            </p>
-          </div>
-        </Link>
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto p-8">
+        {/* KPI Cards */}
+        <div className="mb-8">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Dashboard Overview</h2>
+          
+          {loading ? (
+            <div className="text-gray-500">Loading metrics...</div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {/* Inventory Value - Blue accent */}
+              <div className="bg-white border border-gray-200 rounded-lg p-6 relative overflow-hidden">
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-600"></div>
+                <div className="text-sm text-gray-600 mb-1">Inventory Value</div>
+                <div className="text-2xl font-semibold text-blue-700">
+                  ${stats?.inventoryValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </div>
+                <div className="text-xs text-gray-500 mt-1">Current on-hand value</div>
+              </div>
 
-        <Link href="/customers/options" className="group">
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-12 hover:scale-105 transition-transform cursor-pointer shadow-lg hover:shadow-pink-500/50">
-            <h2 className="text-3xl font-semibold mb-4 bg-gradient-to-r from-pink-400 to-pink-600 bg-clip-text text-transparent group-hover:from-pink-300 group-hover:to-pink-500">
-              Customers
-            </h2>
-            <p className="text-gray-400">
-              Manage customer accounts and information
-            </p>
-          </div>
-        </Link>
+              {/* YTD Revenue - Orange/Gold accent */}
+              <div className="bg-white border border-gray-200 rounded-lg p-6 relative overflow-hidden">
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-orange-500"></div>
+                <div className="text-sm text-gray-600 mb-1">YTD Sales Revenue</div>
+                <div className="text-2xl font-semibold text-orange-600">
+                  ${stats?.ytdRevenue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </div>
+                <div className="text-xs text-gray-500 mt-1">Year to date</div>
+              </div>
 
-        <Link href="/vendors" className="group">
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-12 hover:scale-105 transition-transform cursor-pointer shadow-lg hover:shadow-green-500/50">
-            <h2 className="text-3xl font-semibold mb-4 bg-gradient-to-r from-green-400 to-green-600 bg-clip-text text-transparent group-hover:from-green-300 group-hover:to-green-500">
-              Vendors
-            </h2>
-            <p className="text-gray-400">
-              Manage vendor information and contacts
-            </p>
-          </div>
-        </Link>
+              {/* Recent Orders - Teal accent */}
+              <div className="bg-white border border-gray-200 rounded-lg p-6 relative overflow-hidden">
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-teal-600"></div>
+                <div className="text-sm text-gray-600 mb-1">Recent Sales Orders</div>
+                <div className="text-2xl font-semibold text-teal-700">
+                  {stats?.recentOrdersCount}
+                </div>
+                <div className="text-xs text-gray-500 mt-1">Last 30 days</div>
+              </div>
 
-        <Link href="/purchase-orders" className="group">
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-12 hover:scale-105 transition-transform cursor-pointer shadow-lg hover:shadow-purple-500/50">
-            <h2 className="text-3xl font-semibold mb-4 bg-gradient-to-r from-purple-400 to-purple-600 bg-clip-text text-transparent group-hover:from-purple-300 group-hover:to-purple-500">
-              Purchase Orders
-            </h2>
-            <p className="text-gray-400">
-              Create and track purchase orders
-            </p>
-          </div>
-        </Link>
+              {/* Sales to Budget - Amber accent */}
+              <div className="bg-white border border-gray-200 rounded-lg p-6 relative overflow-hidden">
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-amber-500"></div>
+                <div className="text-sm text-gray-600 mb-1">Sales to Budget</div>
+                <div className="text-2xl font-semibold text-gray-400">
+                  Coming Soon
+                </div>
+                <div className="text-xs text-gray-500 mt-1">Budget feature pending</div>
+              </div>
+            </div>
+          )}
+        </div>
 
-        <Link href="/sales-orders" className="group">
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-12 hover:scale-105 transition-transform cursor-pointer shadow-lg hover:shadow-indigo-500/50">
-            <h2 className="text-3xl font-semibold mb-4 bg-gradient-to-r from-indigo-400 to-indigo-600 bg-clip-text text-transparent group-hover:from-indigo-300 group-hover:to-indigo-500">
-              Sales Orders
-            </h2>
-            <p className="text-gray-400">
-              Create and manage customer sales orders
-            </p>
-          </div>
-        </Link>
-        <Link href="/sales-visits" className="group">
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-12 hover:scale-105 transition-transform cursor-pointer shadow-lg hover:shadow-teal-500/50">
-            <h2 className="text-3xl font-semibold mb-4 bg-gradient-to-r from-teal-400 to-teal-600 bg-clip-text text-transparent group-hover:from-teal-300 group-hover:to-teal-500">
-              Sales Visits
-            </h2>
-            <p className="text-gray-400">
-              Record customer visits and view history
-            </p>
-          </div>
-        </Link>
+        {/* Module Navigation */}
+        <div>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Modules</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <Link href="/products">
+              <div className="bg-white border border-gray-200 rounded-lg p-6 hover:border-blue-400 hover:shadow-md transition-all cursor-pointer group">
+                <h3 className="text-base font-semibold text-gray-900 group-hover:text-blue-700 transition-colors mb-2">
+                  Products
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Manage inventory and pricing
+                </p>
+              </div>
+            </Link>
 
-        <Link href="/reports" className="group">
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-12 hover:scale-105 transition-transform cursor-pointer shadow-lg hover:shadow-cyan-500/50">
-            <h2 className="text-3xl font-semibold mb-4 bg-gradient-to-r from-cyan-400 to-cyan-600 bg-clip-text text-transparent group-hover:from-cyan-300 group-hover:to-cyan-500">
-              Reports
-            </h2>
-            <p className="text-gray-400">
-              View analytics and profitability reports
-            </p>
-          </div>
-        </Link>
+            <Link href="/customers/options">
+              <div className="bg-white border border-gray-200 rounded-lg p-6 hover:border-blue-400 hover:shadow-md transition-all cursor-pointer group">
+                <h3 className="text-base font-semibold text-gray-900 group-hover:text-blue-700 transition-colors mb-2">
+                  Customers
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Manage customer accounts
+                </p>
+              </div>
+            </Link>
 
-        <Link href="/admin" className="group">
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-12 hover:scale-105 transition-transform cursor-pointer shadow-lg hover:shadow-yellow-500/50">
-            <h2 className="text-3xl font-semibold mb-4 bg-gradient-to-r from-yellow-400 to-orange-600 bg-clip-text text-transparent group-hover:from-yellow-300 group-hover:to-orange-500">
-              Admin
-            </h2>
-            <p className="text-gray-400">
-              System settings and data management
-            </p>
+            <Link href="/vendors">
+              <div className="bg-white border border-gray-200 rounded-lg p-6 hover:border-blue-400 hover:shadow-md transition-all cursor-pointer group">
+                <h3 className="text-base font-semibold text-gray-900 group-hover:text-blue-700 transition-colors mb-2">
+                  Vendors
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Manage vendor contacts
+                </p>
+              </div>
+            </Link>
+
+            <Link href="/purchase-orders">
+              <div className="bg-white border border-gray-200 rounded-lg p-6 hover:border-blue-400 hover:shadow-md transition-all cursor-pointer group">
+                <h3 className="text-base font-semibold text-gray-900 group-hover:text-blue-700 transition-colors mb-2">
+                  Purchase Orders
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Track purchase orders
+                </p>
+              </div>
+            </Link>
+
+            <Link href="/sales-orders">
+              <div className="bg-white border border-gray-200 rounded-lg p-6 hover:border-blue-400 hover:shadow-md transition-all cursor-pointer group">
+                <h3 className="text-base font-semibold text-gray-900 group-hover:text-blue-700 transition-colors mb-2">
+                  Sales Orders
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Manage sales orders
+                </p>
+              </div>
+            </Link>
+
+            <Link href="/sales-visits">
+              <div className="bg-white border border-gray-200 rounded-lg p-6 hover:border-blue-400 hover:shadow-md transition-all cursor-pointer group">
+                <h3 className="text-base font-semibold text-gray-900 group-hover:text-blue-700 transition-colors mb-2">
+                  Sales Visits
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Record customer visits
+                </p>
+              </div>
+            </Link>
+
+            <Link href="/reports">
+              <div className="bg-white border border-gray-200 rounded-lg p-6 hover:border-blue-400 hover:shadow-md transition-all cursor-pointer group">
+                <h3 className="text-base font-semibold text-gray-900 group-hover:text-blue-700 transition-colors mb-2">
+                  Reports
+                </h3>
+                <p className="text-sm text-gray-600">
+                  View analytics and reports
+                </p>
+              </div>
+            </Link>
+
+            <Link href="/admin">
+              <div className="bg-white border border-gray-200 rounded-lg p-6 hover:border-blue-400 hover:shadow-md transition-all cursor-pointer group">
+                <h3 className="text-base font-semibold text-gray-900 group-hover:text-blue-700 transition-colors mb-2">
+                  Admin
+                </h3>
+                <p className="text-sm text-gray-600">
+                  System settings
+                </p>
+              </div>
+            </Link>
           </div>
-        </Link>
+        </div>
       </div>
     </div>
   )
