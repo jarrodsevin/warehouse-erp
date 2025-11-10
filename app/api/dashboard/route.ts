@@ -100,7 +100,7 @@ export async function GET() {
     }
 
     // Find top product
-    let bestSeller = null;
+    let bestSeller: string | null = null;
     let maxRevenue = 0;
     
     for (const [_, data] of productRevenue) {
@@ -140,7 +140,7 @@ export async function GET() {
     }
 
     // Find top brand
-    let topBrand = null;
+    let topBrand: string | null = null;
     let maxBrandRevenue = 0;
     
     for (const [_, data] of brandRevenue) {
