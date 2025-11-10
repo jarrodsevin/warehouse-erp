@@ -1,4 +1,4 @@
-﻿import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 console.log('=== Prisma Init ===');
 console.log('VERCEL:', process.env.VERCEL);
