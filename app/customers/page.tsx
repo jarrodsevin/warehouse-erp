@@ -1,278 +1,129 @@
-'use client';
+'use client'
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
+import Sidebar from '../components/Sidebar'
 
-interface Customer {
-  id: string;
-  name: string;
-  email: string | null;
-  phone: string | null;
-  customerGroup: string;
-  customerCategory: string;
-  creditLimit: number;
-  currentBalance: number;
-  status: string;
-  _count: {
-    salesOrders: number;
-    payments: number;
-  };
-}
-
-export default function CustomersPage() {
-  const [customers, setCustomers] = useState<Customer[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
-  const [showFilters, setShowFilters] = useState(false);
+export default function CustomersMenu() {
+  const [customerCount, setCustomerCount] = useState<number | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   useEffect(() => {
-    fetchCustomers();
-  }, []);
-
-  const fetchCustomers = async () => {
-    try {
-      const response = await fetch('/api/customers');
-      const data = await response.json();
-      setCustomers(data);
-    } catch (error) {
-      console.error('Error fetching customers:', error);
-    } finally {
-      setLoading(false);
+    async function fetchCustomerCount() {
+      try {
+        const response = await fetch('/api/customers')
+        const data = await response.json()
+        if (Array.isArray(data)) {
+          setCustomerCount(data.length)
+        }
+      } catch (error) {
+        console.error('Error fetching customer count:', error)
+      } finally {
+        setLoading(false)
+      }
     }
-  };
-
-  const customerGroups = ['Amazon', 'Shoprite', 'Costco', 'Other Ethnic'];
-  const customerCategories = ['Amazon', 'Canadian Mainstream', 'US Mainstream', 'Club', 'Ethnic', 'Costco'];
-  const statuses = ['active', 'inactive', 'suspended'];
-
-  const toggleGroup = (group: string) => {
-    setSelectedGroups(prev =>
-      prev.includes(group) ? prev.filter(g => g !== group) : [...prev, group]
-    );
-  };
-
-  const toggleCategory = (category: string) => {
-    setSelectedCategories(prev =>
-      prev.includes(category) ? prev.filter(c => c !== category) : [...prev, category]
-    );
-  };
-
-  const toggleStatus = (status: string) => {
-    setSelectedStatuses(prev =>
-      prev.includes(status) ? prev.filter(s => s !== status) : [...prev, status]
-    );
-  };
-
-  const filteredCustomers = customers.filter(customer => {
-    const matchesSearch = customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         customer.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         customer.phone?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesGroup = selectedGroups.length === 0 || selectedGroups.includes(customer.customerGroup);
-    const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(customer.customerCategory);
-    const matchesStatus = selectedStatuses.length === 0 || selectedStatuses.includes(customer.status);
-    return matchesSearch && matchesGroup && matchesCategory && matchesStatus;
-  });
-
-  const activeFilterCount = selectedGroups.length + selectedCategories.length + selectedStatuses.length;
-
-  if (loading) {
-    return <div className="p-8">Loading...</div>;
-  }
+    fetchCustomerCount()
+  }, [])
 
   return (
-    <div className="p-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Customers</h1>
-        <Link
-          href="/customers/add"
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-        >
-          Add Customer
-        </Link>
-      </div>
-
-      {/* Search Bar */}
-      <div className="mb-4">
-        <input
-          type="text"
-          placeholder="Search customers by name, email, or phone..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white"
+    <div className="flex min-h-screen bg-gray-50">
+      {/* Mobile Overlay */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          onClick={() => setSidebarOpen(false)}
         />
+      )}
+
+      {/* Sidebar - Fixed on all screen sizes */}
+      <div className={`
+        fixed inset-y-0 left-0 z-50 md:z-10
+        transform transition-transform duration-300 ease-in-out
+        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+      `}>
+        <Sidebar onClose={() => setSidebarOpen(false)} />
       </div>
+      
+      <main className="flex-1 md:ml-64 w-full min-w-0">
+        {/* Mobile Menu Button */}
+        <div className="md:hidden fixed top-4 left-4 z-30">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="bg-white p-2 rounded-lg shadow-lg border border-gray-200"
+            aria-label="Open menu"
+          >
+            <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
 
-      {/* Filter Section */}
-      <div className="mb-6">
-        <button
-          onClick={() => setShowFilters(!showFilters)}
-          className="text-sm text-blue-400 hover:text-blue-300 mb-2"
-        >
-          {showFilters ? '▼' : '▶'} Filters {activeFilterCount > 0 && `(${activeFilterCount} active)`}
-        </button>
+        {/* Blue Gradient Header - Mobile Responsive */}
+        <div className="bg-gradient-to-r from-blue-900 via-blue-800 to-blue-900 border-b border-blue-700">
+          <div className="max-w-7xl mx-auto px-4 md:px-8 py-4 md:py-8 pt-16 md:pt-8">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              {/* Left: Title */}
+              <div>
+                <h1 className="text-2xl md:text-4xl font-bold text-white mb-1 tracking-tight">Customers</h1>
+                <p className="text-blue-200 text-sm md:text-lg">Customer Management</p>
+                <p className="text-blue-300 text-xs md:text-sm mt-1">Choose an action to manage your customers</p>
+              </div>
 
-        {showFilters && (
-          <div className="space-y-4 p-4 bg-gray-800 rounded border border-gray-700">
-            {/* Customer Group Filters */}
-            <div>
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-sm font-medium text-green-400">Customer Group</span>
-                {selectedGroups.length > 0 && (
-                  <button
-                    onClick={() => setSelectedGroups([])}
-                    className="text-xs text-gray-400 hover:text-white"
-                  >
-                    Clear ({selectedGroups.length})
-                  </button>
-                )}
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {customerGroups.map(group => (
-                  <button
-                    key={group}
-                    onClick={() => toggleGroup(group)}
-                    className={`px-3 py-1 rounded text-sm ${
-                      selectedGroups.includes(group)
-                        ? 'bg-green-500/20 text-green-400 border border-green-500'
-                        : 'bg-green-500/10 text-green-400/60 border border-green-500/30 hover:border-green-500'
-                    }`}
-                  >
-                    {group}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Customer Category Filters */}
-            <div>
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-sm font-medium text-blue-400">Customer Category</span>
-                {selectedCategories.length > 0 && (
-                  <button
-                    onClick={() => setSelectedCategories([])}
-                    className="text-xs text-gray-400 hover:text-white"
-                  >
-                    Clear ({selectedCategories.length})
-                  </button>
-                )}
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {customerCategories.map(category => (
-                  <button
-                    key={category}
-                    onClick={() => toggleCategory(category)}
-                    className={`px-3 py-1 rounded text-sm ${
-                      selectedCategories.includes(category)
-                        ? 'bg-blue-500/20 text-blue-400 border border-blue-500'
-                        : 'bg-blue-500/10 text-blue-400/60 border border-blue-500/30 hover:border-blue-500'
-                    }`}
-                  >
-                    {category}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Status Filters */}
-            <div>
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-sm font-medium text-yellow-400">Status</span>
-                {selectedStatuses.length > 0 && (
-                  <button
-                    onClick={() => setSelectedStatuses([])}
-                    className="text-xs text-gray-400 hover:text-white"
-                  >
-                    Clear ({selectedStatuses.length})
-                  </button>
-                )}
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {statuses.map(status => (
-                  <button
-                    key={status}
-                    onClick={() => toggleStatus(status)}
-                    className={`px-3 py-1 rounded text-sm capitalize ${
-                      selectedStatuses.includes(status)
-                        ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500'
-                        : 'bg-yellow-500/10 text-yellow-400/60 border border-yellow-500/30 hover:border-yellow-500'
-                    }`}
-                  >
-                    {status}
-                  </button>
-                ))}
+              {/* Right: Total Customers Stat */}
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2 md:px-5 md:py-3 border border-white/20">
+                <div className="text-blue-200 text-xs mb-1">Total Customers</div>
+                <div className="text-white text-xl md:text-2xl font-semibold">
+                  {loading ? '...' : customerCount}
+                </div>
               </div>
             </div>
           </div>
-        )}
-      </div>
+        </div>
 
-      {/* Results Summary */}
-      <div className="mb-4 text-sm text-gray-400">
-        Showing {filteredCustomers.length} of {customers.length} customers
-      </div>
+        {/* Content Area */}
+        <div className="p-4 md:p-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+              <Link href="/customers/create">
+                <div className="bg-white border-2 border-gray-200 rounded-lg p-6 md:p-8 hover:border-green-500 hover:shadow-lg transition-all cursor-pointer group h-full relative overflow-hidden">
+                  <div className="absolute top-0 left-0 w-full h-1 bg-green-500"></div>
+                  <h2 className="text-lg md:text-xl font-semibold mb-3 text-gray-900 group-hover:text-green-700 transition-colors">
+                    Create New Customer
+                  </h2>
+                  <p className="text-gray-600 text-sm">
+                    Add a new customer to your database with contact details and account information
+                  </p>
+                </div>
+              </Link>
 
-      {/* Customers Table */}
-      <div className="bg-gray-800 rounded-lg overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-900">
-            <tr>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-400">Name</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-400">Group</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-400">Category</th>
-              <th className="px-4 py-3 text-right text-sm font-medium text-gray-400">Credit Limit</th>
-              <th className="px-4 py-3 text-right text-sm font-medium text-gray-400">Balance</th>
-              <th className="px-4 py-3 text-center text-sm font-medium text-gray-400">Status</th>
-              <th className="px-4 py-3 text-center text-sm font-medium text-gray-400">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredCustomers.map((customer, index) => (
-              <tr key={customer.id} className={index % 2 === 0 ? 'bg-gray-800' : 'bg-gray-750'}>
-                <td className="px-4 py-3">
-                  <div className="font-medium text-white">{customer.name}</div>
-                  <div className="text-sm text-gray-400">{customer.email}</div>
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-300">{customer.customerGroup}</td>
-                <td className="px-4 py-3 text-sm text-gray-300">{customer.customerCategory}</td>
-                <td className="px-4 py-3 text-right text-sm text-gray-300">
-                  ${customer.creditLimit.toLocaleString()}
-                </td>
-                <td className="px-4 py-3 text-right text-sm">
-                  <span className={customer.currentBalance > 0 ? 'text-yellow-400' : 'text-green-400'}>
-                    ${customer.currentBalance.toLocaleString()}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-center">
-                  <span className={`px-2 py-1 text-xs rounded capitalize ${
-                    customer.status === 'active' ? 'bg-green-500/20 text-green-400' :
-                    customer.status === 'inactive' ? 'bg-gray-500/20 text-gray-400' :
-                    'bg-red-500/20 text-red-400'
-                  }`}>
-                    {customer.status}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-center">
-                  <Link
-                    href={`/customers/${customer.id}`}
-                    className="text-blue-400 hover:text-blue-300 text-sm mr-3"
-                  >
-                    View
-                  </Link>
-                  <Link
-                    href={`/customers/edit/${customer.id}`}
-                    className="text-blue-400 hover:text-blue-300 text-sm"
-                  >
-                    Edit
-                  </Link>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+              <Link href="/customers/update">
+                <div className="bg-white border-2 border-gray-200 rounded-lg p-6 md:p-8 hover:border-blue-500 hover:shadow-lg transition-all cursor-pointer group h-full relative overflow-hidden">
+                  <div className="absolute top-0 left-0 w-full h-1 bg-blue-500"></div>
+                  <h2 className="text-lg md:text-xl font-semibold mb-3 text-gray-900 group-hover:text-blue-700 transition-colors">
+                    Update Customer
+                  </h2>
+                  <p className="text-gray-600 text-sm">
+                    Edit existing customer information and account details
+                  </p>
+                </div>
+              </Link>
+
+              <Link href="/customers/view">
+                <div className="bg-white border-2 border-gray-200 rounded-lg p-6 md:p-8 hover:border-purple-500 hover:shadow-lg transition-all cursor-pointer group h-full relative overflow-hidden">
+                  <div className="absolute top-0 left-0 w-full h-1 bg-purple-500"></div>
+                  <h2 className="text-lg md:text-xl font-semibold mb-3 text-gray-900 group-hover:text-purple-700 transition-colors">
+                    View Customers
+                  </h2>
+                  <p className="text-gray-600 text-sm">
+                    Browse and search your complete customer database with filtering options
+                  </p>
+                </div>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
-  );
+  )
 }
