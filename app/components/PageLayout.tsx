@@ -1,5 +1,8 @@
+'use client'
+
 import Sidebar from './Sidebar'
 import Link from 'next/link'
+import { useState } from 'react'
 
 interface Breadcrumb {
   label: string
@@ -21,15 +24,45 @@ export default function PageLayout({
   breadcrumbs,
   actions 
 }: PageLayoutProps) {
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <Sidebar />
+      {/* Mobile Overlay */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar - Hidden on mobile, slide in when open */}
+      <div className={`
+        fixed md:static inset-y-0 left-0 z-50
+        transform transition-transform duration-300 ease-in-out
+        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+      `}>
+        <Sidebar onClose={() => setSidebarOpen(false)} />
+      </div>
       
-      <main className="flex-1 ml-64">
+      <main className="flex-1 md:ml-64">
+        {/* Mobile Menu Button */}
+        <div className="md:hidden fixed top-4 left-4 z-30">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="bg-white p-2 rounded-lg shadow-lg border border-gray-200"
+            aria-label="Open menu"
+          >
+            <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
+
         {/* Header Section */}
         {(title || subtitle || breadcrumbs) && (
           <div className="bg-white border-b border-gray-200">
-            <div className="px-8 py-6">
+            <div className="px-4 md:px-8 py-6 pt-16 md:pt-6">
               {/* Breadcrumbs */}
               {breadcrumbs && breadcrumbs.length > 0 && (
                 <nav className="flex mb-3" aria-label="Breadcrumb">
@@ -82,7 +115,7 @@ export default function PageLayout({
         )}
         
         {/* Content Area */}
-        <div className="p-8">
+        <div className="p-4 md:p-8">
           {children}
         </div>
       </main>
