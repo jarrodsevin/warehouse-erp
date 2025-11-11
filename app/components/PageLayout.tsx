@@ -36,16 +36,16 @@ export default function PageLayout({
         />
       )}
 
-      {/* Sidebar - Hidden on mobile, slide in when open */}
+      {/* Sidebar - Fixed on all screen sizes */}
       <div className={`
-        fixed md:static inset-y-0 left-0 z-50
+        fixed inset-y-0 left-0 z-50 md:z-10
         transform transition-transform duration-300 ease-in-out
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
       `}>
         <Sidebar onClose={() => setSidebarOpen(false)} />
       </div>
       
-      <main className="flex-1 md:ml-64">
+      <main className="flex-1 md:ml-64 w-full">
         {/* Mobile Menu Button */}
         <div className="md:hidden fixed top-4 left-4 z-30">
           <button

@@ -36,16 +36,16 @@ export default function ProductsMenu() {
         />
       )}
 
-      {/* Sidebar - Hidden on mobile, slide in when open */}
+      {/* Sidebar - Fixed on all screen sizes */}
       <div className={`
-        fixed md:static inset-y-0 left-0 z-50
+        fixed inset-y-0 left-0 z-50 md:z-10
         transform transition-transform duration-300 ease-in-out
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
       `}>
         <Sidebar onClose={() => setSidebarOpen(false)} />
       </div>
       
-      <main className="flex-1 md:ml-64">
+      <main className="flex-1 md:ml-64 w-full">
         {/* Mobile Menu Button */}
         <div className="md:hidden fixed top-4 left-4 z-30">
           <button
@@ -61,7 +61,7 @@ export default function ProductsMenu() {
 
         {/* Blue Gradient Header - Mobile Responsive */}
         <div className="bg-gradient-to-r from-blue-900 via-blue-800 to-blue-900 border-b border-blue-700">
-          <div className="px-4 md:px-8 py-4 md:py-8 pt-16 md:pt-8">
+          <div className="max-w-7xl mx-auto px-4 md:px-8 py-4 md:py-8 pt-16 md:pt-8">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               {/* Left: Title */}
               <div>
@@ -83,7 +83,7 @@ export default function ProductsMenu() {
 
         {/* Content Area */}
         <div className="p-4 md:p-8">
-          <div className="max-w-5xl mx-auto">
+          <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
               <Link href="/products/create">
                 <div className="bg-white border-2 border-gray-200 rounded-lg p-6 md:p-8 hover:border-green-500 hover:shadow-lg transition-all cursor-pointer group h-full relative overflow-hidden">

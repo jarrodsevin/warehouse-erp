@@ -15,6 +15,12 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "ApexFlow - Warehouse Management System",
   description: "Complete warehouse ERP solution for inventory, sales, and profitability management",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "ApexFlow",
+  },
 };
 
 export default function RootLayout({
