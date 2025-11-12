@@ -9,7 +9,6 @@ interface Vendor {
   name: string
   email: string | null
   phone: string | null
-  address: string | null
   contactPerson: string | null
   status: string
 }
@@ -210,11 +209,7 @@ export default function ViewVendorsPage() {
               </p>
             )}
 
-            {vendor.address && (
-              <p className="text-xs text-gray-500 mb-3 line-clamp-2">{vendor.address}</p>
-            )}
-
-            <div className="flex gap-2 pt-3 border-t border-gray-200">
+            <div className="flex gap-2 pt-3 border-t border-gray-200 mt-3">
               <Link
                 href={`/vendors/${vendor.id}`}
                 className="w-full text-center px-3 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors font-medium"

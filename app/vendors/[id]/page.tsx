@@ -9,7 +9,6 @@ interface Vendor {
   name: string
   email: string | null
   phone: string | null
-  address: string | null
   contactPerson: string | null
   status: string
   notes: string | null
@@ -127,13 +126,6 @@ export default function VendorDetailsPage({ params }: { params: Promise<{ id: st
                   </svg>
                   {vendor.phone}
                 </a>
-              </div>
-            )}
-
-            {vendor.address && (
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-500 mb-1">Address</label>
-                <p className="text-gray-900">{vendor.address}</p>
               </div>
             )}
           </div>
