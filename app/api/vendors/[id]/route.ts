@@ -37,7 +37,6 @@ export async function PUT(
         name: body.name,
         email: body.email || null,
         phone: body.phone || null,
-        contactPerson: body.contactPerson || null,
         status: body.status || 'active',
         notes: body.notes || null,
       }

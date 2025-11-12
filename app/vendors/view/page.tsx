@@ -9,7 +9,6 @@ interface Vendor {
   name: string
   email: string | null
   phone: string | null
-  contactPerson: string | null
   status: string
 }
 
@@ -47,8 +46,7 @@ export default function ViewVendorsPage() {
   const filteredVendors = vendors.filter(vendor => {
     const matchesSearch = vendor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          vendor.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         vendor.phone?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         vendor.contactPerson?.toLowerCase().includes(searchTerm.toLowerCase())
+                         vendor.phone?.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesStatus = selectedStatus.length === 0 || selectedStatus.includes(vendor.status)
     return matchesSearch && matchesStatus
   })
@@ -89,7 +87,7 @@ export default function ViewVendorsPage() {
         <div className="relative">
           <input
             type="text"
-            placeholder="Search by name, email, phone, or contact person..."
+            placeholder="Search by name, email, or phone..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full px-4 py-3 pl-10 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -183,13 +181,6 @@ export default function ViewVendorsPage() {
                 {vendor.status}
               </span>
             </div>
-            
-            {vendor.contactPerson && (
-              <div className="mb-2">
-                <p className="text-sm text-gray-500">Contact Person</p>
-                <p className="text-sm text-gray-900 font-medium">{vendor.contactPerson}</p>
-              </div>
-            )}
             
             {vendor.email && (
               <p className="text-sm text-gray-600 mb-1 truncate flex items-center gap-1">
