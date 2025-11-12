@@ -16,7 +16,7 @@ export async function createVendor(formData: FormData) {
   await prisma.vendor.create({
     data: {
       name,
-      contactName,
+      contactPerson,
       email,
       phone,
       terms,
@@ -58,7 +58,7 @@ export async function updateVendor(id: string, formData: FormData) {
     where: { id },
     data: {
       name,
-      contactName,
+      contactPerson,
       email,
       phone,
       terms,
