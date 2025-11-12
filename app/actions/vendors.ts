@@ -7,10 +7,11 @@ const prisma = new PrismaClient();
 
 export async function createVendor(formData: FormData) {
   const name = formData.get("name") as string;
-  const contactName = formData.get("contactName") as string;
+  const contactPerson = formData.get("contactPerson") as string;
   const email = formData.get("email") as string;
   const phone = formData.get("phone") as string;
-  const terms = formData.get("terms") as string;
+  const address = formData.get("address") as string;
+  const status = formData.get("status") as string;
   const notes = formData.get("notes") as string;
 
   await prisma.vendor.create({
@@ -19,7 +20,8 @@ export async function createVendor(formData: FormData) {
       contactPerson,
       email,
       phone,
-      terms,
+      address,
+      status: status || "active",
       notes,
     },
   });
@@ -32,6 +34,7 @@ export async function getVendors() {
     orderBy: { createdAt: "desc" },
   });
 }
+
 export async function getVendor(id: string) {
   return await prisma.vendor.findUnique({
     where: { id }
@@ -48,10 +51,11 @@ export async function deleteVendor(id: string) {
 
 export async function updateVendor(id: string, formData: FormData) {
   const name = formData.get("name") as string;
-  const contactName = formData.get("contactName") as string;
+  const contactPerson = formData.get("contactPerson") as string;
   const email = formData.get("email") as string;
   const phone = formData.get("phone") as string;
-  const terms = formData.get("terms") as string;
+  const address = formData.get("address") as string;
+  const status = formData.get("status") as string;
   const notes = formData.get("notes") as string;
 
   await prisma.vendor.update({
@@ -61,7 +65,8 @@ export async function updateVendor(id: string, formData: FormData) {
       contactPerson,
       email,
       phone,
-      terms,
+      address,
+      status: status || "active",
       notes,
     },
   });
