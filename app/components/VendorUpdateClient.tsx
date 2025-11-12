@@ -7,7 +7,7 @@ import PageLayout from '@/app/components/PageLayout'
 type Vendor = {
   id: string
   name: string
-  contactName: string | null
+  contactPerson: string | null  // Changed from contactName
   email: string | null
   phone: string | null
 }
@@ -16,7 +16,7 @@ function VendorCard({ vendor }: { vendor: Vendor }) {
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-6 h-full flex flex-col shadow-sm">
       <h3 className="text-xl font-semibold mb-2 text-gray-900">{vendor.name}</h3>
-      <p className="text-gray-600 text-sm mb-1">Contact: {vendor.contactName || 'N/A'}</p>
+      <p className="text-gray-600 text-sm mb-1">Contact: {vendor.contactPerson || 'N/A'}</p>
       <p className="text-gray-600 text-sm mb-1">Email: {vendor.email || 'N/A'}</p>
       <p className="text-gray-600 text-sm mb-4 flex-grow">Phone: {vendor.phone || 'N/A'}</p>
       
@@ -37,7 +37,7 @@ export default function VendorUpdateClient({ vendors }: { vendors: Vendor[] }) {
     const query = searchQuery.toLowerCase()
     return (
       vendor.name.toLowerCase().includes(query) ||
-      vendor.contactName?.toLowerCase().includes(query) ||
+      vendor.contactPerson?.toLowerCase().includes(query) ||  // Changed from contactName
       vendor.email?.toLowerCase().includes(query) ||
       vendor.phone?.toLowerCase().includes(query)
     )
