@@ -30,7 +30,7 @@ export default function VendorsMenu() {
     <div className="flex min-h-screen bg-gray-50">
       {/* Mobile Overlay */}
       {sidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
           onClick={() => setSidebarOpen(false)}
         />
@@ -44,7 +44,7 @@ export default function VendorsMenu() {
       `}>
         <Sidebar onClose={() => setSidebarOpen(false)} />
       </div>
-      
+
       <main className="flex-1 md:ml-64 w-full min-w-0">
         {/* Mobile Menu Button */}
         <div className="md:hidden fixed top-4 left-4 z-30">
