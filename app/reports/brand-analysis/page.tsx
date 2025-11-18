@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import PageLayout from '@/app/components/PageLayout'
 
 type Category = {
   id: string
@@ -60,13 +61,17 @@ export default function BrandAnalysis() {
   const [loading, setLoading] = useState(true)
   const [sortBy, setSortBy] = useState<'margin' | 'markup' | 'profit'>('margin')
   const [expandedBrand, setExpandedBrand] = useState<string | null>(null)
+  const [showEmailModal, setShowEmailModal] = useState(false)
+  const [emailAddress, setEmailAddress] = useState('')
+  const [emailSending, setEmailSending] = useState(false)
 
   useEffect(() => {
     async function fetchData() {
       try {
         const response = await fetch('/api/products')
         const data = await response.json()
-        setProducts(data.products.filter((p: Product) => p.brand !== null))
+        const productsData = Array.isArray(data) ? data : (data.products || [])
+        setProducts(productsData.filter((p: Product) => p.brand !== null))
       } catch (error) {
         console.error('Error fetching data:', error)
       } finally {
@@ -244,200 +249,312 @@ export default function BrandAnalysis() {
       },
     })
 
+    return doc
+  }
+
+  const downloadPDF = async () => {
+    const doc = await generatePDF()
     doc.save(`brand-analysis-${new Date().toISOString().split('T')[0]}.pdf`)
+  }
+
+  const handleEmailPDF = async () => {
+    if (!emailAddress || !emailAddress.includes('@')) {
+      alert('Please enter a valid email address')
+      return
+    }
+
+    setEmailSending(true)
+
+    try {
+      const doc = await generatePDF()
+      const pdfBase64 = doc.output('datauristring').split(',')[1]
+
+      const response = await fetch('/api/email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: emailAddress,
+          subject: `Brand Profitability Analysis - ${new Date().toLocaleDateString()}`,
+          html: `
+            <h2>Brand Profitability Analysis</h2>
+            <p>Please find attached your Brand Profitability Analysis report.</p>
+            <h3>Summary:</h3>
+            <ul>
+              <li><strong>Total Brands:</strong> ${brandMetrics.length}</li>
+              <li><strong>Report Date:</strong> ${new Date().toLocaleDateString()}</li>
+            </ul>
+            <p>Generated on ${new Date().toLocaleString()}</p>
+          `,
+          attachments: [
+            {
+              filename: `brand-analysis-${new Date().toISOString().split('T')[0]}.pdf`,
+              content: pdfBase64,
+            },
+          ],
+        }),
+      })
+
+      if (response.ok) {
+        alert('Report emailed successfully!')
+        setShowEmailModal(false)
+        setEmailAddress('')
+      } else {
+        const error = await response.json()
+        alert(`Failed to send email: ${error.error}`)
+      }
+    } catch (error) {
+      console.error('Error sending email:', error)
+      alert('Failed to send email. Please try again.')
+    } finally {
+      setEmailSending(false)
+    }
   }
 
   if (loading) {
     return (
-      <div className="min-h-screen p-8 flex items-center justify-center">
-        <div className="text-xl text-gray-400">Loading report...</div>
-      </div>
+      <PageLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-gray-500">Loading report...</div>
+        </div>
+      </PageLayout>
     )
   }
 
   return (
-    <div className="min-h-screen p-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
-            Brand Profitability Analysis
-          </h1>
-          <div className="flex gap-3">
-            <button
-              onClick={generatePDF}
-              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
-            >
-              📄 Export PDF
-            </button>
-            <Link
-              href="/reports"
-              className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
-            >
+    <PageLayout>
+      {/* Email Modal */}
+      {showEmailModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">Email Report</h3>
+            <p className="text-gray-600 text-sm mb-4">
+              Enter the email address where you'd like to send this report.
+            </p>
+            <input
+              type="email"
+              placeholder="email@example.com"
+              value={emailAddress}
+              onChange={(e) => setEmailAddress(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <div className="flex gap-3">
+              <button
+                onClick={handleEmailPDF}
+                disabled={emailSending}
+                className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {emailSending ? 'Sending...' : 'Send Email'}
+              </button>
+              <button
+                onClick={() => {
+                  setShowEmailModal(false)
+                  setEmailAddress('')
+                }}
+                className="flex-1 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Blue Header Section */}
+      <div className="bg-blue-600 text-white py-12 px-8 -m-8 mb-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-4">
+            <Link href="/reports" className="text-blue-100 hover:text-white font-medium">
               ← Back to Reports
             </Link>
           </div>
-        </div>
-
-        {/* Sort Options */}
-        <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 mb-8">
-          <div className="flex gap-4 items-center">
-            <label className="text-sm font-medium text-gray-300">Sort by:</label>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as 'margin' | 'markup' | 'profit')}
-              className="px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-gray-100"
-            >
-              <option value="margin">Average Margin %</option>
-              <option value="markup">Average Markup %</option>
-              <option value="profit">Average Profit per Unit</option>
-            </select>
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl md:text-4xl font-bold mb-2">
+                Brand Profitability Analysis
+              </h1>
+              <p className="text-blue-100">
+                Compare brand performance across categories and subcategories
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={downloadPDF}
+                className="px-4 py-2 bg-white text-blue-600 hover:bg-blue-50 rounded-lg transition-colors font-medium"
+              >
+                📄 Export PDF
+              </button>
+              <button
+                onClick={() => setShowEmailModal(true)}
+                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors font-medium"
+              >
+                📧 Email PDF
+              </button>
+            </div>
           </div>
         </div>
+      </div>
 
-        {/* Brand Cards */}
-        <div className="space-y-6">
-          {brandMetrics.map((brandMetric, index) => (
-            <div
-              key={brandMetric.brand.id}
-              className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden"
+      {/* Sort Options */}
+      <div className="bg-white border border-gray-200 rounded-lg p-6 mb-8">
+        <div className="flex gap-4 items-center">
+          <label className="text-sm font-medium text-gray-700">Sort by:</label>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as 'margin' | 'markup' | 'profit')}
+            className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="margin">Average Margin %</option>
+            <option value="markup">Average Markup %</option>
+            <option value="profit">Average Profit per Unit</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Brand Cards */}
+      <div className="space-y-6">
+        {brandMetrics.map((brandMetric, index) => (
+          <div
+            key={brandMetric.brand.id}
+            className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-blue-300 hover:shadow-md transition-all"
+          >
+            {/* Brand Header */}
+            <div 
+              className="p-6 cursor-pointer hover:bg-gray-50 transition-colors"
+              onClick={() => setExpandedBrand(
+                expandedBrand === brandMetric.brand.id ? null : brandMetric.brand.id
+              )}
             >
-              {/* Brand Header */}
-              <div 
-                className="p-6 cursor-pointer hover:bg-gray-750 transition-colors"
-                onClick={() => setExpandedBrand(
-                  expandedBrand === brandMetric.brand.id ? null : brandMetric.brand.id
-                )}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <span className="text-2xl font-bold text-gray-500">#{index + 1}</span>
-                    <div>
-                      <h3 className="text-2xl font-bold text-purple-400">{brandMetric.brand.name}</h3>
-                      <p className="text-sm text-gray-400 mt-1">{brandMetric.productCount} products</p>
-                    </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <span className="text-2xl font-bold text-gray-400">#{index + 1}</span>
+                  <div>
+                    <h3 className="text-2xl font-bold text-purple-600">{brandMetric.brand.name}</h3>
+                    <p className="text-sm text-gray-500 mt-1">{brandMetric.productCount} products</p>
                   </div>
-                  <div className="flex gap-8">
-                    <div className="text-right">
-                      <p className="text-sm text-gray-400">Avg Margin</p>
-                      <p className="text-2xl font-bold text-yellow-400">{brandMetric.avgMargin.toFixed(2)}%</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm text-gray-400">Avg Markup</p>
-                      <p className="text-2xl font-bold text-purple-400">{brandMetric.avgMarkup.toFixed(2)}%</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm text-gray-400">Avg Profit/Unit</p>
-                      <p className="text-2xl font-bold text-green-400">${brandMetric.avgProfitPerUnit.toFixed(2)}</p>
-                    </div>
-                    <button className="text-gray-400 hover:text-gray-300">
-                      {expandedBrand === brandMetric.brand.id ? '▼' : '▶'}
-                    </button>
+                </div>
+                <div className="flex gap-8">
+                  <div className="text-right">
+                    <p className="text-sm text-gray-500">Avg Margin</p>
+                    <p className="text-2xl font-bold text-yellow-600">{brandMetric.avgMargin.toFixed(2)}%</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm text-gray-500">Avg Markup</p>
+                    <p className="text-2xl font-bold text-purple-600">{brandMetric.avgMarkup.toFixed(2)}%</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm text-gray-500">Avg Profit/Unit</p>
+                    <p className="text-2xl font-bold text-green-600">${brandMetric.avgProfitPerUnit.toFixed(2)}</p>
+                  </div>
+                  <button className="text-gray-400 hover:text-gray-600">
+                    {expandedBrand === brandMetric.brand.id ? '▼' : '▶'}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Expanded Details */}
+            {expandedBrand === brandMetric.brand.id && (
+              <div className="border-t border-gray-200 p-6 bg-gray-50">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                  {/* Category Breakdown */}
+                  <div>
+                    <h4 className="text-lg font-semibold text-blue-600 mb-4">
+                      Top Categories
+                    </h4>
+                    {brandMetric.categoryBreakdown.length > 0 ? (
+                      <div className="space-y-3">
+                        {brandMetric.categoryBreakdown.slice(0, 5).map(cat => (
+                          <div key={cat.category.id} className="bg-white rounded-lg p-4 border border-gray-200">
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <p className="font-medium text-gray-900">{cat.category.name}</p>
+                                <p className="text-sm text-gray-500">{cat.productCount} products</p>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-sm text-yellow-600">{cat.avgMargin.toFixed(2)}% margin</p>
+                                <p className="text-sm text-purple-600">{cat.avgMarkup.toFixed(2)}% markup</p>
+                                <p className="text-sm font-semibold text-green-600">${cat.avgProfitPerUnit.toFixed(2)}/unit</p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-gray-500">No categories</p>
+                    )}
+                  </div>
+
+                  {/* Subcategory Breakdown */}
+                  <div>
+                    <h4 className="text-lg font-semibold text-orange-600 mb-4">
+                      Top Subcategories
+                    </h4>
+                    {brandMetric.subcategoryBreakdown.length > 0 ? (
+                      <div className="space-y-3">
+                        {brandMetric.subcategoryBreakdown.slice(0, 5).map(sub => (
+                          <div key={sub.subcategory.id} className="bg-white rounded-lg p-4 border border-gray-200">
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <p className="font-medium text-gray-900">{sub.subcategory.name}</p>
+                                <p className="text-sm text-gray-500">{sub.productCount} products</p>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-sm text-yellow-600">{sub.avgMargin.toFixed(2)}% margin</p>
+                                <p className="text-sm text-purple-600">{sub.avgMarkup.toFixed(2)}% markup</p>
+                                <p className="text-sm font-semibold text-green-600">${sub.avgProfitPerUnit.toFixed(2)}/unit</p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-gray-500">No subcategories</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Products List */}
+                <div>
+                  <h4 className="text-lg font-semibold text-green-600 mb-4">
+                    Products
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {products
+                      .filter(p => p.brand?.id === brandMetric.brand.id)
+                      .map(product => {
+                        const margin = product.retailPrice > 0 
+                          ? ((product.retailPrice - product.cost) / product.retailPrice) * 100 
+                          : 0
+                        const markup = product.cost > 0 
+                          ? ((product.retailPrice - product.cost) / product.cost) * 100 
+                          : 0
+                        const profitPerUnit = product.retailPrice - product.cost
+
+                        return (
+                          <div key={product.id} className="bg-white rounded-lg p-4 border border-gray-200">
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <p className="font-medium text-gray-900">{product.name}</p>
+                                <p className="text-sm text-gray-500">{product.sku}</p>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-sm text-yellow-600">{margin.toFixed(2)}% margin</p>
+                                <p className="text-sm text-purple-600">{markup.toFixed(2)}% markup</p>
+                                <p className="text-sm font-semibold text-green-600">${profitPerUnit.toFixed(2)}/unit</p>
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })}
                   </div>
                 </div>
               </div>
-
-              {/* Expanded Details */}
-              {expandedBrand === brandMetric.brand.id && (
-                <div className="border-t border-gray-700 p-6 bg-gray-900">
-                  <div className="grid grid-cols-2 gap-8 mb-8">
-                    {/* Category Breakdown */}
-                    <div>
-                      <h4 className="text-lg font-semibold text-blue-400 mb-4">
-                        Top Categories
-                      </h4>
-                      {brandMetric.categoryBreakdown.length > 0 ? (
-                        <div className="space-y-3">
-                          {brandMetric.categoryBreakdown.slice(0, 5).map(cat => (
-                            <div key={cat.category.id} className="bg-gray-800 rounded-lg p-3">
-                              <div className="flex justify-between items-center">
-                                <div>
-                                  <p className="font-medium text-gray-200">{cat.category.name}</p>
-                                  <p className="text-sm text-gray-400">{cat.productCount} products</p>
-                                </div>
-                                <div className="text-right">
-                                  <p className="text-sm text-yellow-400">{cat.avgMargin.toFixed(2)}% margin</p>
-                                  <p className="text-sm text-purple-400">{cat.avgMarkup.toFixed(2)}% markup</p>
-                                  <p className="text-sm font-semibold text-green-400">${cat.avgProfitPerUnit.toFixed(2)}/unit</p>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="text-gray-500">No categories</p>
-                      )}
-                    </div>
-
-                    {/* Subcategory Breakdown */}
-                    <div>
-                      <h4 className="text-lg font-semibold text-orange-400 mb-4">
-                        Top Subcategories
-                      </h4>
-                      {brandMetric.subcategoryBreakdown.length > 0 ? (
-                        <div className="space-y-3">
-                          {brandMetric.subcategoryBreakdown.slice(0, 5).map(sub => (
-                            <div key={sub.subcategory.id} className="bg-gray-800 rounded-lg p-3">
-                              <div className="flex justify-between items-center">
-                                <div>
-                                  <p className="font-medium text-gray-200">{sub.subcategory.name}</p>
-                                  <p className="text-sm text-gray-400">{sub.productCount} products</p>
-                                </div>
-                                <div className="text-right">
-                                  <p className="text-sm text-yellow-400">{sub.avgMargin.toFixed(2)}% margin</p>
-                                  <p className="text-sm text-purple-400">{sub.avgMarkup.toFixed(2)}% markup</p>
-                                  <p className="text-sm font-semibold text-green-400">${sub.avgProfitPerUnit.toFixed(2)}/unit</p>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="text-gray-500">No subcategories</p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Products List */}
-                  <div>
-                    <h4 className="text-lg font-semibold text-green-400 mb-4">
-                      Products
-                    </h4>
-                    <div className="space-y-3">
-                      {products
-                        .filter(p => p.brand?.id === brandMetric.brand.id)
-                        .map(product => {
-                          const margin = product.retailPrice > 0 
-                            ? ((product.retailPrice - product.cost) / product.retailPrice) * 100 
-                            : 0
-                          const markup = product.cost > 0 
-                            ? ((product.retailPrice - product.cost) / product.cost) * 100 
-                            : 0
-                          const profitPerUnit = product.retailPrice - product.cost
-
-                          return (
-                            <div key={product.id} className="bg-gray-800 rounded-lg p-3">
-                              <div className="flex justify-between items-center">
-                                <div>
-                                  <p className="font-medium text-gray-200">{product.name}</p>
-                                  <p className="text-sm text-gray-400">{product.sku}</p>
-                                </div>
-                                <div className="text-right">
-                                  <p className="text-sm text-yellow-400">{margin.toFixed(2)}% margin</p>
-                                  <p className="text-sm text-purple-400">{markup.toFixed(2)}% markup</p>
-                                  <p className="text-sm font-semibold text-green-400">${profitPerUnit.toFixed(2)}/unit</p>
-                                </div>
-                              </div>
-                            </div>
-                          )
-                        })}
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+            )}
+          </div>
+        ))}
       </div>
-    </div>
+    </PageLayout>
   )
 }

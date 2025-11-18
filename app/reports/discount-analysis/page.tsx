@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import PageLayout from '@/app/components/PageLayout'
 
 type Customer = {
   id: string
@@ -64,6 +65,9 @@ export default function DiscountAnalysisReport() {
   const [productSortBy, setProductSortBy] = useState<'profitLost' | 'discount' | 'units' | 'potentialProfit'>('profitLost')
   const [customerSortBy, setCustomerSortBy] = useState<'profitLost' | 'discount' | 'orders' | 'discountRate'>('profitLost')
   const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('desc')
+  const [showEmailModal, setShowEmailModal] = useState(false)
+  const [emailAddress, setEmailAddress] = useState('')
+  const [emailSending, setEmailSending] = useState(false)
 
   useEffect(() => {
     async function fetchData() {
@@ -293,6 +297,18 @@ export default function DiscountAnalysisReport() {
     ? (totalActualProfit / totalPotentialProfit) * 100
     : 0
 
+  const getFilterLabel = () => {
+    switch (dateFilter) {
+      case '30': return 'Last 30 Days'
+      case '60': return 'Last 60 Days'
+      case '90': return 'Last 90 Days'
+      case 'ytd': return 'Year to Date'
+      case 'thisYear': return 'This Year'
+      case 'lastYear': return 'Last Year'
+      default: return 'Last 30 Days'
+    }
+  }
+
   const generatePDF = async () => {
     const { jsPDF } = await import('jspdf')
     const autoTable = (await import('jspdf-autotable')).default
@@ -357,308 +373,417 @@ export default function DiscountAnalysisReport() {
       })
     }
 
+    return doc
+  }
+
+  const downloadPDF = async () => {
+    const doc = await generatePDF()
     doc.save(`discount-analysis-${viewMode}-${dateFilter}-${new Date().toISOString().split('T')[0]}.pdf`)
   }
 
-  const getFilterLabel = () => {
-    switch (dateFilter) {
-      case '30': return 'Last 30 Days'
-      case '60': return 'Last 60 Days'
-      case '90': return 'Last 90 Days'
-      case 'ytd': return 'Year to Date'
-      case 'thisYear': return 'This Year'
-      case 'lastYear': return 'Last Year'
-      default: return 'Last 30 Days'
+  const handleEmailPDF = async () => {
+    if (!emailAddress || !emailAddress.includes('@')) {
+      alert('Please enter a valid email address')
+      return
+    }
+
+    setEmailSending(true)
+
+    try {
+      const doc = await generatePDF()
+      const pdfBase64 = doc.output('datauristring').split(',')[1]
+
+      const response = await fetch('/api/email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: emailAddress,
+          subject: `Discount & Pricing Analysis - ${viewMode === 'products' ? 'Products' : 'Customers'} - ${getFilterLabel()} - ${new Date().toLocaleDateString()}`,
+          html: `
+            <h2>Discount & Pricing Analysis</h2>
+            <p>Please find attached your Discount & Pricing Analysis report.</p>
+            <h3>Summary:</h3>
+            <ul>
+              <li><strong>View:</strong> ${viewMode === 'products' ? 'Products' : 'Customers'}</li>
+              <li><strong>Period:</strong> ${getFilterLabel()}</li>
+              <li><strong>Potential Profit:</strong> $${totalPotentialProfit.toFixed(2)}</li>
+              <li><strong>Actual Profit:</strong> $${totalActualProfit.toFixed(2)}</li>
+              <li><strong>Profit Lost:</strong> $${totalProfitLost.toFixed(2)}</li>
+              <li><strong>Average Discount:</strong> ${avgDiscount.toFixed(1)}%</li>
+              <li><strong>Capture Rate:</strong> ${captureRate.toFixed(1)}%</li>
+            </ul>
+            <p>Generated on ${new Date().toLocaleString()}</p>
+          `,
+          attachments: [
+            {
+              filename: `discount-analysis-${viewMode}-${dateFilter}-${new Date().toISOString().split('T')[0]}.pdf`,
+              content: pdfBase64,
+            },
+          ],
+        }),
+      })
+
+      if (response.ok) {
+        alert('Report emailed successfully!')
+        setShowEmailModal(false)
+        setEmailAddress('')
+      } else {
+        const error = await response.json()
+        alert(`Failed to send email: ${error.error}`)
+      }
+    } catch (error) {
+      console.error('Error sending email:', error)
+      alert('Failed to send email. Please try again.')
+    } finally {
+      setEmailSending(false)
     }
   }
 
   if (loading) {
     return (
-      <div className="min-h-screen p-8 flex items-center justify-center">
-        <div className="text-xl text-gray-400">Loading report...</div>
-      </div>
+      <PageLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-gray-500">Loading report...</div>
+        </div>
+      </PageLayout>
     )
   }
 
   return (
-    <div className="min-h-screen p-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-red-400 to-orange-600 bg-clip-text text-transparent">
-            Discount & Pricing Analysis
-          </h1>
-          <div className="flex gap-3">
-            <button
-              onClick={generatePDF}
-              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
-            >
-              📄 Export PDF
-            </button>
-            <Link
-              href="/reports"
-              className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
-            >
+    <PageLayout>
+      {/* Email Modal */}
+      {showEmailModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">Email Report</h3>
+            <p className="text-gray-600 text-sm mb-4">
+              Enter the email address where you'd like to send this report.
+            </p>
+            <input
+              type="email"
+              placeholder="email@example.com"
+              value={emailAddress}
+              onChange={(e) => setEmailAddress(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <div className="flex gap-3">
+              <button
+                onClick={handleEmailPDF}
+                disabled={emailSending}
+                className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {emailSending ? 'Sending...' : 'Send Email'}
+              </button>
+              <button
+                onClick={() => {
+                  setShowEmailModal(false)
+                  setEmailAddress('')
+                }}
+                className="flex-1 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Blue Header Section */}
+      <div className="bg-blue-600 text-white py-12 px-8 -m-8 mb-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-4">
+            <Link href="/reports" className="text-blue-100 hover:text-white font-medium">
               ← Back to Reports
             </Link>
           </div>
-        </div>
-
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-            <p className="text-sm text-gray-400 mb-2">Potential Profit</p>
-            <p className="text-3xl font-bold text-blue-400">${totalPotentialProfit.toFixed(0)}</p>
-            <p className="text-xs text-gray-500 mt-1">At full retail</p>
-          </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-            <p className="text-sm text-gray-400 mb-2">Actual Profit</p>
-            <p className="text-3xl font-bold text-green-400">${totalActualProfit.toFixed(0)}</p>
-            <p className="text-xs text-gray-500 mt-1">With discounts</p>
-          </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-            <p className="text-sm text-gray-400 mb-2">Profit Lost</p>
-            <p className="text-3xl font-bold text-red-400">${totalProfitLost.toFixed(0)}</p>
-            <p className="text-xs text-gray-500 mt-1">Due to discounts</p>
-          </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-            <p className="text-sm text-gray-400 mb-2">Avg Discount</p>
-            <p className="text-3xl font-bold text-orange-400">{avgDiscount.toFixed(1)}%</p>
-            <p className="text-xs text-gray-500 mt-1">Across all products</p>
-          </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-            <p className="text-sm text-gray-400 mb-2">Capture Rate</p>
-            <p className="text-3xl font-bold text-purple-400">{captureRate.toFixed(1)}%</p>
-            <p className="text-xs text-gray-500 mt-1">Of potential profit</p>
-          </div>
-        </div>
-
-        {/* View Mode Toggle */}
-        <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 mb-6">
-          <div className="flex gap-4 items-center">
-            <label className="text-sm font-medium text-gray-300">View:</label>
-            <div className="flex gap-2">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl md:text-4xl font-bold mb-2">
+                Discount & Pricing Analysis
+              </h1>
+              <p className="text-blue-100">
+                Analyze discount impact on profitability by products and customers
+              </p>
+            </div>
+            <div className="flex gap-3">
               <button
-                onClick={() => setViewMode('products')}
-                className={`px-6 py-2 rounded-lg transition-colors font-medium ${
-                  viewMode === 'products'
-                    ? 'bg-red-500 text-white'
-                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                }`}
+                onClick={downloadPDF}
+                className="px-4 py-2 bg-white text-blue-600 hover:bg-blue-50 rounded-lg transition-colors font-medium"
               >
-                📦 Products
+                📄 Export PDF
               </button>
               <button
-                onClick={() => setViewMode('customers')}
-                className={`px-6 py-2 rounded-lg transition-colors font-medium ${
-                  viewMode === 'customers'
-                    ? 'bg-red-500 text-white'
-                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                }`}
+                onClick={() => setShowEmailModal(true)}
+                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors font-medium"
               >
-                👥 Customers
+                📧 Email PDF
               </button>
             </div>
           </div>
         </div>
-
-        {/* Filters */}
-        <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 mb-8">
-          <div className="flex gap-6 items-center flex-wrap">
-            {/* Date Filter */}
-            <div className="flex gap-4 items-center">
-              <label className="text-sm font-medium text-gray-300">Period:</label>
-              <div className="flex gap-2">
-                {[
-                  { value: '30', label: 'Last 30 Days' },
-                  { value: '60', label: 'Last 60 Days' },
-                  { value: '90', label: 'Last 90 Days' },
-                  { value: 'ytd', label: 'YTD' },
-                  { value: 'thisYear', label: 'This Year' },
-                  { value: 'lastYear', label: 'Last Year' },
-                ].map(filter => (
-                  <button
-                    key={filter.value}
-                    onClick={() => setDateFilter(filter.value as DateFilter)}
-                    className={`px-4 py-2 rounded-lg transition-colors ${
-                      dateFilter === filter.value
-                        ? 'bg-red-500 text-white'
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
-                  >
-                    {filter.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Sort Options */}
-            <div className="flex gap-4 items-center ml-auto">
-              <label className="text-sm font-medium text-gray-300">Sort by:</label>
-              {viewMode === 'products' ? (
-                <select
-                  value={productSortBy}
-                  onChange={(e) => setProductSortBy(e.target.value as 'profitLost' | 'discount' | 'units' | 'potentialProfit')}
-                  className="px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-gray-100"
-                >
-                  <option value="profitLost">Profit Lost</option>
-                  <option value="discount">Discount %</option>
-                  <option value="units">Units Sold</option>
-                  <option value="potentialProfit">Potential Profit</option>
-                </select>
-              ) : (
-                <select
-                  value={customerSortBy}
-                  onChange={(e) => setCustomerSortBy(e.target.value as 'profitLost' | 'discount' | 'orders' | 'discountRate')}
-                  className="px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-gray-100"
-                >
-                  <option value="profitLost">Profit Lost</option>
-                  <option value="discount">Avg Discount %</option>
-                  <option value="orders">Order Count</option>
-                  <option value="discountRate">Discount Rate %</option>
-                </select>
-              )}
-              <button
-                onClick={() => setSortOrder(prev => prev === 'desc' ? 'asc' : 'desc')}
-                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
-              >
-                {sortOrder === 'desc' ? '↓ Highest First' : '↑ Lowest First'}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Results Table - Products View */}
-        {viewMode === 'products' && (
-          <>
-            {productMetrics.length === 0 ? (
-              <div className="bg-gray-800 border border-gray-700 rounded-lg p-8 text-center">
-                <p className="text-gray-400">No sales data for the selected period.</p>
-              </div>
-            ) : (
-              <div className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="bg-gray-900 border-b border-gray-700">
-                      <tr>
-                        <th className="text-left p-4 text-gray-400 font-medium">Rank</th>
-                        <th className="text-left p-4 text-gray-400 font-medium">SKU</th>
-                        <th className="text-left p-4 text-gray-400 font-medium">Product</th>
-                        <th className="text-center p-4 text-gray-400 font-medium">Units Sold</th>
-                        <th className="text-right p-4 text-gray-400 font-medium">Retail Price</th>
-                        <th className="text-right p-4 text-gray-400 font-medium">Avg Selling Price</th>
-                        <th className="text-right p-4 text-gray-400 font-medium">Avg Discount %</th>
-                        <th className="text-right p-4 text-gray-400 font-medium">Potential Profit</th>
-                        <th className="text-right p-4 text-gray-400 font-medium">Actual Profit</th>
-                        <th className="text-right p-4 text-gray-400 font-medium">Profit Lost</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {productMetrics.map((product, index) => (
-                        <tr 
-                          key={product.product.id} 
-                          className="border-b border-gray-800 hover:bg-gray-900/50 transition-colors"
-                        >
-                          <td className="p-4 text-gray-300">#{index + 1}</td>
-                          <td className="p-4 text-gray-300 font-mono text-sm">{product.product.sku}</td>
-                          <td className="p-4 text-gray-100 font-medium">{product.product.name}</td>
-                          <td className="p-4 text-center text-cyan-400">{product.unitsSold}</td>
-                          <td className="p-4 text-right text-gray-400">${product.product.retailPrice.toFixed(2)}</td>
-                          <td className="p-4 text-right text-blue-400">${product.avgSellingPrice.toFixed(2)}</td>
-                          <td className="p-4 text-right">
-                            <span className={`font-semibold ${
-                              product.avgDiscount > 10 ? 'text-red-400' : 
-                              product.avgDiscount > 5 ? 'text-orange-400' : 
-                              'text-yellow-400'
-                            }`}>
-                              {product.avgDiscount.toFixed(1)}%
-                            </span>
-                          </td>
-                          <td className="p-4 text-right text-blue-400">${product.potentialProfit.toFixed(2)}</td>
-                          <td className="p-4 text-right text-green-400">${product.actualProfit.toFixed(2)}</td>
-                          <td className="p-4 text-right">
-                            <span className="font-semibold text-red-400">
-                              ${product.profitLost.toFixed(2)}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-          </>
-        )}
-
-        {/* Results Table - Customers View */}
-        {viewMode === 'customers' && (
-          <>
-            {customerMetrics.length === 0 ? (
-              <div className="bg-gray-800 border border-gray-700 rounded-lg p-8 text-center">
-                <p className="text-gray-400">No sales data for the selected period.</p>
-              </div>
-            ) : (
-              <div className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="bg-gray-900 border-b border-gray-700">
-                      <tr>
-                        <th className="text-left p-4 text-gray-400 font-medium">Rank</th>
-                        <th className="text-left p-4 text-gray-400 font-medium">Customer</th>
-                        <th className="text-center p-4 text-gray-400 font-medium">Orders</th>
-                        <th className="text-center p-4 text-gray-400 font-medium">Total Units</th>
-                        <th className="text-right p-4 text-gray-400 font-medium">Avg Discount %</th>
-                        <th className="text-right p-4 text-gray-400 font-medium">Discount Rate %</th>
-                        <th className="text-right p-4 text-gray-400 font-medium">Potential Profit</th>
-                        <th className="text-right p-4 text-gray-400 font-medium">Actual Profit</th>
-                        <th className="text-right p-4 text-gray-400 font-medium">Profit Lost</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {customerMetrics.map((customer, index) => (
-                        <tr 
-                          key={customer.customer.id} 
-                          className="border-b border-gray-800 hover:bg-gray-900/50 transition-colors"
-                        >
-                          <td className="p-4 text-gray-300">#{index + 1}</td>
-                          <td className="p-4 text-gray-100 font-medium">{customer.customer.name}</td>
-                          <td className="p-4 text-center text-cyan-400">{customer.orderCount}</td>
-                          <td className="p-4 text-center text-purple-400">{customer.totalUnits}</td>
-                          <td className="p-4 text-right">
-                            <span className={`font-semibold ${
-                              customer.avgDiscount > 10 ? 'text-red-400' : 
-                              customer.avgDiscount > 5 ? 'text-orange-400' : 
-                              'text-yellow-400'
-                            }`}>
-                              {customer.avgDiscount.toFixed(1)}%
-                            </span>
-                          </td>
-                          <td className="p-4 text-right">
-                            <span className={`font-semibold ${
-                              customer.discountRate > 75 ? 'text-red-400' : 
-                              customer.discountRate > 50 ? 'text-orange-400' : 
-                              'text-yellow-400'
-                            }`}>
-                              {customer.discountRate.toFixed(1)}%
-                            </span>
-                          </td>
-                          <td className="p-4 text-right text-blue-400">${customer.potentialProfit.toFixed(2)}</td>
-                          <td className="p-4 text-right text-green-400">${customer.actualProfit.toFixed(2)}</td>
-                          <td className="p-4 text-right">
-                            <span className="font-semibold text-red-400">
-                              ${customer.profitLost.toFixed(2)}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-          </>
-        )}
       </div>
-    </div>
+
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+        <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <p className="text-sm text-gray-500 mb-2">Potential Profit</p>
+          <p className="text-3xl font-bold text-blue-600">${totalPotentialProfit.toFixed(0)}</p>
+          <p className="text-xs text-gray-400 mt-1">At full retail</p>
+        </div>
+        <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <p className="text-sm text-gray-500 mb-2">Actual Profit</p>
+          <p className="text-3xl font-bold text-green-600">${totalActualProfit.toFixed(0)}</p>
+          <p className="text-xs text-gray-400 mt-1">With discounts</p>
+        </div>
+        <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <p className="text-sm text-gray-500 mb-2">Profit Lost</p>
+          <p className="text-3xl font-bold text-red-600">${totalProfitLost.toFixed(0)}</p>
+          <p className="text-xs text-gray-400 mt-1">Due to discounts</p>
+        </div>
+        <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <p className="text-sm text-gray-500 mb-2">Avg Discount</p>
+          <p className="text-3xl font-bold text-orange-600">{avgDiscount.toFixed(1)}%</p>
+          <p className="text-xs text-gray-400 mt-1">Across all products</p>
+        </div>
+        <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <p className="text-sm text-gray-500 mb-2">Capture Rate</p>
+          <p className="text-3xl font-bold text-purple-600">{captureRate.toFixed(1)}%</p>
+          <p className="text-xs text-gray-400 mt-1">Of potential profit</p>
+        </div>
+      </div>
+
+      {/* View Mode Toggle */}
+      <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+        <div className="flex gap-4 items-center">
+          <label className="text-sm font-medium text-gray-700">View:</label>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setViewMode('products')}
+              className={`px-6 py-2 rounded-lg transition-colors font-medium ${
+                viewMode === 'products'
+                  ? 'bg-red-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+               Products
+            </button>
+            <button
+              onClick={() => setViewMode('customers')}
+              className={`px-6 py-2 rounded-lg transition-colors font-medium ${
+                viewMode === 'customers'
+                  ? 'bg-red-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+               Customers
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div className="bg-white border border-gray-200 rounded-lg p-6 mb-8">
+        <div className="flex gap-6 items-center flex-wrap">
+          {/* Date Filter */}
+          <div className="flex gap-4 items-center">
+            <label className="text-sm font-medium text-gray-700">Period:</label>
+            <div className="flex flex-wrap gap-2">
+              {[
+                { value: '30', label: 'Last 30 Days' },
+                { value: '60', label: 'Last 60 Days' },
+                { value: '90', label: 'Last 90 Days' },
+                { value: 'ytd', label: 'YTD' },
+                { value: 'thisYear', label: 'This Year' },
+                { value: 'lastYear', label: 'Last Year' },
+              ].map(filter => (
+                <button
+                  key={filter.value}
+                  onClick={() => setDateFilter(filter.value as DateFilter)}
+                  className={`px-4 py-2 rounded-lg transition-colors ${
+                    dateFilter === filter.value
+                      ? 'bg-red-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {filter.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Sort Options */}
+          <div className="flex gap-4 items-center ml-auto">
+            <label className="text-sm font-medium text-gray-700">Sort by:</label>
+            {viewMode === 'products' ? (
+              <select
+                value={productSortBy}
+                onChange={(e) => setProductSortBy(e.target.value as 'profitLost' | 'discount' | 'units' | 'potentialProfit')}
+                className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="profitLost">Profit Lost</option>
+                <option value="discount">Discount %</option>
+                <option value="units">Units Sold</option>
+                <option value="potentialProfit">Potential Profit</option>
+              </select>
+            ) : (
+              <select
+                value={customerSortBy}
+                onChange={(e) => setCustomerSortBy(e.target.value as 'profitLost' | 'discount' | 'orders' | 'discountRate')}
+                className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="profitLost">Profit Lost</option>
+                <option value="discount">Avg Discount %</option>
+                <option value="orders">Order Count</option>
+                <option value="discountRate">Discount Rate %</option>
+              </select>
+            )}
+            <button
+              onClick={() => setSortOrder(prev => prev === 'desc' ? 'asc' : 'desc')}
+              className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
+            >
+              {sortOrder === 'desc' ? '↓ Highest First' : '↑ Lowest First'}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Results Table - Products View */}
+      {viewMode === 'products' && (
+        <>
+          {productMetrics.length === 0 ? (
+            <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
+              <p className="text-gray-500">No sales data for the selected period.</p>
+            </div>
+          ) : (
+            <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                      <th className="text-left p-4 text-gray-700 font-medium text-sm">Rank</th>
+                      <th className="text-left p-4 text-gray-700 font-medium text-sm">SKU</th>
+                      <th className="text-left p-4 text-gray-700 font-medium text-sm">Product</th>
+                      <th className="text-center p-4 text-gray-700 font-medium text-sm">Units Sold</th>
+                      <th className="text-right p-4 text-gray-700 font-medium text-sm">Retail Price</th>
+                      <th className="text-right p-4 text-gray-700 font-medium text-sm">Avg Selling Price</th>
+                      <th className="text-right p-4 text-gray-700 font-medium text-sm">Avg Discount %</th>
+                      <th className="text-right p-4 text-gray-700 font-medium text-sm">Potential Profit</th>
+                      <th className="text-right p-4 text-gray-700 font-medium text-sm">Actual Profit</th>
+                      <th className="text-right p-4 text-gray-700 font-medium text-sm">Profit Lost</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {productMetrics.map((product, index) => (
+                      <tr 
+                        key={product.product.id} 
+                        className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${
+                          index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'
+                        }`}
+                      >
+                        <td className="p-4 text-gray-600 text-sm">#{index + 1}</td>
+                        <td className="p-4 text-gray-600 font-mono text-sm">{product.product.sku}</td>
+                        <td className="p-4 text-gray-900 font-medium text-sm">{product.product.name}</td>
+                        <td className="p-4 text-center text-cyan-600 text-sm">{product.unitsSold}</td>
+                        <td className="p-4 text-right text-gray-500 text-sm">${product.product.retailPrice.toFixed(2)}</td>
+                        <td className="p-4 text-right text-blue-600 text-sm">${product.avgSellingPrice.toFixed(2)}</td>
+                        <td className="p-4 text-right text-sm">
+                          <span className={`font-semibold ${
+                            product.avgDiscount > 10 ? 'text-red-600' : 
+                            product.avgDiscount > 5 ? 'text-orange-600' : 
+                            'text-yellow-600'
+                          }`}>
+                            {product.avgDiscount.toFixed(1)}%
+                          </span>
+                        </td>
+                        <td className="p-4 text-right text-blue-600 text-sm">${product.potentialProfit.toFixed(2)}</td>
+                        <td className="p-4 text-right text-green-600 text-sm">${product.actualProfit.toFixed(2)}</td>
+                        <td className="p-4 text-right text-sm">
+                          <span className="font-semibold text-red-600">
+                            ${product.profitLost.toFixed(2)}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Results Table - Customers View */}
+      {viewMode === 'customers' && (
+        <>
+          {customerMetrics.length === 0 ? (
+            <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
+              <p className="text-gray-500">No sales data for the selected period.</p>
+            </div>
+          ) : (
+            <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                      <th className="text-left p-4 text-gray-700 font-medium text-sm">Rank</th>
+                      <th className="text-left p-4 text-gray-700 font-medium text-sm">Customer</th>
+                      <th className="text-center p-4 text-gray-700 font-medium text-sm">Orders</th>
+                      <th className="text-center p-4 text-gray-700 font-medium text-sm">Total Units</th>
+                      <th className="text-right p-4 text-gray-700 font-medium text-sm">Avg Discount %</th>
+                      <th className="text-right p-4 text-gray-700 font-medium text-sm">Discount Rate %</th>
+                      <th className="text-right p-4 text-gray-700 font-medium text-sm">Potential Profit</th>
+                      <th className="text-right p-4 text-gray-700 font-medium text-sm">Actual Profit</th>
+                      <th className="text-right p-4 text-gray-700 font-medium text-sm">Profit Lost</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {customerMetrics.map((customer, index) => (
+                      <tr 
+                        key={customer.customer.id} 
+                        className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${
+                          index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'
+                        }`}
+                      >
+                        <td className="p-4 text-gray-600 text-sm">#{index + 1}</td>
+                        <td className="p-4 text-gray-900 font-medium text-sm">{customer.customer.name}</td>
+                        <td className="p-4 text-center text-cyan-600 text-sm">{customer.orderCount}</td>
+                        <td className="p-4 text-center text-purple-600 text-sm">{customer.totalUnits}</td>
+                        <td className="p-4 text-right text-sm">
+                          <span className={`font-semibold ${
+                            customer.avgDiscount > 10 ? 'text-red-600' : 
+                            customer.avgDiscount > 5 ? 'text-orange-600' : 
+                            'text-yellow-600'
+                          }`}>
+                            {customer.avgDiscount.toFixed(1)}%
+                          </span>
+                        </td>
+                        <td className="p-4 text-right text-sm">
+                          <span className={`font-semibold ${
+                            customer.discountRate > 75 ? 'text-red-600' : 
+                            customer.discountRate > 50 ? 'text-orange-600' : 
+                            'text-yellow-600'
+                          }`}>
+                            {customer.discountRate.toFixed(1)}%
+                          </span>
+                        </td>
+                        <td className="p-4 text-right text-blue-600 text-sm">${customer.potentialProfit.toFixed(2)}</td>
+                        <td className="p-4 text-right text-green-600 text-sm">${customer.actualProfit.toFixed(2)}</td>
+                        <td className="p-4 text-right text-sm">
+                          <span className="font-semibold text-red-600">
+                            ${customer.profitLost.toFixed(2)}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+    </PageLayout>
   )
 }
