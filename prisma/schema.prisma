@@ -235,3 +235,35 @@ model SalesVisit {
   @@index([customerId])
   @@index([visitDate])
 }
+model ScheduledReportBatch {
+  id              String                 @id @default(cuid())
+  name            String                 // User-defined name like "Weekly Executive Summary"
+  userName        String                 // Name of person receiving report
+  emailAddress    String                 // Email to send to
+  status          String                 @default("draft") // "draft" or "active"
+  frequency       String                 // "daily", "weekly", "monthly"
+  scheduledDays   String?                // JSON array of days for weekly (e.g., ["Monday", "Friday"])
+  scheduledTime   String                 @default("09:00") // Time to send (HH:MM format)
+  lastSentAt      DateTime?              // Last time report was sent
+  nextScheduledAt DateTime?              // Next scheduled send time
+  items           ScheduledReportItem[]  // Reports in this batch
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+
+  @@index([status])
+  @@index([nextScheduledAt])
+}
+
+model ScheduledReportItem {
+  id                     String                @id @default(cuid())
+  batchId                String
+  batch                  ScheduledReportBatch  @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  reportType             String                // "product-profitability", "category-analysis", etc.
+  orderIndex             Int                   // Position in the batch (for drag-and-drop ordering)
+  filterConfig           String                @db.Text // JSON string of filter settings
+  createdAt              DateTime              @default(now())
+  updatedAt              DateTime              @updatedAt
+
+  @@index([batchId])
+  @@index([orderIndex])
+}
