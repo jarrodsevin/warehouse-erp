@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import PageLayout from '@/app/components/PageLayout'
 
 type Category = {
   id: string
@@ -43,6 +44,10 @@ export default function ProfitabilityReport() {
   const [subcategories, setSubcategories] = useState<Subcategory[]>([])
   const [brands, setBrands] = useState<Brand[]>([])
   const [loading, setLoading] = useState(true)
+  const [showFilters, setShowFilters] = useState(true)
+  const [showEmailModal, setShowEmailModal] = useState(false)
+  const [emailAddress, setEmailAddress] = useState('')
+  const [emailSending, setEmailSending] = useState(false)
 
   // Filters
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
@@ -57,11 +62,9 @@ export default function ProfitabilityReport() {
         const response = await fetch('/api/products')
         const data = await response.json()
         
-        // Handle the API response - it returns an array directly
         const productsData = Array.isArray(data) ? data : []
         setProducts(productsData)
         
-        // Extract unique categories, subcategories, and brands
         const uniqueCategories = Array.from(
           new Map(productsData.map((p: Product) => [p.category.id, p.category])).values()
         ) as Category[]
@@ -261,71 +264,202 @@ export default function ProfitabilityReport() {
       },
     })
 
+    return doc
+  }
+
+  const downloadPDF = async () => {
+    const doc = await generatePDF()
     doc.save(`profitability-report-${new Date().toISOString().split('T')[0]}.pdf`)
   }
 
+  const handleEmailPDF = async () => {
+    if (!emailAddress || !emailAddress.includes('@')) {
+      alert('Please enter a valid email address')
+      return
+    }
+
+    setEmailSending(true)
+
+    try {
+      const doc = await generatePDF()
+      const pdfBase64 = doc.output('datauristring').split(',')[1]
+
+      const response = await fetch('/api/email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: emailAddress,
+          subject: `Product Profitability Report - ${new Date().toLocaleDateString()}`,
+          html: `
+            <h2>Product Profitability Report</h2>
+            <p>Please find attached your Product Profitability Report.</p>
+            <h3>Summary:</h3>
+            <ul>
+              <li><strong>Total Products:</strong> ${totalProducts}</li>
+              <li><strong>Average Profit/Unit:</strong> $${avgProfit.toFixed(2)}</li>
+              <li><strong>Average Margin:</strong> ${avgMargin.toFixed(2)}%</li>
+            </ul>
+            <p>Generated on ${new Date().toLocaleString()}</p>
+          `,
+          attachments: [
+            {
+              filename: `profitability-report-${new Date().toISOString().split('T')[0]}.pdf`,
+              content: pdfBase64,
+            },
+          ],
+        }),
+      })
+
+      if (response.ok) {
+        alert('Report emailed successfully!')
+        setShowEmailModal(false)
+        setEmailAddress('')
+      } else {
+        const error = await response.json()
+        alert(`Failed to send email: ${error.error}`)
+      }
+    } catch (error) {
+      console.error('Error sending email:', error)
+      alert('Failed to send email. Please try again.')
+    } finally {
+      setEmailSending(false)
+    }
+  }
+
+  const activeFilterCount = selectedCategories.length + selectedSubcategories.length + selectedBrands.length
+
   if (loading) {
     return (
-      <div className="min-h-screen p-8 flex items-center justify-center">
-        <div className="text-xl text-gray-400">Loading report...</div>
-      </div>
+      <PageLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-gray-500">Loading report...</div>
+        </div>
+      </PageLayout>
     )
   }
 
   return (
-    <div className="min-h-screen p-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-green-400 to-cyan-600 bg-clip-text text-transparent">
-            Product Profitability Report
-          </h1>
-          <div className="flex gap-3">
-            <button
-              onClick={generatePDF}
-              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center gap-2"
-            >
-              📄 Export PDF
-            </button>
-            <Link
-              href="/reports"
-              className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
-            >
+    <PageLayout>
+      {/* Email Modal */}
+      {showEmailModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">Email Report</h3>
+            <p className="text-gray-600 text-sm mb-4">
+              Enter the email address where you'd like to send this report.
+            </p>
+            <input
+              type="email"
+              placeholder="email@example.com"
+              value={emailAddress}
+              onChange={(e) => setEmailAddress(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <div className="flex gap-3">
+              <button
+                onClick={handleEmailPDF}
+                disabled={emailSending}
+                className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {emailSending ? 'Sending...' : 'Send Email'}
+              </button>
+              <button
+                onClick={() => {
+                  setShowEmailModal(false)
+                  setEmailAddress('')
+                }}
+                className="flex-1 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Blue Header Section */}
+      <div className="bg-blue-600 text-white py-12 px-8 -m-8 mb-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-4">
+            <Link href="/reports" className="text-blue-100 hover:text-white font-medium">
               ← Back to Reports
             </Link>
           </div>
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl md:text-4xl font-bold mb-2">
+                Product Profitability Report
+              </h1>
+              <p className="text-blue-100">
+                Compare individual products by profitability with multi-dimensional filtering
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={downloadPDF}
+                className="px-4 py-2 bg-white text-blue-600 hover:bg-blue-50 rounded-lg transition-colors font-medium flex items-center gap-2"
+              >
+                📄 Export PDF
+              </button>
+              <button
+                onClick={() => setShowEmailModal(true)}
+                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors font-medium flex items-center gap-2"
+              >
+                📧 Email PDF
+              </button>
+            </div>
+          </div>
         </div>
+      </div>
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-            <p className="text-sm text-gray-400 mb-2">Total Products</p>
-            <p className="text-3xl font-bold text-blue-400">{totalProducts}</p>
-          </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-            <p className="text-sm text-gray-400 mb-2">Avg Profit/Unit</p>
-            <p className="text-3xl font-bold text-green-400">${avgProfit.toFixed(2)}</p>
-          </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-            <p className="text-sm text-gray-400 mb-2">Avg Margin</p>
-            <p className="text-3xl font-bold text-yellow-400">{avgMargin.toFixed(2)}%</p>
-          </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-            <p className="text-sm text-gray-400 mb-2">Range</p>
-            <p className="text-lg font-bold text-purple-400">
-              ${leastProfitable?.profit.toFixed(2) || '0'} - ${mostProfitable?.profit.toFixed(2) || '0'}
-            </p>
-          </div>
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <p className="text-sm text-gray-500 mb-2">Total Products</p>
+          <p className="text-3xl font-bold text-blue-600">{totalProducts}</p>
         </div>
+        <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <p className="text-sm text-gray-500 mb-2">Avg Profit/Unit</p>
+          <p className="text-3xl font-bold text-green-600">${avgProfit.toFixed(2)}</p>
+        </div>
+        <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <p className="text-sm text-gray-500 mb-2">Avg Margin</p>
+          <p className="text-3xl font-bold text-yellow-600">{avgMargin.toFixed(2)}%</p>
+        </div>
+        <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <p className="text-sm text-gray-500 mb-2">Range</p>
+          <p className="text-lg font-bold text-purple-600">
+            ${leastProfitable?.profit.toFixed(2) || '0'} - ${mostProfitable?.profit.toFixed(2) || '0'}
+          </p>
+        </div>
+      </div>
 
-        {/* Filters */}
-        <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 mb-8">
-          <h2 className="text-xl font-semibold text-gray-300 mb-4">Filters</h2>
-          
+      {/* Filters Toggle Button */}
+      <div className="mb-4">
+        <button
+          onClick={() => setShowFilters(!showFilters)}
+          className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-2"
+        >
+          <span>{showFilters ? '▼' : '▶'}</span>
+          <span>Filters</span>
+          {activeFilterCount > 0 && (
+            <span className="bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full text-xs">
+              {activeFilterCount} active
+            </span>
+          )}
+        </button>
+      </div>
+
+      {/* Filters */}
+      {showFilters && (
+        <div className="bg-white border border-gray-200 rounded-lg p-6 mb-8">
           {/* Category Filter */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Categories {selectedCategories.length > 0 && (
-                <span className="text-blue-400">({selectedCategories.length} selected)</span>
+                <span className="text-blue-600">({selectedCategories.length} selected)</span>
               )}
             </label>
             <div className="flex flex-wrap gap-2">
@@ -335,8 +469,8 @@ export default function ProfitabilityReport() {
                   onClick={() => toggleCategory(category.id)}
                   className={`px-4 py-2 rounded-lg transition-colors ${
                     selectedCategories.includes(category.id)
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
                   {category.name}
@@ -345,7 +479,7 @@ export default function ProfitabilityReport() {
               {selectedCategories.length > 0 && (
                 <button
                   onClick={() => setSelectedCategories([])}
-                  className="px-4 py-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30"
+                  className="px-4 py-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100"
                 >
                   Clear
                 </button>
@@ -355,9 +489,9 @@ export default function ProfitabilityReport() {
 
           {/* Subcategory Filter */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Subcategories {selectedSubcategories.length > 0 && (
-                <span className="text-orange-400">({selectedSubcategories.length} selected)</span>
+                <span className="text-orange-600">({selectedSubcategories.length} selected)</span>
               )}
             </label>
             <div className="flex flex-wrap gap-2">
@@ -367,8 +501,8 @@ export default function ProfitabilityReport() {
                   onClick={() => toggleSubcategory(subcategory.id)}
                   className={`px-4 py-2 rounded-lg transition-colors ${
                     selectedSubcategories.includes(subcategory.id)
-                      ? 'bg-orange-500 text-white'
-                      : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                      ? 'bg-orange-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
                   {subcategory.name}
@@ -377,7 +511,7 @@ export default function ProfitabilityReport() {
               {selectedSubcategories.length > 0 && (
                 <button
                   onClick={() => setSelectedSubcategories([])}
-                  className="px-4 py-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30"
+                  className="px-4 py-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100"
                 >
                   Clear
                 </button>
@@ -387,9 +521,9 @@ export default function ProfitabilityReport() {
 
           {/* Brand Filter */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Brands {selectedBrands.length > 0 && (
-                <span className="text-purple-400">({selectedBrands.length} selected)</span>
+                <span className="text-purple-600">({selectedBrands.length} selected)</span>
               )}
             </label>
             <div className="flex flex-wrap gap-2">
@@ -399,8 +533,8 @@ export default function ProfitabilityReport() {
                   onClick={() => toggleBrand(brand.id)}
                   className={`px-4 py-2 rounded-lg transition-colors ${
                     selectedBrands.includes(brand.id)
-                      ? 'bg-purple-500 text-white'
-                      : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                      ? 'bg-purple-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
                   {brand.name}
@@ -409,7 +543,7 @@ export default function ProfitabilityReport() {
               {selectedBrands.length > 0 && (
                 <button
                   onClick={() => setSelectedBrands([])}
-                  className="px-4 py-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30"
+                  className="px-4 py-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100"
                 >
                   Clear
                 </button>
@@ -418,12 +552,12 @@ export default function ProfitabilityReport() {
           </div>
 
           {/* Sort Options */}
-          <div className="flex gap-4 items-center">
-            <label className="text-sm font-medium text-gray-300">Sort by:</label>
+          <div className="flex flex-wrap gap-4 items-center">
+            <label className="text-sm font-medium text-gray-700">Sort by:</label>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as 'profit' | 'margin' | 'markup')}
-              className="px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-gray-100"
+              className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="profit">Profit per Unit</option>
               <option value="margin">Margin %</option>
@@ -431,68 +565,70 @@ export default function ProfitabilityReport() {
             </select>
             <button
               onClick={() => setSortOrder(prev => prev === 'desc' ? 'asc' : 'desc')}
-              className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
+              className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
             >
               {sortOrder === 'desc' ? '↓ Highest First' : '↑ Lowest First'}
             </button>
           </div>
         </div>
+      )}
 
-        {/* Results Table */}
-        {filteredProducts.length === 0 ? (
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-8 text-center">
-            <p className="text-gray-400">No products match your filter criteria.</p>
-          </div>
-        ) : (
-          <div className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-900 border-b border-gray-700">
-                  <tr>
-                    <th className="text-left p-4 text-gray-400 font-medium">Rank</th>
-                    <th className="text-left p-4 text-gray-400 font-medium">SKU</th>
-                    <th className="text-left p-4 text-gray-400 font-medium">Product Name</th>
-                    <th className="text-left p-4 text-gray-400 font-medium">Brand</th>
-                    <th className="text-left p-4 text-gray-400 font-medium">Category</th>
-                    <th className="text-left p-4 text-gray-400 font-medium">Subcategory</th>
-                    <th className="text-right p-4 text-gray-400 font-medium">Cost</th>
-                    <th className="text-right p-4 text-gray-400 font-medium">Retail</th>
-                    <th className="text-right p-4 text-gray-400 font-medium">Profit</th>
-                    <th className="text-right p-4 text-gray-400 font-medium">Margin %</th>
-                    <th className="text-right p-4 text-gray-400 font-medium">Markup %</th>
+      {/* Results Table */}
+      {filteredProducts.length === 0 ? (
+        <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
+          <p className="text-gray-500">No products match your filter criteria.</p>
+        </div>
+      ) : (
+        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50 border-b border-gray-200">
+                <tr>
+                  <th className="text-left p-4 text-gray-700 font-medium text-sm">Rank</th>
+                  <th className="text-left p-4 text-gray-700 font-medium text-sm">SKU</th>
+                  <th className="text-left p-4 text-gray-700 font-medium text-sm">Product Name</th>
+                  <th className="text-left p-4 text-gray-700 font-medium text-sm">Brand</th>
+                  <th className="text-left p-4 text-gray-700 font-medium text-sm">Category</th>
+                  <th className="text-left p-4 text-gray-700 font-medium text-sm">Subcategory</th>
+                  <th className="text-right p-4 text-gray-700 font-medium text-sm">Cost</th>
+                  <th className="text-right p-4 text-gray-700 font-medium text-sm">Retail</th>
+                  <th className="text-right p-4 text-gray-700 font-medium text-sm">Profit</th>
+                  <th className="text-right p-4 text-gray-700 font-medium text-sm">Margin %</th>
+                  <th className="text-right p-4 text-gray-700 font-medium text-sm">Markup %</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredProducts.map((product, index) => (
+                  <tr 
+                    key={product.id} 
+                    className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${
+                      index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'
+                    }`}
+                  >
+                    <td className="p-4 text-gray-600 text-sm">#{index + 1}</td>
+                    <td className="p-4 text-gray-600 font-mono text-sm">{product.sku}</td>
+                    <td className="p-4 text-gray-900 font-medium text-sm">{product.name}</td>
+                    <td className="p-4 text-gray-600 text-sm">{product.brand?.name || '-'}</td>
+                    <td className="p-4 text-gray-600 text-sm">{product.category.name}</td>
+                    <td className="p-4 text-gray-600 text-sm">{product.subcategory?.name || '-'}</td>
+                    <td className="p-4 text-right text-green-600 text-sm">${product.cost.toFixed(2)}</td>
+                    <td className="p-4 text-right text-blue-600 text-sm">${product.retailPrice.toFixed(2)}</td>
+                    <td className="p-4 text-right text-sm">
+                      <span className={`font-semibold ${
+                        product.profit > avgProfit ? 'text-green-600' : 'text-yellow-600'
+                      }`}>
+                        ${product.profit.toFixed(2)}
+                      </span>
+                    </td>
+                    <td className="p-4 text-right text-yellow-600 text-sm">{product.margin.toFixed(2)}%</td>
+                    <td className="p-4 text-right text-purple-600 text-sm">{product.markup.toFixed(2)}%</td>
                   </tr>
-                </thead>
-                <tbody>
-                  {filteredProducts.map((product, index) => (
-                    <tr 
-                      key={product.id} 
-                      className="border-b border-gray-800 hover:bg-gray-900/50 transition-colors"
-                    >
-                      <td className="p-4 text-gray-300">#{index + 1}</td>
-                      <td className="p-4 text-gray-300 font-mono text-sm">{product.sku}</td>
-                      <td className="p-4 text-gray-100 font-medium">{product.name}</td>
-                      <td className="p-4 text-gray-400">{product.brand?.name || '-'}</td>
-                      <td className="p-4 text-gray-400">{product.category.name}</td>
-                      <td className="p-4 text-gray-400">{product.subcategory?.name || '-'}</td>
-                      <td className="p-4 text-right text-green-400">${product.cost.toFixed(2)}</td>
-                      <td className="p-4 text-right text-blue-400">${product.retailPrice.toFixed(2)}</td>
-                      <td className="p-4 text-right">
-                        <span className={`font-semibold ${
-                          product.profit > avgProfit ? 'text-green-400' : 'text-yellow-400'
-                        }`}>
-                          ${product.profit.toFixed(2)}
-                        </span>
-                      </td>
-                      <td className="p-4 text-right text-yellow-400">{product.margin.toFixed(2)}%</td>
-                      <td className="p-4 text-right text-purple-400">{product.markup.toFixed(2)}%</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
           </div>
-        )}
-      </div>
-    </div>
+        </div>
+      )}
+    </PageLayout>
   )
 }
