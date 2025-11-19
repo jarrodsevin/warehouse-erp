@@ -24,6 +24,7 @@ export default function ScheduledReportsPage() {
   const [reports, setReports] = useState<ScheduledReport[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<'all' | 'active' | 'draft'>('all')
+  const [sendingTestId, setSendingTestId] = useState<string | null>(null)
 
   useEffect(() => {
     fetchReports()
@@ -60,6 +61,37 @@ export default function ScheduledReportsPage() {
     }
   }
 
+  const handleSendTestNow = async (reportId: string, reportName: string, emailAddress: string) => {
+    if (!confirm(`Send test email to ${emailAddress}?`)) return
+
+    setSendingTestId(reportId)
+
+    try {
+      const response = await fetch('/api/scheduled-reports/test', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          scheduledReportId: reportId,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        alert(`✅ Test report sent successfully to ${emailAddress}!\n\nThe email includes ${data.reportCount} report(s).`)
+      } else {
+        alert(`❌ Failed to send test report:\n${data.error}\n\n${data.details || ''}`)
+      }
+    } catch (error) {
+      console.error('Error sending test report:', error)
+      alert('❌ Failed to send test report. Please try again.')
+    } finally {
+      setSendingTestId(null)
+    }
+  }
+
   const filteredReports = reports.filter(report => {
     if (filter === 'all') return true
     return report.status === filter
@@ -88,13 +120,21 @@ export default function ScheduledReportsPage() {
               ← Back to Reports
             </Link>
           </div>
-          <div>
-            <h1 className="text-3xl md:text-4xl font-bold mb-2">
-              Scheduled Reports
-            </h1>
-            <p className="text-blue-100">
-              Manage automated report batches sent via email on a schedule
-            </p>
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl md:text-4xl font-bold mb-2">
+                Scheduled Reports
+              </h1>
+              <p className="text-blue-100">
+                Manage automated report batches sent via email on a schedule
+              </p>
+            </div>
+            <Link
+              href="/reports/scheduled/new"
+              className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors font-medium"
+            >
+              + Create New Schedule
+            </Link>
           </div>
         </div>
       </div>
@@ -212,10 +252,26 @@ export default function ScheduledReportsPage() {
                   )}
                 </div>
 
-                <div className="flex gap-2 ml-4">
+                <div className="flex flex-col gap-2 ml-4">
+                  <button
+                    onClick={() => handleSendTestNow(report.id, report.name, report.emailAddress)}
+                    disabled={sendingTestId === report.id}
+                    className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 justify-center"
+                  >
+                    {sendingTestId === report.id ? (
+                      <>
+                        <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        📧 Send Test Now
+                      </>
+                    )}
+                  </button>
                   <Link
                     href={`/reports/scheduled/${report.id}`}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm font-medium"
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm font-medium text-center"
                   >
                     Edit
                   </Link>

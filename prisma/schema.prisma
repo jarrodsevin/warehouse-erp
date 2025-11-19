@@ -244,6 +244,7 @@ model ScheduledReportBatch {
   frequency       String                 // "daily", "weekly", "monthly"
   scheduledDays   String?                // JSON array of days for weekly (e.g., ["Monday", "Friday"])
   scheduledTime   String                 @default("09:00") // Time to send (HH:MM format)
+  timezone          String            @default("America/Chicago")
   lastSentAt      DateTime?              // Last time report was sent
   nextScheduledAt DateTime?              // Next scheduled send time
   items           ScheduledReportItem[]  // Reports in this batch

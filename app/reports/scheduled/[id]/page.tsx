@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
 import PageLayout from '@/app/components/PageLayout'
+import { TIMEZONES } from '@/lib/timezones'
 
 type Category = { id: string; name: string }
 type Subcategory = { id: string; name: string }
@@ -31,6 +32,7 @@ type FormData = {
   frequency: 'daily' | 'weekly' | 'monthly'
   scheduledDays: string[]
   scheduledTime: string
+  timezone: string
   items: ReportItem[]
 }
 
@@ -80,6 +82,7 @@ export default function ScheduledReportForm() {
     frequency: 'weekly',
     scheduledDays: [],
     scheduledTime: '09:00',
+    timezone: 'America/Chicago',
     items: [],
   })
 
@@ -143,6 +146,7 @@ export default function ScheduledReportForm() {
         frequency: data.frequency,
         scheduledDays: data.scheduledDays || [],
         scheduledTime: data.scheduledTime,
+        timezone: data.timezone || 'America/Chicago',
         items: (data.items || []).map((item: any) => ({
           id: item.id,
           reportType: item.reportType,
@@ -230,10 +234,12 @@ export default function ScheduledReportForm() {
         body: JSON.stringify({ scheduledReportId: id }),
       })
 
+      const data = await testResponse.json()
+
       if (testResponse.ok) {
-        alert(`Test report sent successfully to ${formData.emailAddress}!`)
+        alert(`✅ Test report sent successfully to ${formData.emailAddress}!\n\nThe email includes ${data.reportCount} report(s).`)
       } else {
-        alert('Failed to send test report')
+        alert(`❌ Failed to send test report:\n${data.error}\n\n${data.details || ''}`)
       }
     } catch (error) {
       console.error('Error sending test:', error)
@@ -554,7 +560,7 @@ export default function ScheduledReportForm() {
         <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Schedule Configuration</h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Frequency *
@@ -585,6 +591,21 @@ export default function ScheduledReportForm() {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Timezone *
+              </label>
+              <select
+                value={formData.timezone}
+                onChange={(e) => setFormData({ ...formData, timezone: e.target.value })}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {TIMEZONES.map(tz => (
+                  <option key={tz.value} value={tz.value}>{tz.label}</option>
+                ))}
+              </select>
             </div>
           </div>
 
