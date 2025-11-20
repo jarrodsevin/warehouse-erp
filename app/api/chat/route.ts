@@ -198,9 +198,7 @@ const tools: OpenAI.Chat.Completions.ChatCompletionTool[] = [
 ];
 
 // Function to execute tool calls
-async function executeFunction(name: string, args: any): Promise<any> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-  
+async function executeFunction(name: string, args: any, request: NextRequest): Promise<any> {
   const functionMap: Record<string, string> = {
     'search_products': '/api/chat/tools/products',
     'check_inventory': '/api/chat/tools/inventory',
@@ -215,13 +213,26 @@ async function executeFunction(name: string, args: any): Promise<any> {
     throw new Error(`Unknown function: ${name}`);
   }
 
+  // Get the base URL from the request
+  const host = request.headers.get('host') || '';
+  const protocol = request.headers.get('x-forwarded-proto') || 'https';
+  const baseUrl = `${protocol}://${host}`;
+
+  console.log(`Calling ${baseUrl}${endpoint}`);
+
   const response = await fetch(`${baseUrl}${endpoint}`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 
+      'Content-Type': 'application/json',
+      // Forward cookies for authentication
+      'Cookie': request.headers.get('cookie') || '',
+    },
     body: JSON.stringify(args),
   });
 
   if (!response.ok) {
+    const errorText = await response.text();
+    console.error(`Function ${name} failed:`, response.status, errorText);
     throw new Error(`Function ${name} failed: ${response.statusText}`);
   }
 
@@ -327,7 +338,7 @@ CLOSING:
         console.log(`Executing function: ${functionName}`, functionArgs);
         
         try {
-          const functionResponse = await executeFunction(functionName, functionArgs);
+          const functionResponse = await executeFunction(functionName, functionArgs, request);
           
           messages.push({
             role: 'tool',
