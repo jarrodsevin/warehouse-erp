@@ -134,7 +134,7 @@ export default function ReportsMenu() {
                 <div className="bg-white border-2 border-gray-200 rounded-lg p-6 md:p-8 hover:border-cyan-500 hover:shadow-lg transition-all cursor-pointer group h-full relative overflow-hidden">
                   <div className="absolute top-0 left-0 w-full h-1 bg-cyan-500"></div>
                   <h2 className="text-lg md:text-xl font-semibold mb-3 text-gray-900 group-hover:text-cyan-700 transition-colors">
-                    📧 Scheduled Reports
+                    Scheduled Reports
                   </h2>
                   <p className="text-gray-600 text-sm">
                     Manage automated report batches sent via email on a daily schedule
