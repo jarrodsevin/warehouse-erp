@@ -318,6 +318,9 @@ CLOSING:
       
       // Execute all tool calls
       for (const toolCall of responseMessage.tool_calls) {
+        // Type guard for function tool calls
+        if (toolCall.type !== 'function') continue;
+        
         const functionName = toolCall.function.name;
         const functionArgs = JSON.parse(toolCall.function.arguments);
         
